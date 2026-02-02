@@ -41,7 +41,7 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
                     transition={{ delay: 0.25 }}
                     style={{ marginBottom: '30px', fontWeight: '700', color: 'var(--accent)' }}
                 >
-                    🚀 Lancement officiel le 14 février
+                    Lancement officiel le 14 février
                 </motion.div>
 
                 <motion.div
