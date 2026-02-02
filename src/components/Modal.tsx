@@ -76,20 +76,20 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, mode, initialEmai
         founder: {
             badge: "⏳ Accès Prioritaire",
             title: "STOP ! Vous êtes en avance.",
-            desc: "L'Allié ouvre officiellement ses portes dans quelques jours. En cliquant, vous venez de prouver que ce problème est urgent.",
+            desc: "L'Allié ouvre officiellement ses portes le 14 février. En vous inscrivant aujourd'hui, vous sécurisez votre accès prioritaire.",
             offer: <>Nous avons réservé votre place au <strong>tarif Early Bird de 29€</strong> (au lieu de 59€).</>,
-            button: "Je veux mon accès",
-            label: "Ton email (pour t’envoyer l’accès bêta + tarif fondateur)",
-            successMsg: "Votre place au tarif Early Bird est réservée ! Surveillez votre boîte mail."
+            button: "Je veux mon accès au 14/02",
+            label: "Ton email (pour t’envoyer ton accès le 14 février)",
+            successMsg: "C'est réservé ! Vous recevrez votre accès prioritaire par email le 14 février."
         },
         waitlist: {
             badge: "📧 Liste d'attente",
             title: "Rejoignez la révolution.",
-            desc: "Nous finalisons les derniers détails pour vous offrir la meilleure expérience possible.",
-            offer: <>Inscrivez-vous pour être prévenu(e) en priorité du <strong>lancement public (tarif standard 59€)</strong>.</>,
-            button: "Me prévenir du lancement",
+            desc: "Le lancement public est prévu pour le 14 février. Soyez parmi les premiers informés.",
+            offer: <>Inscrivez-vous pour être prévenu(e) en priorité du <strong>lancement le 14 février</strong>.</>,
+            button: "Me prévenir le 14 février",
             label: "Ton email (pour recevoir l'invitation au lancement)",
-            successMsg: "Vous êtes sur la liste d'attente prioritaire ! Merci de votre confiance."
+            successMsg: "Vous êtes sur la liste ! Rendez-vous le 14 février pour le lancement public."
         }
     };
 

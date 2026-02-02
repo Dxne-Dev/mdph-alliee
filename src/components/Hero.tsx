@@ -36,6 +36,15 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
                 </motion.p>
 
                 <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.25 }}
+                    style={{ marginBottom: '30px', fontWeight: '700', color: 'var(--accent)' }}
+                >
+                    🚀 Lancement officiel le 14 février
+                </motion.div>
+
+                <motion.div
                     className="hero-cta-group"
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -46,10 +55,10 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
                         Je renouvelle mon dossier
                         <span className="btn-sub">Accès Fondateur &middot; 29€ à vie</span>
                     </button>
-                    <button onClick={onCtaClick} className="btn-outline" style={{ 
-                        background: 'transparent', 
-                        border: '2px solid var(--primary)', 
-                        padding: '16px 32px', 
+                    <button onClick={onCtaClick} className="btn-outline" style={{
+                        background: 'transparent',
+                        border: '2px solid var(--primary)',
+                        padding: '16px 32px',
                         borderRadius: 'var(--radius-md)',
                         fontWeight: '600',
                         display: 'flex',

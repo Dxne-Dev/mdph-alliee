@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Calendar } from 'lucide-react';
 import { Hero } from './components/Hero';
 import { Problem } from './components/Problem';
 import { Solution } from './components/Solution';
@@ -24,7 +24,10 @@ function App() {
     return (
         <>
             <div className="sticky-bar">
-                <p>Places Bêta limitées &middot; <strong>Offre Lancement disponible</strong></p>
+                <p>
+                    <Calendar size={14} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                    Lancement officiel le <strong>14 février</strong> &middot; Places Bêta limitées
+                </p>
                 <button
                     onClick={() => openModal('founder')}
                     style={{ marginLeft: '10px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
