@@ -1,5 +1,5 @@
 import React from 'react';
-import { Lock, FileText, ShieldCheck, Sparkles, Send } from 'lucide-react';
+import { Lock, FileText, ShieldCheck, Sparkles, Send, Repeat } from 'lucide-react';
 import { type ModalMode } from './Modal';
 
 interface PricingProps {
@@ -11,34 +11,55 @@ export const Pricing: React.FC<PricingProps> = ({ onCtaClick }) => {
         <section id="pricing" className="section-pricing">
             <div className="container">
                 <div className="section-header text-center" style={{ textAlign: 'center', marginBottom: '60px' }}>
-                    <h2 className="section-title">Choisissez votre accès</h2>
-                    <p className="section-lead">Choisissez l'option qui vous convient le mieux pour sécuriser votre futur dossier.</p>
+                    <h2 className="section-title">Payez une fois. Renouvelez à vie.</h2>
+                    <p className="section-lead">L'investissement le plus rentable pour la tranquillité administrative de votre famille.</p>
                 </div>
 
                 <div className="pricing-grid">
-                    {/* Option A - Payante */}
-                    <div className="pricing-card recommended">
-                        <div className="ribbon">Signal Fort &middot; Recommandé</div>
-                        <h3 className="card-tag">Option A : Tarif Fondateur</h3>
+                    {/* Option Comparison - Left (Public Scribe) */}
+                    <div className="pricing-card secondary" style={{ opacity: 0.8 }}>
+                        <h3 className="card-tag">Accompagnement Classique</h3>
                         <div className="price">
-                            <span className="currency">€</span>9<span className="period"> (Réservation)</span>
+                            <span className="currency">€</span>150
+                        </div>
+                        <p className="price-sub">Tarif moyen par dossier</p>
+
+                        <hr className="divider" />
+
+                        <ul className="pricing-features">
+                            <li><FileText size={16} /> Payé à chaque dépôt</li>
+                            <li><Lock size={16} /> Pas de mémoire du dossier</li>
+                            <li><Repeat size={16} /> Tout refaire l'an prochain</li>
+                        </ul>
+
+                        <div style={{ marginTop: 'auto' }}>
+                            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Coût total sur 3 ans : ~450€</p>
+                        </div>
+                    </div>
+
+                    {/* Option A - L'Allié (Winner) */}
+                    <div className="pricing-card recommended">
+                        <div className="ribbon">Accès Illimité</div>
+                        <h3 className="card-tag">Option A : L'Allié MDPH</h3>
+                        <div className="price">
+                            <span className="currency">€</span>29
                         </div>
                         <p className="price-sub">
-                            Accès Bêta &middot; Remboursable à tout moment<br />
-                            <strong>+ 20€ au lancement (Total 29€)</strong>
+                            Paiement unique &middot; Vie illimitée<br />
+                            <strong>Inclut tous les renouvellements futurs</strong>
                         </p>
 
                         <hr className="divider" />
 
                         <ul className="pricing-features">
-                            <li><Lock size={16} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Accès prioritaire à l'outil</li>
-                            <li><FileText size={16} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Dossiers illimités (Pack complet)</li>
-                            <li><ShieldCheck size={16} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Checklist anti-rejet</li>
-                            <li><Sparkles size={16} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Support prioritaire mail</li>
+                            <li><ShieldCheck size={16} /> Mémoire du dossier conservée</li>
+                            <li><Repeat size={16} /> Renouvellements en 2 clics</li>
+                            <li><Sparkles size={16} /> Toutes les mises à jour incl.</li>
+                            <li><Lock size={16} /> Coffre-fort numérique sécurisé</li>
                         </ul>
 
                         <button className="btn-primary" onClick={() => onCtaClick('founder')}>
-                            Je réserve (9€ remboursables)
+                            Je m'inscris (29€ à vie)
                         </button>
                     </div>
 
@@ -48,27 +69,28 @@ export const Pricing: React.FC<PricingProps> = ({ onCtaClick }) => {
                         <div className="price">
                             <span className="currency">€</span>0
                         </div>
-                        <p className="price-sub">Soyer prévenu(e) au lancement public</p>
+                        <p className="price-sub">Soyez prévenu(e) au lancement</p>
 
                         <hr className="divider" />
 
                         <ul className="pricing-features">
-                            <li><Send size={16} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Notifications par email</li>
-                            <li><Sparkles size={16} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Accès au tarif public (59€)</li>
-                            <li><Lock size={16} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Sans priorité d'accès</li>
+                            <li><Send size={16} /> Notifications par email</li>
+                            <li><Sparkles size={16} /> Accès au tarif public (59€)</li>
+                            <li><Lock size={16} /> Sans priorité d'accès</li>
                         </ul>
 
                         <div style={{ marginTop: 'auto' }}>
                             <button className="btn-secondary" onClick={() => onCtaClick('waitlist')}>
-                                Je rejoins la liste d’attente (gratuit)
+                                Rejoindre la liste
                             </button>
                         </div>
                     </div>
                 </div>
 
                 <div className="pricing-explanation">
-                    <p className="micro-text">
-                        <strong>Pourquoi une bêta payante ?</strong> Parce que je veux construire avec des familles qui en ont vraiment besoin — et mesurer si ça vaut le coup de le produire jusqu'au bout.
+                    <p className="micro-text" style={{ fontSize: '1rem' }}>
+                        Votre accès inclut toutes les mises à jour futures et les renouvellements pour votre enfant.
+                        <strong> C'est le dernier outil que vous achèterez pour votre dossier MDPH.</strong>
                     </p>
                 </div>
             </div>

@@ -23,13 +23,13 @@ function App() {
     return (
         <>
             <div className="sticky-bar">
-                <p>Places Bêta limitées &middot; <strong>Tarif Fondateur disponible</strong></p>
+                <p>Places Bêta limitées &middot; <strong>Offre Lancement disponible</strong></p>
                 <button
                     onClick={() => openModal('founder')}
                     style={{ marginLeft: '10px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
                     className="btn-xs"
                 >
-                    Réserver ma place (9€) <ArrowRight size={14} />
+                    Réserver ma place <ArrowRight size={14} />
                 </button>
             </div>
 
@@ -42,7 +42,7 @@ function App() {
                 <Hero onCtaClick={() => openModal('founder')} />
                 <Problem />
                 <Solution />
-                <Pack />
+                <Pack onCtaClick={() => openModal('founder')} />
                 <Pricing onCtaClick={(mode) => openModal(mode)} />
                 <FAQ />
             </main>

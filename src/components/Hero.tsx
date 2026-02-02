@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Check, ArrowDown, FileText } from 'lucide-react';
+import { Check, ArrowDown, FileText, ArrowRight } from 'lucide-react';
 
 interface HeroProps {
     onCtaClick: () => void;
@@ -22,7 +22,7 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
                 >
-                    Ils jugent l'avenir de votre enfant sur <span className="text-gradient">un formulaire papier.</span>
+                    Renouvellement MDPH : <span className="text-gradient">ne repartez plus jamais de zéro.</span>
                 </motion.h1>
 
                 <motion.p
@@ -31,7 +31,8 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
                 >
-                    Ne leur donnez pas le bâton pour vous battre. <strong>L'Allié</strong> traduit votre réalité de parent en langage administratif irréfutable. Sans larmes. En 15 minutes.
+                    Vous avez déjà tout prouvé. Pourquoi recommencer ? <br />
+                    L'Allié garde votre dossier en mémoire. Mettez à jour uniquement ce qui a changé. Imprimez. Déposez.
                 </motion.p>
 
                 <motion.div
@@ -39,13 +40,27 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.3 }}
+                    style={{ display: 'flex', gap: '20px', justifyContent: 'center', alignItems: 'center' }}
                 >
                     <button onClick={onCtaClick} className="btn-primary">
-                        Je sécurise mon dossier
-                        <span className="btn-sub">Acompte 9€ remboursable &middot; Aucun engagement</span>
+                        Je renouvelle mon dossier
+                        <span className="btn-sub">Accès Fondateur &middot; 29€ à vie</span>
                     </button>
-                    <p className="trust-text">Jointe par +500 parents sur liste d'attente</p>
+                    <button onClick={onCtaClick} className="btn-outline" style={{ 
+                        background: 'transparent', 
+                        border: '2px solid var(--primary)', 
+                        padding: '16px 32px', 
+                        borderRadius: 'var(--radius-md)',
+                        fontWeight: '600',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        cursor: 'pointer'
+                    }}>
+                        Première demande <ArrowRight size={18} />
+                    </button>
                 </motion.div>
+                <p className="trust-text" style={{ marginTop: '20px' }}>Jointe par +500 parents sur liste d'attente</p>
             </div>
 
             {/* Abstract Visual / Glass Effect */}
@@ -59,14 +74,14 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
                     <div className="check-item">
                         <div className="check-icon"><Check size={14} /></div>
                         <div className="check-text">
-                            <strong>Vous cochez :</strong> "Il ne tient pas en place."
+                            <strong>L'Allié garde en mémoire :</strong> Bilans 2024, École, Soins.
                         </div>
                     </div>
                     <div className="arrow-down"><ArrowDown /></div>
                     <div className="result-item">
                         <div className="result-icon"><FileText size={14} /></div>
                         <div className="result-text">
-                            <strong>L'Allié écrit :</strong> "Trouble de l'attention avec impulsivité motrice nécessitant guidance."
+                            <strong>Dossier 2026 :</strong> "Génération en 1 clic. Seuls les changements sont demandés."
                         </div>
                     </div>
                 </div>
