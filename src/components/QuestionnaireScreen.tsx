@@ -8,7 +8,6 @@ export const QuestionnaireScreen = () => {
 
     const handleComplete = (answers: any) => {
         console.log('Questionnaire completed:', answers);
-        // Here we would call the OpenAI API or redirect to payment/success
         alert('Merci ! Vos réponses ont été enregistrées. Prochaine étape : La génération de vos documents.');
         navigate('/dashboard');
     };
@@ -36,3 +35,5 @@ export const QuestionnaireScreen = () => {
         </div>
     );
 };
+
+export default QuestionnaireScreen;
