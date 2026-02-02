@@ -4,6 +4,7 @@ import { Hero } from './components/Hero';
 import { Problem } from './components/Problem';
 import { Solution } from './components/Solution';
 import { Pack } from './components/Pack';
+import { MVPCapabilities } from './components/MVPCapabilities';
 import { Pricing } from './components/Pricing';
 import { FAQ } from './components/FAQ';
 import { Footer } from './components/Footer';
@@ -43,6 +44,7 @@ function App() {
                 <Problem />
                 <Solution />
                 <Pack onCtaClick={() => openModal('founder')} />
+                <MVPCapabilities />
                 <Pricing onCtaClick={(mode) => openModal(mode)} />
                 <FAQ />
             </main>
