@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Check, ArrowDown, FileText, ArrowRight, ShieldCheck, Zap } from 'lucide-react';
+import { Check, FileText, ArrowRight, ShieldCheck, Zap } from 'lucide-react';
 
 interface HeroProps {
     onCtaClick: () => void;
