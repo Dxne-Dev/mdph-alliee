@@ -1,5 +1,5 @@
 import React from 'react';
-import { Lock, FileText, ShieldCheck, Sparkles, Send, Repeat, Check } from 'lucide-react';
+import { Lock, FileText, Sparkles, Send, Repeat, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { type ModalMode } from './Modal';
 
@@ -18,11 +18,11 @@ export const Pricing: React.FC<PricingProps> = ({ onCtaClick }) => {
 
                 <div className="pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '30px', alignItems: 'center' }}>
                     {/* Option Comparison - Left */}
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true }}
-                        className="pricing-card" 
+                        className="pricing-card"
                         style={{ padding: '40px', background: 'white', opacity: 0.7, border: '1px solid #e2e8f0' }}
                     >
                         <h3 style={{ fontSize: '0.9rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '24px' }}>Accompagnement Classique</h3>
@@ -36,19 +36,19 @@ export const Pricing: React.FC<PricingProps> = ({ onCtaClick }) => {
                             <li style={{ display: 'flex', gap: '12px', color: '#94a3b8', fontSize: '0.95rem' }}><Lock size={18} /> Pas de mémoire du dossier</li>
                             <li style={{ display: 'flex', gap: '12px', color: '#94a3b8', fontSize: '0.95rem' }}><Repeat size={18} /> Tout refaire l'an prochain</li>
                         </ul>
-                    </div>
+                    </motion.div>
 
                     {/* L'Allié (Winner) */}
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="pricing-card recommended" 
-                        style={{ 
-                            padding: '60px 40px', 
-                            background: 'var(--primary)', 
-                            color: 'white', 
-                            transform: 'scale(1.05)', 
+                        className="pricing-card recommended"
+                        style={{
+                            padding: '60px 40px',
+                            background: 'var(--primary)',
+                            color: 'white',
+                            transform: 'scale(1.05)',
                             boxShadow: '0 40px 80px -20px rgba(15, 23, 42, 0.3)',
                             border: '2px solid var(--accent)',
                             position: 'relative'
@@ -74,11 +74,11 @@ export const Pricing: React.FC<PricingProps> = ({ onCtaClick }) => {
                     </motion.div>
 
                     {/* Option B - Waitlist */}
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true }}
-                        className="pricing-card" 
+                        className="pricing-card"
                         style={{ padding: '40px', background: 'white', border: '1px solid #e2e8f0' }}
                     >
                         <h3 style={{ fontSize: '0.9rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '24px' }}>Liste d'attente</h3>
@@ -96,7 +96,7 @@ export const Pricing: React.FC<PricingProps> = ({ onCtaClick }) => {
                         <button className="btn-outline" onClick={() => onCtaClick('waitlist')} style={{ width: '100%', padding: '16px' }}>
                             Rejoindre la liste
                         </button>
-                    </div>
+                    </motion.div>
                 </div>
 
                 <div style={{ marginTop: '60px', textAlign: 'center' }}>
@@ -104,7 +104,7 @@ export const Pricing: React.FC<PricingProps> = ({ onCtaClick }) => {
                         * Votre accès inclut tous les renouvellements futurs pour votre enfant sans aucun frais supplémentaire.
                     </p>
                 </div>
-            </div >
-        </section >
+            </div>
+        </section>
     );
 };
