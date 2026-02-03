@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Plus, User, LogOut, LayoutDashboard, Settings, Bell, X, Baby, Heart, ShieldCheck, Trash2, Edit3, ArrowRight } from 'lucide-react';
+import { Plus, User, LogOut, LayoutDashboard, Settings, Bell, X, Baby, Heart, ShieldCheck, Trash2, Edit3, ArrowRight, FolderLock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { DocumentVault } from './DocumentVault';
 
 export const Dashboard = () => {
     const navigate = useNavigate();
@@ -20,6 +21,8 @@ export const Dashboard = () => {
     const [openMenuId, setOpenMenuId] = useState<string | null>(null);
     const [editingChild, setEditingChild] = useState<any>(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [selectedChildForVault, setSelectedChildForVault] = useState<any>(null);
+    const [isVaultOpen, setIsVaultOpen] = useState(false);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -117,6 +120,12 @@ export const Dashboard = () => {
         }).finally(() => {
             setIsSubmitting(false);
         });
+    };
+
+    const handleOpenVault = (child: any) => {
+        setOpenMenuId(null);
+        setSelectedChildForVault(child);
+        setIsVaultOpen(true);
     };
 
     const startQuestionnaire = (childId: string) => {
@@ -407,21 +416,43 @@ export const Dashboard = () => {
                                     </p>
                                 </div>
 
-                                <button
-                                    onClick={() => startQuestionnaire(child.id)}
-                                    className="btn-primary"
-                                    style={{
-                                        width: '100%',
-                                        justifyContent: 'center',
-                                        padding: '16px',
-                                        fontSize: '1rem',
-                                        background: 'var(--accent)',
-                                        border: 'none',
-                                        boxShadow: '0 4px 6px -1px rgba(249, 115, 22, 0.2)'
-                                    }}
-                                >
-                                    Compléter mon dossier <ArrowRight size={18} style={{ marginLeft: '8px' }} />
-                                </button>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                                    <button
+                                        onClick={() => startQuestionnaire(child.id)}
+                                        className="btn-primary"
+                                        style={{
+                                            justifyContent: 'center',
+                                            padding: '14px',
+                                            fontSize: '0.9rem',
+                                            background: 'var(--accent)',
+                                            border: 'none',
+                                            boxShadow: '0 4px 6px -1px rgba(249, 115, 22, 0.2)',
+                                            borderRadius: 'var(--radius-md)',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '6px'
+                                        }}
+                                    >
+                                        Dossier <ArrowRight size={16} />
+                                    </button>
+                                    <button
+                                        onClick={() => handleOpenVault(child)}
+                                        className="btn-secondary"
+                                        style={{
+                                            justifyContent: 'center',
+                                            padding: '14px',
+                                            fontSize: '0.9rem',
+                                            borderRadius: 'var(--radius-md)',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '6px',
+                                            background: 'white',
+                                            border: '1px solid var(--border-subtle)'
+                                        }}
+                                    >
+                                        <FolderLock size={16} /> Coffre-fort
+                                    </button>
+                                </div>
                             </motion.div>
                         ))
                     )}
@@ -627,6 +658,13 @@ export const Dashboard = () => {
                     </div>
                 )}
             </AnimatePresence>
+            {/* Document Vault Modal */}
+            <DocumentVault
+                isOpen={isVaultOpen}
+                onClose={() => { setIsVaultOpen(false); setSelectedChildForVault(null); }}
+                childId={selectedChildForVault?.id}
+                childName={selectedChildForVault?.first_name}
+            />
         </div>
     );
 };
