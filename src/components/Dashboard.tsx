@@ -1,12 +1,17 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Plus, User, FileText, LogOut, LayoutDashboard, Settings, Bell } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Plus, User, FileText, LogOut, LayoutDashboard, Settings, Bell, X, Baby, Heart, ShieldCheck } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export const Dashboard = () => {
     const [user, setUser] = useState<any>(null);
     const [children, setChildren] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+
+    // Modal state
+    const [isAddChildModalOpen, setIsAddChildModalOpen] = useState(false);
+    const [childForm, setChildForm] = useState({ firstName: '', diagnosis: '' });
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -32,25 +37,34 @@ export const Dashboard = () => {
         window.location.href = '/';
     };
 
-    const handleAddChild = async () => {
-        const firstName = prompt("Prénom de l'enfant ?");
-        const diagnosis = prompt("Diagnostic (TSA, TDAH, DYS...) ?");
+    const handleAddChildClick = () => {
+        setChildForm({ firstName: '', diagnosis: '' });
+        setIsAddChildModalOpen(true);
+    };
 
-        if (firstName && diagnosis) {
+    const submitAddChild = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!childForm.firstName || !childForm.diagnosis) return;
+
+        setIsSubmitting(true);
+        try {
             const { data, error } = await supabase
                 .from('children')
                 .insert([{
                     parent_id: user.id,
-                    first_name: firstName,
-                    diagnosis: diagnosis
+                    first_name: childForm.firstName,
+                    diagnosis: childForm.diagnosis
                 }])
                 .select();
 
-            if (error) {
-                alert("Erreur lors de l'ajout : " + error.message);
-            } else {
-                setChildren([...children, ...data]);
-            }
+            if (error) throw error;
+
+            setChildren([...children, ...data]);
+            setIsAddChildModalOpen(false);
+        } catch (error: any) {
+            alert("Erreur lors de l'ajout : " + error.message);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -114,7 +128,7 @@ export const Dashboard = () => {
                         <h1 style={{ fontSize: '2.5rem', marginBottom: '8px', letterSpacing: '-1px' }}>Bonjour, ravi de vous revoir</h1>
                         <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>Gérez les dossiers et les actualisations de vos enfants.</p>
                     </div>
-                    <button onClick={handleAddChild} className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 24px', fontSize: '1rem', borderRadius: 'var(--radius-md)' }}>
+                    <button onClick={handleAddChildClick} className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 24px', fontSize: '1rem', borderRadius: 'var(--radius-md)' }}>
                         <Plus size={20} /> Ajouter un enfant
                     </button>
                 </header>
@@ -141,7 +155,7 @@ export const Dashboard = () => {
                             </div>
                             <h2 style={{ fontSize: '1.8rem', marginBottom: '12px' }}>Votre espace est prêt</h2>
                             <p style={{ color: 'var(--text-muted)', marginBottom: '32px', maxWidth: '450px', fontSize: '1.1rem' }}>Commencez par ajouter le profil de votre enfant pour que l'Allié puisse mémoriser ses besoins.</p>
-                            <button onClick={handleAddChild} className="btn-primary" style={{ padding: '16px 40px' }}>
+                            <button onClick={handleAddChildClick} className="btn-primary" style={{ padding: '16px 40px' }}>
                                 Ajouter mon premier enfant
                             </button>
                         </motion.div>
@@ -229,6 +243,106 @@ export const Dashboard = () => {
                     )}
                 </div>
             </main>
+
+            {/* Add Child Modal */}
+            <AnimatePresence>
+                {isAddChildModalOpen && (
+                    <div
+                        className="modal-overlay"
+                        style={{
+                            position: 'fixed',
+                            inset: 0,
+                            background: 'rgba(15, 23, 42, 0.7)',
+                            backdropFilter: 'blur(4px)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            zIndex: 2000,
+                            padding: '20px'
+                        }}
+                        onClick={() => setIsAddChildModalOpen(false)}
+                    >
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            onClick={(e) => e.stopPropagation()}
+                            style={{
+                                background: 'white',
+                                borderRadius: 'var(--radius-lg)',
+                                width: '100%',
+                                maxWidth: '500px',
+                                padding: '40px',
+                                position: 'relative',
+                                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+                            }}
+                        >
+                            <button
+                                onClick={() => setIsAddChildModalOpen(false)}
+                                style={{ position: 'absolute', top: '20px', right: '20px', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
+                            >
+                                <X size={24} />
+                            </button>
+
+                            <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+                                <div style={{ width: '60px', height: '60px', background: '#fff3eb', color: 'var(--accent)', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+                                    <Baby size={30} />
+                                </div>
+                                <h2 style={{ fontSize: '1.8rem', marginBottom: '8px' }}>Ajouter un enfant</h2>
+                                <p style={{ color: 'var(--text-muted)' }}>Ces informations nous aident à personnaliser ses documents.</p>
+                            </div>
+
+                            <form onSubmit={submitAddChild} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                                <div className="form-group">
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '0.9rem' }}>Prénom de l'enfant</label>
+                                    <div style={{ position: 'relative' }}>
+                                        <Heart size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                                        <input
+                                            type="text"
+                                            required
+                                            value={childForm.firstName}
+                                            onChange={(e) => setChildForm({ ...childForm, firstName: e.target.value })}
+                                            placeholder="Ex: Léo"
+                                            className="modal-input"
+                                            style={{ width: '100%', paddingLeft: '40px' }}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="form-group">
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '0.9rem' }}>Diagnostic ou trouble principal</label>
+                                    <div style={{ position: 'relative' }}>
+                                        <ShieldCheck size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                                        <select
+                                            required
+                                            value={childForm.diagnosis}
+                                            onChange={(e) => setChildForm({ ...childForm, diagnosis: e.target.value })}
+                                            className="modal-input"
+                                            style={{ width: '100%', paddingLeft: '40px' }}
+                                        >
+                                            <option value="">Choisir un diagnostic...</option>
+                                            <option value="TSA (Trouble du Spectre de l'Autisme)">TSA (Autisme)</option>
+                                            <option value="TDAH (Trouble de l'Attention)">TDAH</option>
+                                            <option value="Troubles DYS (Dyslexie, Dyspraxie...)">Troubles DYS</option>
+                                            <option value="Retard de développement">Retard de développement</option>
+                                            <option value="Autre">Autre</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    className="btn-primary"
+                                    disabled={isSubmitting}
+                                    style={{ width: '100%', justifyContent: 'center', marginTop: '10px' }}
+                                >
+                                    {isSubmitting ? 'Création...' : 'Valider et ajouter'}
+                                </button>
+                            </form>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };
