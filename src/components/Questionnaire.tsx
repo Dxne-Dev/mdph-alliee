@@ -145,45 +145,68 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
 
                             <div>
                                 <label className="question-label">Temps de scolarisation</label>
-                                <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-3">
                                     {['Temps plein', 'Temps partiel (matin)', 'Quelques heures/semaine', 'Instruction en Famille (IEF)'].map(opt => (
-                                        <button
-                                            key={opt}
-                                            onClick={() => setAnswer('timeInSchool', opt)}
-                                            className={`option-card ${answers.timeInSchool === opt ? 'selected' : ''}`}
-                                        >
-                                            {opt}
-                                        </button>
+                                        <label key={opt} className={`radio-tile ${answers.timeInSchool === opt ? 'selected' : ''}`}>
+                                            <input
+                                                type="radio"
+                                                name="timeInSchool"
+                                                checked={answers.timeInSchool === opt}
+                                                onChange={() => setAnswer('timeInSchool', opt)}
+                                                className="hidden-radio"
+                                            />
+                                            <div className="radio-content">{opt}</div>
+                                        </label>
                                     ))}
                                 </div>
                             </div>
 
                             <div>
                                 <label className="question-label">A-t-il actuellement une AESH (AVS) ?</label>
-                                <div className="flex gap-4">
-                                    <button
-                                        onClick={() => setAnswer('hasAesh', true)}
-                                        className={`option-card flex-1 ${answers.hasAesh === true ? 'selected' : ''}`}
-                                    >
-                                        Oui
-                                    </button>
-                                    <button
-                                        onClick={() => setAnswer('hasAesh', false)}
-                                        className={`option-card flex-1 ${answers.hasAesh === false ? 'selected' : ''}`}
-                                    >
-                                        Non
-                                    </button>
+                                <div className="space-y-3">
+                                    <label className={`radio-tile ${answers.hasAesh === true ? 'selected' : ''}`}>
+                                        <input
+                                            type="radio"
+                                            name="hasAesh"
+                                            checked={answers.hasAesh === true}
+                                            onChange={() => setAnswer('hasAesh', true)}
+                                            className="hidden-radio"
+                                        />
+                                        <div className="radio-content">Oui</div>
+                                    </label>
+                                    <label className={`radio-tile ${answers.hasAesh === false ? 'selected' : ''}`}>
+                                        <input
+                                            type="radio"
+                                            name="hasAesh"
+                                            checked={answers.hasAesh === false}
+                                            onChange={() => setAnswer('hasAesh', false)}
+                                            className="hidden-radio"
+                                        />
+                                        <div className="radio-content">Non</div>
+                                    </label>
                                 </div>
                             </div>
 
                             {answers.hasAesh && (
-                                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
+                                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-4 pt-2">
                                     <label className="question-label">Type d'aide humaine ?</label>
-                                    <select className="modal-input" value={answers.aeshType || ''} onChange={e => setAnswer('aeshType', e.target.value)}>
-                                        <option value="">Précisez...</option>
-                                        <option value="Individualisée (AESH-i)">Individualisée (AESH-i) - Pour lui seul</option>
-                                        <option value="Mutualisée (AESH-m)">Mutualisée (AESH-m) - Partagée avec d'autres</option>
-                                    </select>
+                                    <div className="space-y-3">
+                                        {[
+                                            { val: "Individualisée (AESH-i)", label: "Individualisée (AESH-i) - Pour lui seul" },
+                                            { val: "Mutualisée (AESH-m)", label: "Mutualisée (AESH-m) - Partagée avec d'autres" }
+                                        ].map(opt => (
+                                            <label key={opt.val} className={`radio-tile ${answers.aeshType === opt.val ? 'selected' : ''}`}>
+                                                <input
+                                                    type="radio"
+                                                    name="aeshType"
+                                                    checked={answers.aeshType === opt.val}
+                                                    onChange={() => setAnswer('aeshType', opt.val)}
+                                                    className="hidden-radio"
+                                                />
+                                                <div className="radio-content">{opt.label}</div>
+                                            </label>
+                                        ))}
+                                    </div>
                                 </motion.div>
                             )}
                         </div>
@@ -199,10 +222,16 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
                                 <label className="question-label" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                     <Utensils size={18} className="text-accent" /> Repas & Alimentation
                                 </label>
-                                <div className="space-y-2">
+                                <div className="space-y-3">
                                     {['Mange seul et proprement', 'Mange seul mais salit beaucoup', 'A besoin qu\'on coupe ses aliments', 'Doit être nourri à la cuillère'].map(opt => (
                                         <label key={opt} className={`radio-tile ${answers.eating === opt ? 'selected' : ''}`}>
-                                            <input type="radio" checked={answers.eating === opt} onChange={() => setAnswer('eating', opt)} className="hidden-radio" />
+                                            <input
+                                                type="radio"
+                                                name="eating"
+                                                checked={answers.eating === opt}
+                                                onChange={() => setAnswer('eating', opt)}
+                                                className="hidden-radio"
+                                            />
                                             <div className="radio-content">{opt}</div>
                                         </label>
                                     ))}
@@ -213,28 +242,43 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
                                 <label className="question-label" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                     <Shirt size={18} className="text-accent" /> Habillage
                                 </label>
-                                <select className="modal-input" value={answers.dressing || ''} onChange={e => setAnswer('dressing', e.target.value)}>
-                                    <option value="">Sélectionnez...</option>
-                                    <option value="Autonome total">S'habille totalement seul</option>
-                                    <option value="Aide boutons/lacets">Sait s'habiller sauf gestes fins (boutons, lacets)</option>
-                                    <option value="Aide choix">Sait s'habiller mais ne sait pas choisir ses vêtements (météo)</option>
-                                    <option value="Dépendant">Doit être habillé par un tiers</option>
-                                </select>
+                                <div className="space-y-3">
+                                    {[
+                                        { val: "Autonome total", label: "S'habille totalement seul" },
+                                        { val: "Aide boutons/lacets", label: "Sait s'habiller sauf gestes fins (boutons, lacets)" },
+                                        { val: "Aide choix", label: "Sait s'habiller mais ne sait pas choisir ses vêtements (météo)" },
+                                        { val: "Dépendant", label: "Doit être habillé par un tiers" }
+                                    ].map(opt => (
+                                        <label key={opt.val} className={`radio-tile ${answers.dressing === opt.val ? 'selected' : ''}`}>
+                                            <input
+                                                type="radio"
+                                                name="dressing"
+                                                checked={answers.dressing === opt.val}
+                                                onChange={() => setAnswer('dressing', opt.val)}
+                                                className="hidden-radio"
+                                            />
+                                            <div className="radio-content">{opt.label}</div>
+                                        </label>
+                                    ))}
+                                </div>
                             </div>
 
                             <div>
                                 <label className="question-label" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                     <Baby size={18} className="text-accent" /> Propreté (Toilettes)
                                 </label>
-                                <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-3">
                                     {['Totale (Jour/Nuit)', 'Diurne uniquement', 'Accidents fréquents', 'Port de couches permanent'].map(opt => (
-                                        <button
-                                            key={opt}
-                                            onClick={() => setAnswer('toileting', opt)}
-                                            className={`option-card ${answers.toileting === opt ? 'selected' : ''}`}
-                                        >
-                                            {opt}
-                                        </button>
+                                        <label key={opt} className={`radio-tile ${answers.toileting === opt ? 'selected' : ''}`}>
+                                            <input
+                                                type="radio"
+                                                name="toileting"
+                                                checked={answers.toileting === opt}
+                                                onChange={() => setAnswer('toileting', opt)}
+                                                className="hidden-radio"
+                                            />
+                                            <div className="radio-content">{opt}</div>
+                                        </label>
                                     ))}
                                 </div>
                             </div>
@@ -250,19 +294,24 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
                         <div className="space-y-6">
                             <div>
                                 <label className="question-label">Qui voit-il régulièrement ? (Cochez tout)</label>
-                                <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-3">
                                     {['Orthophoniste', 'Psychomotricien(ne)', 'Psychologue', 'Ergolibéral', 'Pédopsychiatre', 'Neuropédiatre'].map(pro => (
-                                        <button
+                                        <label
                                             key={pro}
-                                            onClick={() => {
-                                                const current = answers.therapies || [];
-                                                const exists = current.includes(pro);
-                                                setAnswer('therapies', exists ? current.filter((p: string) => p !== pro) : [...current, pro]);
-                                            }}
-                                            className={`option-card ${answers.therapies?.includes(pro) ? 'selected' : ''}`}
+                                            className={`radio-tile ${answers.therapies?.includes(pro) ? 'selected' : ''}`}
                                         >
-                                            {pro}
-                                        </button>
+                                            <input
+                                                type="checkbox"
+                                                checked={answers.therapies?.includes(pro) || false}
+                                                onChange={() => {
+                                                    const current = answers.therapies || [];
+                                                    const exists = current.includes(pro);
+                                                    setAnswer('therapies', exists ? current.filter((p: string) => p !== pro) : [...current, pro]);
+                                                }}
+                                                className="hidden-radio"
+                                            />
+                                            <div className="radio-content">{pro}</div>
+                                        </label>
                                     ))}
                                 </div>
                             </div>
