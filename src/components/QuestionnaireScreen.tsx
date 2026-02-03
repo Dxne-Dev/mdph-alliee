@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { Questionnaire } from './Questionnaire';
-
+import { toast } from 'react-hot-toast';
 
 export const QuestionnaireScreen = () => {
     const { childId } = useParams();
@@ -8,7 +8,10 @@ export const QuestionnaireScreen = () => {
 
     const handleComplete = (answers: any) => {
         console.log('Questionnaire completed:', answers);
-        alert('Merci ! Vos réponses ont été enregistrées. Prochaine étape : La génération de vos documents.');
+        toast.success('Dossier complété avec succès ! ✨\nVos réponses sont enregistrées.', {
+            duration: 5000,
+            icon: '✅'
+        });
         navigate('/dashboard');
     };
 
