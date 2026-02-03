@@ -5,38 +5,33 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-serve(async (req) => {
-    // Handle CORS
-    if (req.method === 'OPTIONS') {
-        return new Response('ok', { headers: corsHeaders })
-    }
+serve(async (req: Request) => {
+    if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
     try {
-        const { answers } = await req.json()
-        const GROQ_API_KEY = Deno.env.get('GROQ_API_KEY')
+        const payload = await req.json()
+        const answers = payload.answers || {}
 
+        console.log("Optimisation pour:", answers.firstName || "Inconnu");
+
+        const GROQ_API_KEY = Deno.env.get('GROQ_API_KEY')
         if (!GROQ_API_KEY) {
-            throw new Error('Missing GROQ_API_KEY')
+            console.error("ERREUR: GROQ_API_KEY manquante dans les secrets Supabase");
+            throw new Error('GROQ_API_KEY not configured');
         }
 
+        // Récupération sécurisée du texte utilisateur
+        const userText = answers.expectations || "";
+        const childInfo = `${answers.firstName || 'L\'enfant'}, ${answers.diagnosis || 'handicap non spécifié'}`;
+
         const prompt = `
-      Tu es un expert en rédaction de dossiers MDPH (Maison Départementale des Personnes Handicapées).
-      Ton rôle est de transformer les réponses brutes d'un parent en un "Projet de Vie" structuré, professionnel et percutant.
-
-      CONSIGNES :
-      1. Utilise un langage administratif et médical précis (ex: "difficultés de concentration" -> "troubles des fonctions exécutives").
-      2. Mets en avant l'impact du handicap sur la vie quotidienne, scolaire et sociale.
-      3. Sois empathique mais factuel. Pas de fioritures, va droit au but pour l'évaluateur.
-      4. Structure le texte en paragraphes clairs.
-
-      DONNÉES :
-      - Enfant: ${answers.firstName}
-      - Diagnostic: ${answers.diagnosis}
-      - Scolarité: ${answers.schoolLevel}
-      - Difficultés notées: ${answers.expectations}
-      - Autonomie: Repas: ${answers.eating}, Habillage: ${answers.dressing}
-
-      RÉDIGE LE PROJET DE VIE (en français) :
+      Tu es un expert MDPH. Transforme ces notes de parents en un Projet de Vie professionnel.
+      Structure le texte en 3 paragraphes.
+      
+      CONTEXTE : ${childInfo}
+      NOTES DU PARENT : ${userText || "Aucune note fournie, rédige un texte de base sur l'accompagnement nécessaire."}
+      
+      RÉPONSE (Directement le texte, sans introduction) :
     `
 
         const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -47,26 +42,31 @@ serve(async (req) => {
             },
             body: JSON.stringify({
                 model: 'deepseek-r1-distill-llama-70b',
-                messages: [
-                    { role: 'system', content: 'Tu es un expert MDPH français.' },
-                    { role: 'user', content: prompt }
-                ],
-                temperature: 0.6,
+                messages: [{ role: 'user', content: prompt }],
+                temperature: 0.5,
+                max_tokens: 1500
             }),
         })
 
-        const result = await response.json()
+        if (!response.ok) {
+            const errorData = await response.text();
+            console.error("Erreur Groq:", errorData);
+            throw new Error(`Groq API error: ${response.status}`);
+        }
 
-        // Some basic text cleaning for DeepSeek (it sometimes includes <think> tags)
-        let expertText = result.choices[0].message.content;
+        const result = await response.json()
+        let expertText = result.choices[0]?.message?.content || "Désolé, je n'ai pas pu générer le texte.";
+
+        // Nettoyage rigoureux
         expertText = expertText.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
 
         return new Response(JSON.stringify({ expertText }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 200,
         })
-    } catch (error) {
-        return new Response(JSON.stringify({ error: error.message }), {
+    } catch (err: any) {
+        console.error("Erreur critique fonction:", err.message);
+        return new Response(JSON.stringify({ error: err.message }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 400,
         })
