@@ -59,6 +59,20 @@ export const Dashboard = () => {
 
         setIsSubmitting(true);
         try {
+            // Ensure profile exists to satisfy foreign key constraint
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('id')
+                .eq('id', user.id)
+                .single();
+
+            if (!profile) {
+                console.log("Profile missing, creating auto-profile...");
+                await supabase
+                    .from('profiles')
+                    .insert([{ id: user.id, email: user.email }]);
+            }
+
             const { data, error } = await supabase
                 .from('children')
                 .insert([{
@@ -77,8 +91,8 @@ export const Dashboard = () => {
             setIsAddChildModalOpen(false);
             setChildForm({ firstName: '', diagnosis: '' });
         } catch (error: any) {
-            console.error("Supabase error:", error);
-            alert("Erreur lors de l'ajout : " + error.message);
+            console.error("Database error:", error);
+            alert("Erreur base de données : " + (error.message || "Impossible d'ajouter l'enfant"));
         } finally {
             setIsSubmitting(false);
         }
