@@ -62,10 +62,11 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
     }, [answers, step, submissionId]);
 
     const steps = [
-        { id: 1, title: "L'Enfant", fields: ['firstName', 'diagnosis'] },
-        { id: 2, title: "Autonomie Quotidienne", fields: ['dressing', 'hygiene'] },
-        { id: 3, title: "Vie Scolaire", fields: ['aesh', 'schoolAdaptations'] },
-        { id: 4, title: "Projet de Vie", fields: ['expectations'] },
+        { id: 1, title: "L'Enfant", fields: ['firstName', 'diagnosis', 'birthDate'] },
+        { id: 2, title: "Vie Scolaire", fields: ['schoolLevel', 'timeInSchool', 'hasAesh', 'aeshType'] },
+        { id: 3, title: "Autonomie & Quotidien", fields: ['dressing', 'eating', 'toileting', 'sleep'] },
+        { id: 4, title: "Suivi Médical", fields: ['therapies', 'medication'] },
+        { id: 5, title: "Projet de Vie", fields: ['expectations'] },
     ];
 
     const handleNext = () => setStep(s => Math.min(s + 1, steps.length));
@@ -79,46 +80,157 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
         switch (step) {
             case 1:
                 return (
-                    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                        <h3 style={{ marginBottom: '20px' }}>Commençons par faire connaissance</h3>
-                        <div style={{ marginBottom: '20px' }}>
-                            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Prénom de l'enfant</label>
-                            <input
-                                className="modal-input"
-                                value={answers.firstName || ''}
-                                onChange={e => setAnswer('firstName', e.target.value)}
-                                placeholder="Ex: Léo"
-                            />
-                        </div>
-                        <div>
-                            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Diagnostic principal</label>
-                            <select
-                                className="modal-input"
-                                value={answers.diagnosis || ''}
-                                onChange={e => setAnswer('diagnosis', e.target.value)}
-                            >
-                                <option value="">Choisir...</option>
-                                <option value="TSA">TSA (Autisme)</option>
-                                <option value="TDAH">TDAH (Trouble de l'attention)</option>
-                                <option value="DYS">DYS (Dyslexie, Dyspraxie...)</option>
-                                <option value="Autre">Autre</option>
-                            </select>
+                    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
+                        <h3 className="text-xl font-bold mb-6">Commençons par l'essentiel</h3>
+                        <div className="space-y-6">
+                            <div>
+                                <label className="question-label">Prénom de l'enfant</label>
+                                <input
+                                    className="modal-input"
+                                    value={answers.firstName || ''}
+                                    onChange={e => setAnswer('firstName', e.target.value)}
+                                    placeholder="Ex: Léo"
+                                />
+                            </div>
+                            <div>
+                                <label className="question-label">Date de naissance</label>
+                                <input
+                                    type="date"
+                                    className="modal-input"
+                                    value={answers.birthDate || ''}
+                                    onChange={e => setAnswer('birthDate', e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label className="question-label">Difficulté principale (Diagnostic)</label>
+                                <select
+                                    className="modal-input"
+                                    value={answers.diagnosis || ''}
+                                    onChange={e => setAnswer('diagnosis', e.target.value)}
+                                >
+                                    <option value="">Choisir...</option>
+                                    <option value="TSA">TSA (Trouble du Spectre de l'Autisme)</option>
+                                    <option value="TDAH">TDAH (Trouble de l'Attention)</option>
+                                    <option value="DYS">Troubles DYS (Dyslexie, etc.)</option>
+                                    <option value="TDI">Trouble du Développement Intellectuel</option>
+                                    <option value="Autre">Autre situation de handicap</option>
+                                </select>
+                            </div>
                         </div>
                     </motion.div>
                 );
             case 2:
                 return (
                     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-                        <h3 style={{ marginBottom: '20px' }}>L'Autonomie au quotidien</h3>
-                        <div style={{ marginBottom: '20px' }}>
-                            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Pour l'habillage, l'enfant :</label>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                {['S\'habille seul', 'A besoin d\'aide (boutons, lacets)', 'Doit être habillé entièrement'].map(opt => (
-                                    <label key={opt} style={{ display: 'flex', gap: '10px', cursor: 'pointer', padding: '15px', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-sm)', background: answers.dressing === opt ? '#fff3eb' : 'white', borderColor: answers.dressing === opt ? 'var(--accent)' : 'var(--border-subtle)' }}>
-                                        <input type="radio" name="dressing" checked={answers.dressing === opt} onChange={() => setAnswer('dressing', opt)} />
-                                        <span>{opt}</span>
-                                    </label>
-                                ))}
+                        <h3 className="text-xl font-bold mb-2">Vie Scolaire</h3>
+                        <p className="text-muted mb-6 text-sm">C'est souvent ici que se joue l'attribution de l'AESH.</p>
+
+                        <div className="space-y-6">
+                            <div>
+                                <label className="question-label">Niveau scolaire actuel</label>
+                                <select className="modal-input" value={answers.schoolLevel || ''} onChange={e => setAnswer('schoolLevel', e.target.value)}>
+                                    <option value="">Sélectionnez...</option>
+                                    <option value="Maternelle PS">Maternelle (PS)</option>
+                                    <option value="Maternelle MS">Maternelle (MS)</option>
+                                    <option value="Maternelle GS">Maternelle (GS)</option>
+                                    <option value="CP">CP</option>
+                                    <option value="CE1">CE1</option>
+                                    <option value="CE2">CE2</option>
+                                    <option value="CM1">CM1</option>
+                                    <option value="CM2">CM2</option>
+                                    <option value="Collège">Collège (ULIS ou Ordinaire)</option>
+                                    <option value="IME">IME / Institut spécialisé</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="question-label">Temps de scolarisation</label>
+                                <div className="grid grid-cols-2 gap-3">
+                                    {['Temps plein', 'Temps partiel (matin)', 'Quelques heures/semaine', 'Instruction en Famille (IEF)'].map(opt => (
+                                        <button
+                                            key={opt}
+                                            onClick={() => setAnswer('timeInSchool', opt)}
+                                            className={`option-card ${answers.timeInSchool === opt ? 'selected' : ''}`}
+                                        >
+                                            {opt}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="question-label">A-t-il actuellement une AESH (AVS) ?</label>
+                                <div className="flex gap-4">
+                                    <button
+                                        onClick={() => setAnswer('hasAesh', true)}
+                                        className={`option-card flex-1 ${answers.hasAesh === true ? 'selected' : ''}`}
+                                    >
+                                        Oui
+                                    </button>
+                                    <button
+                                        onClick={() => setAnswer('hasAesh', false)}
+                                        className={`option-card flex-1 ${answers.hasAesh === false ? 'selected' : ''}`}
+                                    >
+                                        Non
+                                    </button>
+                                </div>
+                            </div>
+
+                            {answers.hasAesh && (
+                                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
+                                    <label className="question-label">Type d'aide humaine ?</label>
+                                    <select className="modal-input" value={answers.aeshType || ''} onChange={e => setAnswer('aeshType', e.target.value)}>
+                                        <option value="">Précisez...</option>
+                                        <option value="Individualisée (AESH-i)">Individualisée (AESH-i) - Pour lui seul</option>
+                                        <option value="Mutualisée (AESH-m)">Mutualisée (AESH-m) - Partagée avec d'autres</option>
+                                    </select>
+                                </motion.div>
+                            )}
+                        </div>
+                    </motion.div>
+                );
+            case 3:
+                return (
+                    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
+                        <h3 className="text-xl font-bold mb-6">Autonomie & Quotidien chez vous</h3>
+
+                        <div className="space-y-8">
+                            <div>
+                                <label className="question-label">🍽️ Repas & Alimentation</label>
+                                <div className="space-y-2">
+                                    {['Mange seul et proprement', 'Mange seul mais salit beaucoup', 'A besoin qu\'on coupe ses aliments', 'Doit être nourri à la cuillère'].map(opt => (
+                                        <label key={opt} className={`radio-tile ${answers.eating === opt ? 'selected' : ''}`}>
+                                            <input type="radio" checked={answers.eating === opt} onChange={() => setAnswer('eating', opt)} className="hidden-radio" />
+                                            <div className="radio-content">{opt}</div>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="question-label">👕 Habillage</label>
+                                <select className="modal-input" value={answers.dressing || ''} onChange={e => setAnswer('dressing', e.target.value)}>
+                                    <option value="">Sélectionnez...</option>
+                                    <option value="Autonome total">S'habille totalement seul</option>
+                                    <option value="Aide boutons/lacets">Sait s'habiller sauf gestes fins (boutons, lacets)</option>
+                                    <option value="Aide choix">Sait s'habiller mais ne sait pas choisir ses vêtements (météo)</option>
+                                    <option value="Dépendant">Doit être habillé par un tiers</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="question-label">🚽 Propreté (Toilettes)</label>
+                                <div className="grid grid-cols-2 gap-3">
+                                    {['Totale (Jour/Nuit)', 'Diurne uniquement', 'Accidents fréquents', 'Port de couches permanent'].map(opt => (
+                                        <button
+                                            key={opt}
+                                            onClick={() => setAnswer('toileting', opt)}
+                                            className={`option-card ${answers.toileting === opt ? 'selected' : ''}`}
+                                        >
+                                            {opt}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </motion.div>
@@ -126,19 +238,66 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
             case 4:
                 return (
                     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-                        <h3 style={{ marginBottom: '20px' }}>Vos attentes et besoins</h3>
-                        <p style={{ color: 'var(--text-muted)', marginBottom: '20px' }}>Que souhaitez-vous que la MDPH comprenne en priorité ? (L'IA traduira ce texte)</p>
-                        <textarea
-                            className="modal-input"
-                            style={{ minHeight: '150px', resize: 'vertical' }}
-                            value={answers.expectations || ''}
-                            onChange={e => setAnswer('expectations', e.target.value)}
-                            placeholder="Ex: Je souhaite une aide pour les soins d'infirmier à domicile..."
-                        />
+                        <h3 className="text-xl font-bold mb-2">Suivi Médical & Soins</h3>
+                        <p className="text-muted mb-6 text-sm">Listez les professionnels qui suivent votre enfant.</p>
+
+                        <div className="space-y-6">
+                            <div>
+                                <label className="question-label">Qui voit-il régulièrement ? (Cochez tout)</label>
+                                <div className="grid grid-cols-2 gap-3">
+                                    {['Orthophoniste', 'Psychomotricien(ne)', 'Psychologue', 'Ergolibéral', 'Pédopsychiatre', 'Neuropédiatre'].map(pro => (
+                                        <button
+                                            key={pro}
+                                            onClick={() => {
+                                                const current = answers.therapies || [];
+                                                const exists = current.includes(pro);
+                                                setAnswer('therapies', exists ? current.filter((p: string) => p !== pro) : [...current, pro]);
+                                            }}
+                                            className={`option-card ${answers.therapies?.includes(pro) ? 'selected' : ''}`}
+                                        >
+                                            {pro}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="question-label">Prend-il un traitement médicamenteux ?</label>
+                                <textarea
+                                    className="modal-input"
+                                    placeholder="Ex: Ritaline LP 20mg le matin, Mélatonine le soir..."
+                                    value={answers.medication || ''}
+                                    onChange={e => setAnswer('medication', e.target.value)}
+                                    rows={3}
+                                />
+                            </div>
+                        </div>
+                    </motion.div>
+                );
+            case 5:
+                return (
+                    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
+                        <h3 className="text-xl font-bold mb-4">🔮 Projet de Vie (Le mot de la fin)</h3>
+                        <div className="bg-blue-50 p-4 rounded-lg mb-6 border border-blue-100">
+                            <p className="text-sm text-blue-800">
+                                <strong>Conseil de l'Allié :</strong> Ne soyez pas modeste. Décrivez "la pire journée". C'est ici que vous demandez concrètement les aides (AESH, matériel, orientation...).
+                            </p>
+                        </div>
+
+                        <div>
+                            <label className="question-label">Quelles sont vos demandes prioritaires pour l'année à venir ?</label>
+                            <textarea
+                                className="modal-input w-full p-4"
+                                style={{ minHeight: '200px', lineHeight: '1.6' }}
+                                value={answers.expectations || ''}
+                                onChange={e => setAnswer('expectations', e.target.value)}
+                                placeholder="Ex: Je demande le maintien de l'AESH à 12h car sans elle, il ne peut pas rester attentif. Je souhaite aussi la prise en charge du transport pour aller au CMPP..."
+                            />
+                        </div>
                     </motion.div>
                 )
             default:
-                return <div>Étape en cours de développement... Nous ajoutons les questions administratives spécifiques.</div>;
+                return <div>Étape inconnue</div>;
         }
     };
 

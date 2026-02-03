@@ -166,6 +166,75 @@ img {
     border-radius: var(--radius-sm);
     border: 1px solid var(--border-subtle);
     font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.modal-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(255, 90, 31, 0.1);
+}
+
+/* Questionnaire & Forms */
+.option-card {
+    border: 1px solid var(--border-subtle);
+    background: white;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.95rem;
+    color: var(--text-main);
+    width: 100%;
+    text-align: left;
+}
+
+.option-card:hover {
+    border-color: var(--accent);
+    background: #fff3eb;
+}
+
+.option-card.selected {
+    border-color: var(--accent);
+    background: #fff3eb;
+    color: var(--accent);
+    font-weight: 600;
+    box-shadow: 0 0 0 1px var(--accent);
+}
+
+.question-label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-main);
+}
+
+.radio-tile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.radio-tile:hover {
+    background: #f8fafc;
+}
+
+.radio-tile.selected {
+    border-color: var(--accent);
+    background: #fff3eb;
+    color: var(--accent);
+    font-weight: 500;
+}
+
+.hidden-radio {
+    accent-color: var(--accent);
+}
     font-family: inherit;
     transition: all 0.2s ease;
     background: white;
