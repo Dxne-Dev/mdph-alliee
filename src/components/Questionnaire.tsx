@@ -20,6 +20,14 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) return;
 
+            // 1. Fetch Child Profile Data
+            const { data: childData } = await supabase
+                .from('children')
+                .select('first_name, diagnosis')
+                .eq('id', childId)
+                .single();
+
+            // 2. Load Existing Submission
             const { data: existing } = await supabase
                 .from('submissions')
                 .select('*')
@@ -29,16 +37,37 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
 
             if (existing) {
                 setSubmissionId(existing.id);
-                setAnswers(existing.answers || {});
+                // Merge child data if fields are missing in answers
+                const mergedAnswers = {
+                    firstName: childData?.first_name || '',
+                    diagnosis: childData?.diagnosis || '',
+                    ...(existing.answers || {})
+                };
+                setAnswers(mergedAnswers);
                 setStep(existing.current_step || 1);
             } else {
+                // New submission: Pre-fill with child data
+                const initialAnswers = {
+                    firstName: childData?.first_name || '',
+                    diagnosis: childData?.diagnosis || '',
+                };
+
                 const { data: newSub } = await supabase
                     .from('submissions')
-                    .insert([{ child_id: childId, user_id: user.id, status: 'draft' }])
+                    .insert([{
+                        child_id: childId,
+                        user_id: user.id,
+                        status: 'draft',
+                        answers: initialAnswers,
+                        current_step: 1
+                    }])
                     .select()
                     .single();
 
-                if (newSub) setSubmissionId(newSub.id);
+                if (newSub) {
+                    setSubmissionId(newSub.id);
+                    setAnswers(initialAnswers);
+                }
             }
         };
 
