@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Plus, User, LogOut, LayoutDashboard, Settings, Bell, X, Baby, Heart, ShieldCheck, Trash2, Edit3, ArrowRight, FolderLock } from 'lucide-react';
+import { Plus, User, LogOut, LayoutDashboard, Settings, Bell, X, Baby, Heart, ShieldCheck, Trash2, Edit3, ArrowRight, FolderLock, FileDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { DocumentVault } from './DocumentVault';
+import { pdf } from '@react-pdf/renderer';
+import { MDPHDocument } from './MDPHDocument';
 
 export const Dashboard = () => {
     const navigate = useNavigate();
@@ -32,7 +34,15 @@ export const Dashboard = () => {
             if (user) {
                 const { data: childrenData } = await supabase
                     .from('children')
-                    .select('*')
+                    .select(`
+                        *,
+                        submissions (
+                            id,
+                            status,
+                            current_step,
+                            updated_at
+                        )
+                    `)
                     .eq('parent_id', user.id);
 
                 setChildren(childrenData || []);
@@ -298,163 +308,239 @@ export const Dashboard = () => {
                             </button>
                         </motion.div>
                     ) : (
-                        children.map((child, index) => (
-                            <motion.div
-                                key={child.id}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.1 }}
-                                className="child-card"
-                                style={{
-                                    background: 'white',
-                                    padding: '32px',
-                                    borderRadius: 'var(--radius-lg)',
-                                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02)',
-                                    border: '1px solid var(--border-subtle)',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    position: 'relative'
-                                }}
-                            >
-                                <div style={{ position: 'absolute', top: '32px', right: '32px' }}>
-                                    <button
-                                        onClick={() => setOpenMenuId(openMenuId === child.id ? null : child.id)}
-                                        style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '4px' }}
-                                    >
-                                        <Settings size={20} />
-                                    </button>
+                        children.map((child, index) => {
+                            const activeSub = child.submissions?.sort((a: any, b: any) =>
+                                new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+                            )[0];
 
-                                    {openMenuId === child.id && (
-                                        <div style={{
-                                            position: 'absolute',
-                                            top: '100%',
-                                            right: 0,
-                                            background: 'white',
-                                            borderRadius: 'var(--radius-sm)',
-                                            boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
-                                            border: '1px solid var(--border-subtle)',
-                                            minWidth: '150px',
-                                            zIndex: 50,
-                                            overflow: 'hidden'
-                                        }}>
-                                            <button
-                                                onClick={() => handleEditChild(child)}
-                                                style={{
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: '10px',
-                                                    width: '100%',
-                                                    padding: '12px 16px',
-                                                    background: 'none',
-                                                    border: 'none',
-                                                    cursor: 'pointer',
-                                                    fontSize: '0.9rem',
-                                                    textAlign: 'left'
-                                                }}
-                                            >
-                                                <Edit3 size={16} /> Modifier
-                                            </button>
-                                            <button
-                                                onClick={() => handleDeleteChild(child.id)}
-                                                style={{
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: '10px',
-                                                    width: '100%',
-                                                    padding: '12px 16px',
-                                                    background: 'none',
-                                                    border: 'none',
-                                                    cursor: 'pointer',
-                                                    fontSize: '0.9rem',
-                                                    textAlign: 'left',
-                                                    color: '#ef4444'
-                                                }}
-                                            >
-                                                <Trash2 size={16} /> Supprimer
-                                            </button>
+                            let statusLabel = 'À commencer';
+                            let progress = 0;
+                            let statusText = 'Aucun dossier généré pour le moment.';
+                            let statusColor = 'var(--accent)';
+                            let statusBg = '#fff3eb';
+
+                            if (activeSub) {
+                                if (activeSub.status === 'completed') {
+                                    statusLabel = 'Terminé';
+                                    progress = 100;
+                                    statusText = 'Dossier prêt à l\'envoi ! ✨';
+                                    statusColor = '#059669';
+                                    statusBg = '#ecfdf5';
+                                } else {
+                                    statusLabel = 'En cours';
+                                    progress = Math.round((activeSub.current_step / 5) * 100);
+                                    statusText = `Étape ${activeSub.current_step} sur 5 complétée.`;
+                                    statusColor = '#2563eb';
+                                    statusBg = '#eff6ff';
+                                }
+                            }
+
+                            return (
+                                <motion.div
+                                    key={child.id}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: index * 0.1 }}
+                                    className="child-card"
+                                    style={{
+                                        background: 'white',
+                                        padding: '32px',
+                                        borderRadius: 'var(--radius-lg)',
+                                        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02)',
+                                        border: '1px solid var(--border-subtle)',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        position: 'relative'
+                                    }}
+                                >
+                                    <div style={{ position: 'absolute', top: '32px', right: '32px' }}>
+                                        <button
+                                            onClick={() => setOpenMenuId(openMenuId === child.id ? null : child.id)}
+                                            style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '4px' }}
+                                        >
+                                            <Settings size={20} />
+                                        </button>
+
+                                        {openMenuId === child.id && (
+                                            <div style={{
+                                                position: 'absolute',
+                                                top: '100%',
+                                                right: 0,
+                                                background: 'white',
+                                                borderRadius: 'var(--radius-sm)',
+                                                boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
+                                                border: '1px solid var(--border-subtle)',
+                                                minWidth: '150px',
+                                                zIndex: 50,
+                                                overflow: 'hidden'
+                                            }}>
+                                                <button
+                                                    onClick={() => handleEditChild(child)}
+                                                    style={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '10px',
+                                                        width: '100%',
+                                                        padding: '12px 16px',
+                                                        background: 'none',
+                                                        border: 'none',
+                                                        cursor: 'pointer',
+                                                        fontSize: '0.9rem',
+                                                        textAlign: 'left'
+                                                    }}
+                                                >
+                                                    <Edit3 size={16} /> Modifier
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDeleteChild(child.id)}
+                                                    style={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '10px',
+                                                        width: '100%',
+                                                        padding: '12px 16px',
+                                                        background: 'none',
+                                                        border: 'none',
+                                                        cursor: 'pointer',
+                                                        fontSize: '0.9rem',
+                                                        textAlign: 'left',
+                                                        color: '#ef4444'
+                                                    }}
+                                                >
+                                                    <Trash2 size={16} /> Supprimer
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
+                                        <div style={{ width: '56px', height: '56px', background: 'var(--primary)', color: 'white', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: '800' }}>
+                                            {child.first_name.charAt(0)}
                                         </div>
-                                    )}
-                                </div>
+                                        <div>
+                                            <h3 style={{ fontSize: '1.4rem', marginBottom: '4px' }}>{child.first_name}</h3>
+                                            <span style={{
+                                                background: '#e0f2fe',
+                                                color: '#0369a1',
+                                                padding: '4px 10px',
+                                                borderRadius: '50px',
+                                                fontSize: '0.75rem',
+                                                fontWeight: '700'
+                                            }}>
+                                                {child.diagnosis}
+                                            </span>
+                                        </div>
+                                    </div>
 
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
-                                    <div style={{ width: '56px', height: '56px', background: 'var(--primary)', color: 'white', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: '800' }}>
-                                        {child.first_name.charAt(0)}
+                                    <div style={{
+                                        background: '#f8fafc',
+                                        padding: '24px',
+                                        borderRadius: 'var(--radius-md)',
+                                        marginBottom: '24px',
+                                        border: '1px solid #f1f5f9'
+                                    }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                                            <span style={{ fontSize: '0.9rem', fontWeight: '700' }}>Session MDPH 2026</span>
+                                            <span style={{
+                                                fontSize: '0.75rem',
+                                                color: statusColor,
+                                                fontWeight: '700',
+                                                background: statusBg,
+                                                padding: '2px 8px',
+                                                borderRadius: '4px'
+                                            }}>
+                                                {statusLabel}
+                                            </span>
+                                        </div>
+                                        <div style={{ height: '4px', background: '#e2e8f0', borderRadius: '2px', marginBottom: '12px' }}>
+                                            <div style={{
+                                                width: `${progress}%`,
+                                                height: '100%',
+                                                background: statusColor,
+                                                borderRadius: '2px',
+                                                transition: 'width 0.5s ease-out'
+                                            }}></div>
+                                        </div>
+                                        <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                                            {statusText}
+                                        </p>
                                     </div>
-                                    <div>
-                                        <h3 style={{ fontSize: '1.4rem', marginBottom: '4px' }}>{child.first_name}</h3>
-                                        <span style={{
-                                            background: '#e0f2fe',
-                                            color: '#0369a1',
-                                            padding: '4px 10px',
-                                            borderRadius: '50px',
-                                            fontSize: '0.75rem',
-                                            fontWeight: '700'
-                                        }}>
-                                            {child.diagnosis}
-                                        </span>
-                                    </div>
-                                </div>
 
-                                <div style={{
-                                    background: '#f8fafc',
-                                    padding: '24px',
-                                    borderRadius: 'var(--radius-md)',
-                                    marginBottom: '24px',
-                                    border: '1px solid #f1f5f9'
-                                }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                                        <span style={{ fontSize: '0.9rem', fontWeight: '700' }}>Session MDPH 2026</span>
-                                        <span style={{ fontSize: '0.75rem', color: 'var(--accent)', fontWeight: '700', background: '#fff3eb', padding: '2px 8px', borderRadius: '4px' }}>
-                                            À commencer
-                                        </span>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                                        {activeSub?.status === 'completed' ? (
+                                            <button
+                                                onClick={async () => {
+                                                    try {
+                                                        const doc = <MDPHDocument data={activeSub.answers} childName={child.first_name} />;
+                                                        const blob = await pdf(doc).toBlob();
+                                                        const url = URL.createObjectURL(blob);
+                                                        const link = document.createElement('a');
+                                                        link.href = url;
+                                                        link.download = `Dossier_MDPH_${child.first_name}.pdf`;
+                                                        link.click();
+                                                        URL.revokeObjectURL(url);
+                                                        toast.success('Téléchargement lancé !');
+                                                    } catch (error) {
+                                                        toast.error('Erreur lors du téléchargement');
+                                                    }
+                                                }}
+                                                className="btn-primary"
+                                                style={{
+                                                    justifyContent: 'center',
+                                                    padding: '14px',
+                                                    fontSize: '0.9rem',
+                                                    background: '#059669',
+                                                    border: 'none',
+                                                    boxShadow: '0 4px 6px -1px rgba(5, 150, 105, 0.2)',
+                                                    borderRadius: 'var(--radius-md)',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '6px'
+                                                }}
+                                            >
+                                                <FileDown size={16} /> Pack PDF
+                                            </button>
+                                        ) : (
+                                            <button
+                                                onClick={() => startQuestionnaire(child.id)}
+                                                className="btn-primary"
+                                                style={{
+                                                    justifyContent: 'center',
+                                                    padding: '14px',
+                                                    fontSize: '0.9rem',
+                                                    background: 'var(--accent)',
+                                                    border: 'none',
+                                                    boxShadow: '0 4px 6px -1px rgba(249, 115, 22, 0.2)',
+                                                    borderRadius: 'var(--radius-md)',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '6px'
+                                                }}
+                                            >
+                                                {activeSub ? 'Reprendre' : 'Dossier'} <ArrowRight size={16} />
+                                            </button>
+                                        )}
+                                        <button
+                                            onClick={() => handleOpenVault(child)}
+                                            className="btn-secondary"
+                                            style={{
+                                                justifyContent: 'center',
+                                                padding: '14px',
+                                                fontSize: '0.9rem',
+                                                borderRadius: 'var(--radius-md)',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '6px',
+                                                background: 'white',
+                                                border: '1px solid var(--border-subtle)'
+                                            }}
+                                        >
+                                            <FolderLock size={16} /> Coffre-fort
+                                        </button>
                                     </div>
-                                    <div style={{ height: '4px', background: '#e2e8f0', borderRadius: '2px', marginBottom: '12px' }}>
-                                        <div style={{ width: '0%', height: '100%', background: 'var(--accent)', borderRadius: '2px' }}></div>
-                                    </div>
-                                    <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                                        Aucun document généré pour le moment.
-                                    </p>
-                                </div>
-
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                                    <button
-                                        onClick={() => startQuestionnaire(child.id)}
-                                        className="btn-primary"
-                                        style={{
-                                            justifyContent: 'center',
-                                            padding: '14px',
-                                            fontSize: '0.9rem',
-                                            background: 'var(--accent)',
-                                            border: 'none',
-                                            boxShadow: '0 4px 6px -1px rgba(249, 115, 22, 0.2)',
-                                            borderRadius: 'var(--radius-md)',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '6px'
-                                        }}
-                                    >
-                                        Dossier <ArrowRight size={16} />
-                                    </button>
-                                    <button
-                                        onClick={() => handleOpenVault(child)}
-                                        className="btn-secondary"
-                                        style={{
-                                            justifyContent: 'center',
-                                            padding: '14px',
-                                            fontSize: '0.9rem',
-                                            borderRadius: 'var(--radius-md)',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '6px',
-                                            background: 'white',
-                                            border: '1px solid var(--border-subtle)'
-                                        }}
-                                    >
-                                        <FolderLock size={16} /> Coffre-fort
-                                    </button>
-                                </div>
-                            </motion.div>
-                        ))
+                                </motion.div>
+                            );
+                        })
                     )}
                 </div>
             </main>

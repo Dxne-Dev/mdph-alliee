@@ -393,6 +393,26 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
         }
     };
 
+    const handleFinalize = async () => {
+        if (!submissionId) return;
+        setSaving(true);
+        try {
+            await supabase
+                .from('submissions')
+                .update({
+                    status: 'completed',
+                    current_step: 5,
+                    updated_at: new Date()
+                })
+                .eq('id', submissionId);
+            onComplete(answers);
+        } catch (error) {
+            console.error('Error finalizing:', error);
+        } finally {
+            setSaving(false);
+        }
+    };
+
     return (
         <div className="questionnaire-layout" style={{ maxWidth: '800px', margin: '40px auto' }}>
             {/* Header Amélioré */}
@@ -461,7 +481,7 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
                             Suivant <ChevronRight size={18} />
                         </button>
                     ) : (
-                        <button onClick={() => onComplete(answers)} className="btn-primary" style={{ background: '#22c55e', borderColor: '#22c55e' }}>
+                        <button onClick={handleFinalize} className="btn-primary" style={{ background: '#22c55e', borderColor: '#22c55e' }}>
                             <CheckCircle size={18} /> Finaliser mon dossier
                         </button>
                     )}
