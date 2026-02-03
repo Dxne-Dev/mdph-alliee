@@ -109,10 +109,12 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
         switch (step) {
             case 1:
                 return (
-                    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-                        <h3 className="text-xl font-bold mb-6">Commençons par l'essentiel</h3>
-                        <div className="space-y-6">
-                            <div>
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                        <h3 className="step-header">Commençons par l'essentiel</h3>
+                        <div className="step-subtext">Quelques informations de base pour identifier le dossier.</div>
+
+                        <div className="space-y-8">
+                            <div className="question-group">
                                 <label className="question-label">Prénom de l'enfant</label>
                                 <input
                                     className="modal-input"
@@ -121,7 +123,8 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
                                     placeholder="Ex: Léo"
                                 />
                             </div>
-                            <div>
+
+                            <div className="question-group">
                                 <label className="question-label">Date de naissance</label>
                                 <input
                                     type="date"
@@ -130,7 +133,8 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
                                     onChange={e => setAnswer('birthDate', e.target.value)}
                                 />
                             </div>
-                            <div>
+
+                            <div className="question-group">
                                 <label className="question-label">Difficulté principale (Diagnostic)</label>
                                 <select
                                     className="modal-input"
@@ -150,29 +154,26 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
                 );
             case 2:
                 return (
-                    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-                        <h3 className="text-xl font-bold mb-2">Vie Scolaire</h3>
-                        <p className="text-muted mb-6 text-sm">C'est souvent ici que se joue l'attribution de l'AESH.</p>
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                        <h3 className="step-header">Vie Scolaire</h3>
+                        <p className="step-subtext">C'est souvent ici que se joue l'attribution de l'AESH.</p>
 
-                        <div className="space-y-6">
-                            <div>
-                                <label className="question-label">Niveau scolaire actuel</label>
+                        <div className="space-y-8">
+                            <div className="question-group">
+                                <label className="question-label">En quelle classe est-il ?</label>
                                 <select className="modal-input" value={answers.schoolLevel || ''} onChange={e => setAnswer('schoolLevel', e.target.value)}>
-                                    <option value="">Sélectionnez...</option>
-                                    <option value="Maternelle PS">Maternelle (PS)</option>
-                                    <option value="Maternelle MS">Maternelle (MS)</option>
-                                    <option value="Maternelle GS">Maternelle (GS)</option>
+                                    <option value="">Choisir...</option>
+                                    <option value="Crèche / Garderie">Crèche / Garderie</option>
+                                    <option value="Maternelle">Maternelle</option>
                                     <option value="CP">CP</option>
-                                    <option value="CE1">CE1</option>
-                                    <option value="CE2">CE2</option>
-                                    <option value="CM1">CM1</option>
-                                    <option value="CM2">CM2</option>
+                                    <option value="CE1-CE2">CE1 / CE2</option>
+                                    <option value="CM1-CM2">CM1 / CM2</option>
                                     <option value="Collège">Collège (ULIS ou Ordinaire)</option>
                                     <option value="IME">IME / Institut spécialisé</option>
                                 </select>
                             </div>
 
-                            <div>
+                            <div className="question-group">
                                 <label className="question-label">Temps de scolarisation</label>
                                 <div className="space-y-3">
                                     {['Temps plein', 'Temps partiel (matin)', 'Quelques heures/semaine', 'Instruction en Famille (IEF)'].map(opt => (
@@ -190,7 +191,7 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
                                 </div>
                             </div>
 
-                            <div>
+                            <div className="question-group">
                                 <label className="question-label">A-t-il actuellement une AESH (AVS) ?</label>
                                 <div className="space-y-3">
                                     <label className={`radio-tile ${answers.hasAesh === true ? 'selected' : ''}`}>
@@ -217,7 +218,7 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
                             </div>
 
                             {answers.hasAesh && (
-                                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-4 pt-2">
+                                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-4 pt-4 question-group">
                                     <label className="question-label">Type d'aide humaine ?</label>
                                     <div className="space-y-3">
                                         {[
@@ -243,11 +244,12 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
                 );
             case 3:
                 return (
-                    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-                        <h3 className="text-xl font-bold mb-6">Autonomie & Quotidien chez vous</h3>
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                        <h3 className="step-header">Autonomie & Quotidien</h3>
+                        <p className="step-subtext">Ces détails aident à évaluer le taux d'incapacité.</p>
 
                         <div className="space-y-8">
-                            <div>
+                            <div className="question-group">
                                 <label className="question-label" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                     <Utensils size={18} className="text-accent" /> Repas & Alimentation
                                 </label>
@@ -267,7 +269,7 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
                                 </div>
                             </div>
 
-                            <div>
+                            <div className="question-group">
                                 <label className="question-label" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                     <Shirt size={18} className="text-accent" /> Habillage
                                 </label>
@@ -292,7 +294,7 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
                                 </div>
                             </div>
 
-                            <div>
+                            <div className="question-group">
                                 <label className="question-label" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                     <Baby size={18} className="text-accent" /> Propreté (Toilettes)
                                 </label>
@@ -316,13 +318,13 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
                 );
             case 4:
                 return (
-                    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-                        <h3 className="text-xl font-bold mb-2">Suivi Médical & Soins</h3>
-                        <p className="text-muted mb-6 text-sm">Listez les professionnels qui suivent votre enfant.</p>
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                        <h3 className="step-header">Suivi Médical & Soins</h3>
+                        <p className="step-subtext">Listez les professionnels qui suivent votre enfant régulièrement.</p>
 
-                        <div className="space-y-6">
-                            <div>
-                                <label className="question-label">Qui voit-il régulièrement ? (Cochez tout)</label>
+                        <div className="space-y-8">
+                            <div className="question-group">
+                                <label className="question-label">Qui voit-il régulièrement ? (Plusieurs choix possibles)</label>
                                 <div className="space-y-3">
                                     {['Orthophoniste', 'Psychomotricien(ne)', 'Psychologue', 'Ergolibéral', 'Pédopsychiatre', 'Neuropédiatre'].map(pro => (
                                         <label
@@ -345,14 +347,14 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
                                 </div>
                             </div>
 
-                            <div>
-                                <label className="question-label">Prend-il un traitement médicamenteux ?</label>
+                            <div className="question-group">
+                                <label className="question-label">Traitement médicamenteux ?</label>
                                 <textarea
                                     className="modal-input"
-                                    placeholder="Ex: Ritaline LP 20mg le matin, Mélatonine le soir..."
+                                    style={{ minHeight: '120px', resize: 'vertical' }}
                                     value={answers.medication || ''}
                                     onChange={e => setAnswer('medication', e.target.value)}
-                                    rows={3}
+                                    placeholder="Si oui, précisez le traitement..."
                                 />
                             </div>
                         </div>
