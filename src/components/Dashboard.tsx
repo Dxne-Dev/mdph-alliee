@@ -59,21 +59,38 @@ export const Dashboard = () => {
 
         setIsSubmitting(true);
         try {
-            // Ensure profile exists to satisfy foreign key constraint
-            const { data: profile } = await supabase
+            console.log("Starting add child process for user:", user.id);
+
+            // 1. Check if profile exists
+            const { data: existingProfile, error: checkError } = await supabase
                 .from('profiles')
                 .select('id')
                 .eq('id', user.id)
-                .single();
+                .maybeSingle();
 
-            if (!profile) {
-                console.log("Profile missing, creating auto-profile...");
-                await supabase
+            console.log("Existing profile check result:", { existingProfile, checkError });
+
+            // 2. Create profile if missing
+            if (!existingProfile) {
+                console.log("Profile is missing. Attempting to create profile for:", user.id);
+                const { error: insertError } = await supabase
                     .from('profiles')
-                    .insert([{ id: user.id, email: user.email }]);
+                    .insert([{
+                        id: user.id,
+                        email: user.email,
+                        full_name: user.email?.split('@')[0] || 'Utilisateur'
+                    }]);
+
+                if (insertError) {
+                    console.error("Failed to create profile:", insertError);
+                    throw new Error(`Erreur lors de la création de votre profil parent : ${insertError.message}. Vérifiez les permissions RLS.`);
+                }
+                console.log("Profile created successfully");
             }
 
-            const { data, error } = await supabase
+            // 3. Now insert the child
+            console.log("Attempting to insert child...");
+            const { data: childData, error: childError } = await supabase
                 .from('children')
                 .insert([{
                     parent_id: user.id,
@@ -82,17 +99,22 @@ export const Dashboard = () => {
                 }])
                 .select();
 
-            if (error) throw error;
-
-            console.log("Child added successfully:", data);
-            if (data) {
-                setChildren([...children, ...data]);
+            if (childError) {
+                console.error("Child insertion error:", childError);
+                throw childError;
             }
+
+            console.log("Child added successfully:", childData);
+            if (childData) {
+                setChildren([...children, ...childData]);
+            }
+
             setIsAddChildModalOpen(false);
             setChildForm({ firstName: '', diagnosis: '' });
+
         } catch (error: any) {
-            console.error("Database error:", error);
-            alert("Erreur base de données : " + (error.message || "Impossible d'ajouter l'enfant"));
+            console.error("Full error stack:", error);
+            alert(error.message || "Une erreur inconnue est survenue lors de l'enregistrement.");
         } finally {
             setIsSubmitting(false);
         }
