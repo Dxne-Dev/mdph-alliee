@@ -1,4 +1,3 @@
-import { ArrowRight } from 'lucide-react';
 import { Hero } from './components/Hero';
 import { Problem } from './components/Problem';
 import { Solution } from './components/Solution';
@@ -7,7 +6,6 @@ import { MVPCapabilities } from './components/MVPCapabilities';
 import { Pricing } from './components/Pricing';
 import { FAQ } from './components/FAQ';
 import { Footer } from './components/Footer';
-import { Calendar } from 'lucide-react';
 
 interface LandingPageProps {
     onOpenModal: (mode: 'founder' | 'waitlist', email?: string) => void;
@@ -15,25 +13,11 @@ interface LandingPageProps {
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onOpenModal }) => {
     return (
-        <>
-            <div className="sticky-bar">
-                <p>
-                    <Calendar size={14} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
-                    Lancement officiel le <strong>14 février</strong> &middot; Places Bêta limitées
-                </p>
-                <button
-                    onClick={() => onOpenModal('founder')}
-                    style={{ marginLeft: '10px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
-                    className="btn-xs"
-                >
-                    Réserver ma place <ArrowRight size={14} />
-                </button>
-            </div>
-
+        <div style={{ background: 'var(--bg-light)' }}>
             <nav className="navbar">
                 <div className="logo">L'Allié <span className="highlight">MDPH</span></div>
-                <div style={{ display: 'flex', gap: '15px' }}>
-                    <button onClick={() => window.location.href = '/auth'} className="btn-sm btn-outline" style={{ background: 'transparent', border: '1px solid var(--primary)', color: 'var(--primary)' }}>Connexion</button>
+                <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+                    <button onClick={() => window.location.href = '/auth'} className="btn-outline" style={{ padding: '8px 20px', fontSize: '0.9rem', border: '1px solid var(--border-subtle)' }}>Connexion</button>
                     <button onClick={() => onOpenModal('founder')} className="btn-sm">Accès Fondateur</button>
                 </div>
             </nav>
@@ -49,6 +33,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onOpenModal }) => {
             </main>
 
             <Footer onWaitlistSubmit={(email) => onOpenModal('waitlist', email)} />
-        </>
+        </div>
     );
 };
+
