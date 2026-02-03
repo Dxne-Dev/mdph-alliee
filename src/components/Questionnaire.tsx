@@ -37,11 +37,12 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
 
             if (existing) {
                 setSubmissionId(existing.id);
-                // Merge child data if fields are missing in answers
+                // Merge child data only if fields are missing OR empty in existing answers
+                const currentAnswers = existing.answers || {};
                 const mergedAnswers = {
-                    firstName: childData?.first_name || '',
-                    diagnosis: childData?.diagnosis || '',
-                    ...(existing.answers || {})
+                    ...currentAnswers,
+                    firstName: currentAnswers.firstName || childData?.first_name || '',
+                    diagnosis: currentAnswers.diagnosis || childData?.diagnosis || '',
                 };
                 setAnswers(mergedAnswers);
                 setStep(existing.current_step || 1);
@@ -142,10 +143,10 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
                                     onChange={e => setAnswer('diagnosis', e.target.value)}
                                 >
                                     <option value="">Choisir...</option>
-                                    <option value="TSA">TSA (Trouble du Spectre de l'Autisme)</option>
-                                    <option value="TDAH">TDAH (Trouble de l'Attention)</option>
-                                    <option value="DYS">Troubles DYS (Dyslexie, etc.)</option>
-                                    <option value="TDI">Trouble du Développement Intellectuel</option>
+                                    <option value="TSA (Trouble du Spectre de l'Autisme)">TSA (Trouble du Spectre de l'Autisme)</option>
+                                    <option value="TDAH (Trouble de l'Attention)">TDAH (Trouble de l'Attention)</option>
+                                    <option value="Troubles DYS (Dyslexie, Dyspraxie...)">Troubles DYS (Dyslexie, Dyspraxie...)</option>
+                                    <option value="Retard de développement">Retard de développement</option>
                                     <option value="Autre">Autre situation de handicap</option>
                                 </select>
                             </div>
