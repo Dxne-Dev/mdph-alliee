@@ -314,23 +314,20 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
 
     return (
         <div className="questionnaire-layout" style={{ maxWidth: '800px', margin: '40px auto' }}>
-            {/* Header Amélioré */}
-            <header style={{ marginBottom: '40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                    <button
-                        onClick={() => window.history.back()}
-                        style={{ background: 'white', border: '1px solid var(--border-subtle)', padding: '10px', borderRadius: '50%', cursor: 'pointer', color: 'var(--text-muted)' }}
-                    >
-                        <ChevronLeft size={20} />
-                    </button>
-                    <div>
-                        <span style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-muted)', fontWeight: '600' }}>Dossier MDPH</span>
-                        <h2 style={{ fontSize: '1.2rem', margin: 0 }}>Questionnaire de situation</h2>
+            {/* Header Simplifié */}
+            <header style={{ marginBottom: '30px', textAlign: 'center' }}>
+                <h1 style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--primary)', margin: 0, letterSpacing: '-0.5px' }}>L'Allié MDPH</h1>
+            </header>
+
+            <div className="questionnaire-card" style={{ background: 'white', padding: '40px', borderRadius: 'var(--radius-lg)', boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}>
+
+                {/* Barre de progression intégrée à la carte */}
+                <div style={{ marginBottom: '30px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: '600' }}>
+                        <span>Étape {step} sur {steps.length}</span>
+                        <span>{Math.round((step / steps.length) * 100)}%</span>
                     </div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                    <span style={{ fontSize: '0.9rem', fontWeight: 'bold', color: 'var(--accent)' }}>Étape {step}/{steps.length}</span>
-                    <div style={{ width: '150px', height: '6px', background: '#e2e8f0', borderRadius: '3px', marginTop: '6px', overflow: 'hidden' }}>
+                    <div style={{ width: '100%', height: '6px', background: '#f1f5f9', borderRadius: '3px', overflow: 'hidden' }}>
                         <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: `${(step / steps.length) * 100}%` }}
@@ -338,9 +335,6 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
                         ></motion.div>
                     </div>
                 </div>
-            </header>
-
-            <div className="questionnaire-card" style={{ background: 'white', padding: '40px', borderRadius: 'var(--radius-lg)', boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}>
 
                 <div className="step-content" style={{ minHeight: '350px' }}>
                     <AnimatePresence mode="wait">
