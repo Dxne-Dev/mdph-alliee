@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, ChevronLeft, Save, CheckCircle, Loader2 } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Save, CheckCircle, Loader2, Utensils, Shirt, Baby, BriefcaseMedical } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface QuestionnaireProps {
@@ -196,7 +196,9 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
 
                         <div className="space-y-8">
                             <div>
-                                <label className="question-label">🍽️ Repas & Alimentation</label>
+                                <label className="question-label" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <Utensils size={18} className="text-accent" /> Repas & Alimentation
+                                </label>
                                 <div className="space-y-2">
                                     {['Mange seul et proprement', 'Mange seul mais salit beaucoup', 'A besoin qu\'on coupe ses aliments', 'Doit être nourri à la cuillère'].map(opt => (
                                         <label key={opt} className={`radio-tile ${answers.eating === opt ? 'selected' : ''}`}>
@@ -208,7 +210,9 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
                             </div>
 
                             <div>
-                                <label className="question-label">👕 Habillage</label>
+                                <label className="question-label" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <Shirt size={18} className="text-accent" /> Habillage
+                                </label>
                                 <select className="modal-input" value={answers.dressing || ''} onChange={e => setAnswer('dressing', e.target.value)}>
                                     <option value="">Sélectionnez...</option>
                                     <option value="Autonome total">S'habille totalement seul</option>
@@ -219,7 +223,9 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
                             </div>
 
                             <div>
-                                <label className="question-label">🚽 Propreté (Toilettes)</label>
+                                <label className="question-label" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <Baby size={18} className="text-accent" /> Propreté (Toilettes)
+                                </label>
                                 <div className="grid grid-cols-2 gap-3">
                                     {['Totale (Jour/Nuit)', 'Diurne uniquement', 'Accidents fréquents', 'Port de couches permanent'].map(opt => (
                                         <button
@@ -302,47 +308,62 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
     };
 
     return (
-        <div className="questionnaire-stepper" style={{ maxWidth: '600px', margin: '0 auto', background: 'white', padding: '40px', borderRadius: 'var(--radius-lg)', boxShadow: '0 4px 15px rgba(0,0,0,0.05)' }}>
-            <div className="stepper-header" style={{ marginBottom: '40px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                    <span style={{ fontSize: '0.8rem', fontWeight: 'bold', color: 'var(--accent)' }}>ÉTAPE {step} SUR {steps.length}</span>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{steps[step - 1].title}</span>
-                </div>
-                <div style={{ width: '100%', height: '6px', background: '#f1f5f9', borderRadius: '3px', overflow: 'hidden' }}>
-                    <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${(step / steps.length) * 100}%` }}
-                        style={{ height: '100%', background: 'var(--accent)' }}
-                    ></motion.div>
-                </div>
-            </div>
-
-            <div className="step-content" style={{ minHeight: '350px' }}>
-                <AnimatePresence mode="wait">
-                    {renderStep()}
-                </AnimatePresence>
-            </div>
-
-            <div className="stepper-footer" style={{ marginTop: '40px', display: 'flex', justifyContent: 'space-between' }}>
-                <button onClick={handleBack} disabled={step === 1} className="btn-secondary" style={{ visibility: step === 1 ? 'hidden' : 'visible' }}>
-                    <ChevronLeft size={18} /> Précédent
-                </button>
-
-                {step < steps.length ? (
-                    <button onClick={handleNext} className="btn-primary">
-                        Suivant <ChevronRight size={18} />
+        <div className="questionnaire-layout" style={{ maxWidth: '800px', margin: '40px auto' }}>
+            {/* Header Amélioré */}
+            <header style={{ marginBottom: '40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                    <button
+                        onClick={() => window.history.back()}
+                        style={{ background: 'white', border: '1px solid var(--border-subtle)', padding: '10px', borderRadius: '50%', cursor: 'pointer', color: 'var(--text-muted)' }}
+                    >
+                        <ChevronLeft size={20} />
                     </button>
-                ) : (
-                    <button onClick={() => onComplete(answers)} className="btn-primary" style={{ background: '#22c55e', borderColor: '#22c55e' }}>
-                        <CheckCircle size={18} /> Finaliser mon dossier
-                    </button>
-                )}
-            </div>
+                    <div>
+                        <span style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-muted)', fontWeight: '600' }}>Dossier MDPH</span>
+                        <h2 style={{ fontSize: '1.2rem', margin: 0 }}>Questionnaire de situation</h2>
+                    </div>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                    <span style={{ fontSize: '0.9rem', fontWeight: 'bold', color: 'var(--accent)' }}>Étape {step}/{steps.length}</span>
+                    <div style={{ width: '150px', height: '6px', background: '#e2e8f0', borderRadius: '3px', marginTop: '6px', overflow: 'hidden' }}>
+                        <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${(step / steps.length) * 100}%` }}
+                            style={{ height: '100%', background: 'var(--accent)' }}
+                        ></motion.div>
+                    </div>
+                </div>
+            </header>
 
-            <div style={{ textAlign: 'center', marginTop: '20px', height: '20px' }}>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-                    {saving ? <><Loader2 size={12} className="animate-spin" /> Sauvegarde...</> : <><Save size={12} /> Sauvegardé automatiquement</>}
-                </span>
+            <div className="questionnaire-card" style={{ background: 'white', padding: '40px', borderRadius: 'var(--radius-lg)', boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}>
+
+                <div className="step-content" style={{ minHeight: '350px' }}>
+                    <AnimatePresence mode="wait">
+                        {renderStep()}
+                    </AnimatePresence>
+                </div>
+
+                <div className="stepper-footer" style={{ marginTop: '40px', display: 'flex', justifyContent: 'space-between' }}>
+                    <button onClick={handleBack} disabled={step === 1} className="btn-secondary" style={{ visibility: step === 1 ? 'hidden' : 'visible' }}>
+                        <ChevronLeft size={18} /> Précédent
+                    </button>
+
+                    {step < steps.length ? (
+                        <button onClick={handleNext} className="btn-primary">
+                            Suivant <ChevronRight size={18} />
+                        </button>
+                    ) : (
+                        <button onClick={() => onComplete(answers)} className="btn-primary" style={{ background: '#22c55e', borderColor: '#22c55e' }}>
+                            <CheckCircle size={18} /> Finaliser mon dossier
+                        </button>
+                    )}
+                </div>
+
+                <div style={{ textAlign: 'center', marginTop: '20px', height: '20px' }}>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                        {saving ? <><Loader2 size={12} className="animate-spin" /> Sauvegarde...</> : <><Save size={12} /> Sauvegardé automatiquement</>}
+                    </span>
+                </div>
             </div>
         </div>
     );
