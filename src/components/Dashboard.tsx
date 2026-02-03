@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Plus, User, FileText, ChevronRight, LogOut, LayoutDashboard, Settings, Bell } from 'lucide-react';
+import { Plus, User, FileText, LogOut, LayoutDashboard, Settings, Bell } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export const Dashboard = () => {
