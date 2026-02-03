@@ -234,11 +234,9 @@ img {
 
 .hidden-radio {
     accent-color: var(--accent);
+    accent-color: var(--accent);
 }
-    font-family: inherit;
-    transition: all 0.2s ease;
-    background: white;
-}
+
 
 .modal-input:focus {
     outline: none;
@@ -617,16 +615,20 @@ img {
 }
 
 @media (max-width: 1024px) {
-    .pricing-grid, .mvp-grid {
+
+    .pricing-grid,
+    .mvp-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
 @media (max-width: 768px) {
-    .pricing-grid, .mvp-grid {
+
+    .pricing-grid,
+    .mvp-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .pricing-card.recommended {
         transform: none;
     }
