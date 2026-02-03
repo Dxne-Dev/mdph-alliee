@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Plus, User, FileText, LogOut, LayoutDashboard, Settings, Bell, X, Baby, Heart, ShieldCheck, Trash2, Edit3, ArrowRight } from 'lucide-react';
+import { Plus, User, LogOut, LayoutDashboard, Settings, Bell, X, Baby, Heart, ShieldCheck, Trash2, Edit3, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 
