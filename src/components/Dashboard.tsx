@@ -3,8 +3,10 @@ import { supabase } from '../lib/supabase';
 import { Plus, User, LogOut, LayoutDashboard, Settings, Bell, X, Baby, Heart, ShieldCheck, Trash2, Edit3, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 export const Dashboard = () => {
+    const navigate = useNavigate();
     const [user, setUser] = useState<any>(null);
     const [children, setChildren] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -118,7 +120,7 @@ export const Dashboard = () => {
     };
 
     const startQuestionnaire = (childId: string) => {
-        window.location.href = `/questionnaire/${childId}`;
+        navigate(`/questionnaire/${childId}`);
     };
 
     const handleEditChild = (child: any) => {
