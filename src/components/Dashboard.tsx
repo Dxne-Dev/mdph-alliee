@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Plus, User, FileText, LogOut, LayoutDashboard, Settings, Bell, X, Baby, Heart, ShieldCheck, Trash2, Edit3 } from 'lucide-react';
+import { Plus, User, FileText, LogOut, LayoutDashboard, Settings, Bell, X, Baby, Heart, ShieldCheck, Trash2, Edit3, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 
@@ -398,11 +398,12 @@ export const Dashboard = () => {
                                         justifyContent: 'center',
                                         padding: '16px',
                                         fontSize: '1rem',
-                                        background: 'var(--primary)',
-                                        boxShadow: 'none'
+                                        background: 'var(--accent)',
+                                        border: 'none',
+                                        boxShadow: '0 4px 6px -1px rgba(249, 115, 22, 0.2)'
                                     }}
                                 >
-                                    <FileText size={18} style={{ marginRight: '8px' }} /> Lancer l'actualisation
+                                    Compléter mon dossier <ArrowRight size={18} style={{ marginLeft: '8px' }} />
                                 </button>
                             </motion.div>
                         ))
