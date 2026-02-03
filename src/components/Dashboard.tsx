@@ -77,13 +77,12 @@ export const Dashboard = () => {
                     .from('profiles')
                     .insert([{
                         id: user.id,
-                        email: user.email,
                         full_name: user.email?.split('@')[0] || 'Utilisateur'
                     }]);
 
                 if (insertError) {
                     console.error("Failed to create profile:", insertError);
-                    throw new Error(`Erreur lors de la création de votre profil parent : ${insertError.message}. Vérifiez les permissions RLS.`);
+                    throw new Error(`Erreur lors de la création de votre profil parent : ${insertError.message}.`);
                 }
                 console.log("Profile created successfully");
             }
