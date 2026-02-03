@@ -1,3 +1,4 @@
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Check, ArrowDown, FileText, ArrowRight, ShieldCheck, Zap } from 'lucide-react';
 
@@ -56,11 +57,11 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
                     </button>
                 </motion.div>
 
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.5 }}
-                    className="trust-text" 
+                    className="trust-text"
                     style={{ marginTop: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '24px' }}
                 >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#64748b' }}>
@@ -81,9 +82,9 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
                 transition={{ delay: 0.4, duration: 1, ease: "easeOut" }}
                 style={{ marginTop: '80px', width: '100%', maxWidth: '1000px', margin: '80px auto 0' }}
             >
-                <div style={{ 
-                    background: 'white', 
-                    borderRadius: 'var(--radius-lg)', 
+                <div style={{
+                    background: 'white',
+                    borderRadius: 'var(--radius-lg)',
                     padding: '8px',
                     boxShadow: '0 50px 100px -20px rgba(15, 23, 42, 0.15)',
                     border: '1px solid #e2e8f0',
@@ -92,8 +93,8 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
                     <div style={{ background: '#f8fafc', borderRadius: '16px', height: '400px', display: 'flex', overflow: 'hidden' }}>
                         <div style={{ width: '260px', background: 'white', borderRight: '1px solid #e2e8f0', padding: '24px' }}>
                             <div style={{ height: '32px', width: '80%', background: '#f1f5f9', borderRadius: '6px', marginBottom: '24px' }} />
-                            <div style={{ spaceY: '12px' }}>
-                                {[1,2,3,4].map(i => (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                {[1, 2, 3, 4].map(i => (
                                     <div key={i} style={{ height: '40px', background: i === 1 ? '#fff3eb' : 'white', border: i === 1 ? '1px solid #f97316' : '1px solid #f1f5f9', borderRadius: '8px', marginBottom: '12px', display: 'flex', alignItems: 'center', padding: '0 12px' }}>
                                         <div style={{ width: '16px', height: '16px', background: i === 1 ? '#f97316' : '#e2e8f0', borderRadius: '4px', marginRight: '12px' }} />
                                         <div style={{ height: '10px', width: '60%', background: i === 1 ? '#ea580c' : '#f1f5f9', borderRadius: '10px' }} />

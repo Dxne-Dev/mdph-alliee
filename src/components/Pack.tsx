@@ -1,4 +1,5 @@
-import { CheckCircle, FileText, Sparkles, ShieldCheck, Mail, ArrowRight } from 'lucide-react';
+import React from 'react';
+import { FileText, Sparkles, ShieldCheck, Mail, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface PackProps {
@@ -22,7 +23,7 @@ export const Pack: React.FC<PackProps> = ({ onCtaClick }) => {
                             <div style={{ position: 'absolute', top: '10px', left: '40px', width: '320px', height: '420px', background: '#f1f5f9', border: '1px solid #e2e8f0', borderRadius: '12px', transform: 'rotate(-3deg)', zIndex: 2, boxShadow: 'var(--shadow-lg)' }} />
                             <div style={{ position: 'absolute', top: '20px', left: '60px', width: '320px', height: '420px', background: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', zIndex: 3, boxShadow: 'var(--shadow-lg)', padding: '40px' }}>
                                 <div style={{ height: '30px', width: '60%', background: '#f1f5f9', borderRadius: '6px', marginBottom: '40px' }} />
-                                <div style={{ spaceY: '20px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                                     {[1, 2, 3, 4, 5, 6].map(i => (
                                         <div key={i} style={{ height: '12px', width: i === 6 ? '40%' : '100%', background: '#f8fafc', borderRadius: '10px', marginBottom: '16px' }} />
                                     ))}
