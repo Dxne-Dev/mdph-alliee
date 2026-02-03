@@ -15,6 +15,7 @@ export const DocumentVault: React.FC<DocumentVaultProps> = ({ isOpen, onClose, c
     const [documents, setDocuments] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
+    const [deleteConfirmItem, setDeleteConfirmItem] = useState<any>(null);
 
     useEffect(() => {
         if (isOpen && childId) {
@@ -91,8 +92,9 @@ export const DocumentVault: React.FC<DocumentVaultProps> = ({ isOpen, onClose, c
         }
     };
 
-    const handleDelete = async (doc: any) => {
-        if (!confirm('Voulez-vous vraiment supprimer ce document ?')) return;
+    const handleDelete = async () => {
+        if (!deleteConfirmItem) return;
+        const doc = deleteConfirmItem;
 
         try {
             // 1. Delete from Storage
@@ -112,6 +114,7 @@ export const DocumentVault: React.FC<DocumentVaultProps> = ({ isOpen, onClose, c
 
             toast.success('Document supprimé');
             setDocuments(docs => docs.filter(d => d.id !== doc.id));
+            setDeleteConfirmItem(null);
         } catch (error: any) {
             console.error('Error deleting:', error);
             toast.error('Erreur lors de la suppression');
@@ -141,8 +144,8 @@ export const DocumentVault: React.FC<DocumentVaultProps> = ({ isOpen, onClose, c
     return (
         <AnimatePresence>
             {isOpen && (
-                <div 
-                    className="modal-overlay" 
+                <div
+                    className="modal-overlay"
                     style={{
                         position: 'fixed',
                         inset: 0,
@@ -197,7 +200,7 @@ export const DocumentVault: React.FC<DocumentVaultProps> = ({ isOpen, onClose, c
                         <div style={{ padding: '30px', overflowY: 'auto', flex: 1 }}>
                             {/* Upload Area */}
                             <div style={{ marginBottom: '30px' }}>
-                                <label 
+                                <label
                                     style={{
                                         display: 'flex',
                                         flexDirection: 'column',
@@ -248,7 +251,7 @@ export const DocumentVault: React.FC<DocumentVaultProps> = ({ isOpen, onClose, c
                                 ) : (
                                     <div style={{ display: 'grid', gap: '12px' }}>
                                         {documents.map((doc) => (
-                                            <div 
+                                            <div
                                                 key={doc.id}
                                                 style={{
                                                     display: 'flex',
@@ -272,7 +275,7 @@ export const DocumentVault: React.FC<DocumentVaultProps> = ({ isOpen, onClose, c
                                                     </span>
                                                 </div>
                                                 <div style={{ display: 'flex', gap: '4px' }}>
-                                                    <button 
+                                                    <button
                                                         onClick={() => handleDownload(doc)}
                                                         style={{ padding: '8px', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', borderRadius: '6px' }}
                                                         className="action-icon"
@@ -280,8 +283,8 @@ export const DocumentVault: React.FC<DocumentVaultProps> = ({ isOpen, onClose, c
                                                     >
                                                         <Download size={18} />
                                                     </button>
-                                                    <button 
-                                                        onClick={() => handleDelete(doc)}
+                                                    <button
+                                                        onClick={() => setDeleteConfirmItem(doc)}
                                                         style={{ padding: '8px', background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', borderRadius: '6px' }}
                                                         className="action-icon"
                                                         title="Supprimer"
@@ -298,7 +301,7 @@ export const DocumentVault: React.FC<DocumentVaultProps> = ({ isOpen, onClose, c
 
                         {/* Footer */}
                         <div style={{ padding: '20px 30px', background: '#f8fafc', borderTop: '1px solid var(--border-subtle)', display: 'flex', justifyContent: 'flex-end' }}>
-                            <button 
+                            <button
                                 onClick={onClose}
                                 className="btn-secondary"
                                 style={{ padding: '10px 24px' }}
@@ -309,6 +312,30 @@ export const DocumentVault: React.FC<DocumentVaultProps> = ({ isOpen, onClose, c
                     </motion.div>
                 </div>
             )}
+
+            {/* Delete Confirmation Modal */}
+            <AnimatePresence>
+                {deleteConfirmItem && (
+                    <div className="modal-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(2px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 3000 }}>
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            style={{ background: 'white', padding: '30px', borderRadius: 'var(--radius-lg)', maxWidth: '400px', textAlign: 'center' }}
+                        >
+                            <div style={{ width: '60px', height: '60px', background: '#fee2e2', color: '#ef4444', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+                                <AlertCircle size={30} />
+                            </div>
+                            <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '8px' }}>Supprimer le document ?</h3>
+                            <p style={{ color: 'var(--text-muted)', marginBottom: '24px', fontSize: '0.9rem' }}>Cette action est irréversible. Voulez-vous supprimer "{deleteConfirmItem.name}" ?</p>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                                <button onClick={() => setDeleteConfirmItem(null)} className="btn-secondary">Annuler</button>
+                                <button onClick={handleDelete} className="btn-primary" style={{ background: '#ef4444' }}>Supprimer</button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </AnimatePresence>
     );
 };
