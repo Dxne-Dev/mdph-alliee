@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, ChevronLeft, Save, CheckCircle, Loader2, Utensils, Shirt, Baby, BriefcaseMedical } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Save, CheckCircle, Loader2, Utensils, Shirt, Baby, Sparkles } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface QuestionnaireProps {
@@ -283,7 +283,12 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
             case 5:
                 return (
                     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-                        <h3 className="text-xl font-bold mb-4">🔮 Projet de Vie (Le mot de la fin)</h3>
+                        <h3 className="text-xl font-bold mb-4" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <div style={{ background: '#eff6ff', padding: '8px', borderRadius: '10px', color: '#3b82f6' }}>
+                                <Sparkles size={24} />
+                            </div>
+                            Projet de Vie (Le mot de la fin)
+                        </h3>
                         <div className="bg-blue-50 p-4 rounded-lg mb-6 border border-blue-100">
                             <p className="text-sm text-blue-800">
                                 <strong>Conseil de l'Allié :</strong> Ne soyez pas modeste. Décrivez "la pire journée". C'est ici que vous demandez concrètement les aides (AESH, matériel, orientation...).
