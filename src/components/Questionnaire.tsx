@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, ChevronLeft, Save, CheckCircle, Loader2, Utensils, Shirt, Baby, Sparkles } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Save, CheckCircle, Loader2, Utensils, Shirt, Baby, Sparkles, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface QuestionnaireProps {
@@ -314,27 +314,55 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
 
     return (
         <div className="questionnaire-layout" style={{ maxWidth: '800px', margin: '40px auto' }}>
-            {/* Header Simplifié */}
-            <header style={{ marginBottom: '30px', textAlign: 'center' }}>
-                <h1 style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--primary)', margin: 0, letterSpacing: '-0.5px' }}>L'Allié MDPH</h1>
+            {/* Header Amélioré */}
+            <header style={{ marginBottom: '40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                {/* Gauche : La Marque */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ width: '40px', height: '40px', background: 'linear-gradient(135deg, #0f172a 0%, #334155 100%)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>
+                        M
+                    </div>
+                    <div>
+                        <h2 style={{ fontSize: '1.2rem', margin: 0, fontWeight: '800', letterSpacing: '-0.5px' }}>L'Allié MDPH</h2>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: '500' }}>Mode Édition</span>
+                    </div>
+                </div>
+
+                {/* Droite : Quitter & Progression */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '30px' }}>
+                    <div style={{ textAlign: 'right' }}>
+                        <span style={{ fontSize: '0.8rem', fontWeight: 'bold', color: 'var(--accent)' }}>Étape {step}/{steps.length}</span>
+                        <div style={{ width: '100px', height: '4px', background: '#e2e8f0', borderRadius: '2px', marginTop: '4px', overflow: 'hidden' }}>
+                            <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${(step / steps.length) * 100}%` }}
+                                style={{ height: '100%', background: 'var(--accent)' }}
+                            ></motion.div>
+                        </div>
+                    </div>
+
+                    <button
+                        onClick={() => window.history.back()}
+                        style={{
+                            background: 'white',
+                            border: '1px solid var(--border-subtle)',
+                            padding: '10px 16px',
+                            borderRadius: 'var(--radius-sm)',
+                            cursor: 'pointer',
+                            color: 'var(--text-muted)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            fontSize: '0.9rem',
+                            fontWeight: '500',
+                            transition: 'all 0.2s'
+                        }}
+                    >
+                        <X size={18} /> Quitter
+                    </button>
+                </div>
             </header>
 
             <div className="questionnaire-card" style={{ background: 'white', padding: '40px', borderRadius: 'var(--radius-lg)', boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}>
-
-                {/* Barre de progression intégrée à la carte */}
-                <div style={{ marginBottom: '30px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: '600' }}>
-                        <span>Étape {step} sur {steps.length}</span>
-                        <span>{Math.round((step / steps.length) * 100)}%</span>
-                    </div>
-                    <div style={{ width: '100%', height: '6px', background: '#f1f5f9', borderRadius: '3px', overflow: 'hidden' }}>
-                        <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${(step / steps.length) * 100}%` }}
-                            style={{ height: '100%', background: 'var(--accent)' }}
-                        ></motion.div>
-                    </div>
-                </div>
 
                 <div className="step-content" style={{ minHeight: '350px' }}>
                     <AnimatePresence mode="wait">
