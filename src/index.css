@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
     /* Colors */
@@ -202,55 +202,74 @@ img {
     box-shadow: 0 0 0 1px var(--accent);
 }
 
+/* Questionnaire & Forms */
+.questionnaire-layout {
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -0.011em;
+}
+
 .question-label {
     display: block;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
     font-weight: 600;
-    font-size: 1.05rem;
+    font-size: 1.15rem;
     color: var(--primary);
+    line-height: 1.5;
 }
 
 .radio-tile {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 16px;
+    gap: 16px;
+    padding: 20px;
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     background: white;
 }
 
 .radio-tile:hover {
     border-color: var(--accent);
     background: #fffaf7;
-    transform: translateX(4px);
+    transform: translateX(6px);
 }
 
 .radio-tile.selected {
     border-color: var(--accent);
     background: #fff3eb;
-    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.08);
+    box-shadow: 0 4px 20px rgba(249, 115, 22, 0.1);
 }
 
 .hidden-radio {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     cursor: pointer;
     accent-color: var(--accent);
     flex-shrink: 0;
 }
 
 .radio-content {
-    font-size: 0.95rem;
+    font-size: 1rem;
     font-weight: 500;
     color: var(--text-main);
+    line-height: 1.6;
 }
 
 .radio-tile.selected .radio-content {
     color: var(--primary);
     font-weight: 600;
+}
+
+.modal-input {
+    width: 100%;
+    padding: 16px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-subtle);
+    font-size: 1rem;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s;
+    line-height: 1.6;
 }
 
 

@@ -411,15 +411,15 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
                 </div>
             </header>
 
-            <div className="questionnaire-card" style={{ background: 'white', padding: '40px', borderRadius: 'var(--radius-lg)', boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}>
+            <div className="questionnaire-card" style={{ background: 'white', padding: '60px', borderRadius: 'var(--radius-lg)', boxShadow: '0 4px 30px rgba(0,0,0,0.08)' }}>
 
-                <div className="step-content" style={{ minHeight: '350px' }}>
+                <div className="step-content" style={{ minHeight: '400px' }}>
                     <AnimatePresence mode="wait">
                         {renderStep()}
                     </AnimatePresence>
                 </div>
 
-                <div className="stepper-footer" style={{ marginTop: '40px', display: 'flex', justifyContent: 'space-between' }}>
+                <div className="stepper-footer" style={{ marginTop: '60px', display: 'flex', justifyContent: 'space-between' }}>
                     <button onClick={handleBack} disabled={step === 1} className="btn-secondary" style={{ visibility: step === 1 ? 'hidden' : 'visible' }}>
                         <ChevronLeft size={18} /> Précédent
                     </button>
