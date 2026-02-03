@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { Plus, User, FileText, LogOut, LayoutDashboard, Settings, Bell, X, Baby, Heart, ShieldCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import toast from 'react-hot-toast';
 
 export const Dashboard = () => {
     const [user, setUser] = useState<any>(null);
@@ -58,21 +59,19 @@ export const Dashboard = () => {
         }
 
         setIsSubmitting(true);
-        try {
+
+        const saveChild = async () => {
             console.log("Starting add child process for user:", user.id);
 
             // 1. Check if profile exists
-            const { data: existingProfile, error: checkError } = await supabase
+            const { data: existingProfile } = await supabase
                 .from('profiles')
                 .select('id')
                 .eq('id', user.id)
                 .maybeSingle();
 
-            console.log("Existing profile check result:", { existingProfile, checkError });
-
             // 2. Create profile if missing
             if (!existingProfile) {
-                console.log("Profile is missing. Attempting to create profile for:", user.id);
                 const { error: insertError } = await supabase
                     .from('profiles')
                     .insert([{
@@ -80,15 +79,10 @@ export const Dashboard = () => {
                         full_name: user.email?.split('@')[0] || 'Utilisateur'
                     }]);
 
-                if (insertError) {
-                    console.error("Failed to create profile:", insertError);
-                    throw new Error(`Erreur lors de la création de votre profil parent : ${insertError.message}.`);
-                }
-                console.log("Profile created successfully");
+                if (insertError) throw insertError;
             }
 
-            // 3. Now insert the child
-            console.log("Attempting to insert child...");
+            // 3. Insert the child
             const { data: childData, error: childError } = await supabase
                 .from('children')
                 .insert([{
@@ -98,25 +92,24 @@ export const Dashboard = () => {
                 }])
                 .select();
 
-            if (childError) {
-                console.error("Child insertion error:", childError);
-                throw childError;
-            }
+            if (childError) throw childError;
 
-            console.log("Child added successfully:", childData);
             if (childData) {
                 setChildren([...children, ...childData]);
             }
 
             setIsAddChildModalOpen(false);
             setChildForm({ firstName: '', diagnosis: '' });
+            return childData;
+        };
 
-        } catch (error: any) {
-            console.error("Full error stack:", error);
-            alert(error.message || "Une erreur inconnue est survenue lors de l'enregistrement.");
-        } finally {
+        toast.promise(saveChild(), {
+            loading: 'Enregistrement de l\'enfant...',
+            success: 'Enfant ajouté avec succès ! ✨',
+            error: (err) => `Erreur : ${err.message || 'Impossible d\'ajouter l\'enfant'}`
+        }).finally(() => {
             setIsSubmitting(false);
-        }
+        });
     };
 
     const startQuestionnaire = (childId: string) => {
