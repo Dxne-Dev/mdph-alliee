@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, ChevronLeft, Save, CheckCircle, Loader2, Utensils, Shirt, Baby, Sparkles, X, LogOut } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Save, CheckCircle, Loader2, Utensils, Shirt, Baby, Sparkles, LogOut } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface QuestionnaireProps {
