@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Plus, User, FileText, LogOut, LayoutDashboard, Settings, Bell, X, Baby, Heart, ShieldCheck } from 'lucide-react';
+import { Plus, User, FileText, LogOut, LayoutDashboard, Settings, Bell, X, Baby, Heart, ShieldCheck, Trash2, Edit3 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 
@@ -13,6 +13,11 @@ export const Dashboard = () => {
     const [isAddChildModalOpen, setIsAddChildModalOpen] = useState(false);
     const [childForm, setChildForm] = useState({ firstName: '', diagnosis: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Settings dropdown & edit modal
+    const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+    const [editingChild, setEditingChild] = useState<any>(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -114,6 +119,69 @@ export const Dashboard = () => {
 
     const startQuestionnaire = (childId: string) => {
         window.location.href = `/questionnaire/${childId}`;
+    };
+
+    const handleEditChild = (child: any) => {
+        setEditingChild(child);
+        setChildForm({ firstName: child.first_name, diagnosis: child.diagnosis });
+        setOpenMenuId(null);
+        setIsEditModalOpen(true);
+    };
+
+    const handleDeleteChild = async (childId: string) => {
+        setOpenMenuId(null);
+
+        const deleteChild = async () => {
+            const { error } = await supabase
+                .from('children')
+                .delete()
+                .eq('id', childId);
+
+            if (error) throw error;
+            setChildren(children.filter(c => c.id !== childId));
+        };
+
+        toast.promise(deleteChild(), {
+            loading: 'Suppression en cours...',
+            success: 'Profil enfant supprimé',
+            error: (err) => `Erreur : ${err.message}`
+        });
+    };
+
+    const submitEditChild = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!editingChild || !childForm.firstName || !childForm.diagnosis) return;
+
+        setIsSubmitting(true);
+
+        const updateChild = async () => {
+            const { data, error } = await supabase
+                .from('children')
+                .update({
+                    first_name: childForm.firstName,
+                    diagnosis: childForm.diagnosis
+                })
+                .eq('id', editingChild.id)
+                .select();
+
+            if (error) throw error;
+
+            if (data) {
+                setChildren(children.map(c => c.id === editingChild.id ? data[0] : c));
+            }
+            setIsEditModalOpen(false);
+            setEditingChild(null);
+            setChildForm({ firstName: '', diagnosis: '' });
+            return data;
+        };
+
+        toast.promise(updateChild(), {
+            loading: 'Mise à jour...',
+            success: 'Profil mis à jour ! ✨',
+            error: (err) => `Erreur : ${err.message}`
+        }).finally(() => {
+            setIsSubmitting(false);
+        });
     };
 
     if (loading) return (
@@ -223,9 +291,63 @@ export const Dashboard = () => {
                                 }}
                             >
                                 <div style={{ position: 'absolute', top: '32px', right: '32px' }}>
-                                    <button style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
+                                    <button
+                                        onClick={() => setOpenMenuId(openMenuId === child.id ? null : child.id)}
+                                        style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '4px' }}
+                                    >
                                         <Settings size={20} />
                                     </button>
+
+                                    {openMenuId === child.id && (
+                                        <div style={{
+                                            position: 'absolute',
+                                            top: '100%',
+                                            right: 0,
+                                            background: 'white',
+                                            borderRadius: 'var(--radius-sm)',
+                                            boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
+                                            border: '1px solid var(--border-subtle)',
+                                            minWidth: '150px',
+                                            zIndex: 50,
+                                            overflow: 'hidden'
+                                        }}>
+                                            <button
+                                                onClick={() => handleEditChild(child)}
+                                                style={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '10px',
+                                                    width: '100%',
+                                                    padding: '12px 16px',
+                                                    background: 'none',
+                                                    border: 'none',
+                                                    cursor: 'pointer',
+                                                    fontSize: '0.9rem',
+                                                    textAlign: 'left'
+                                                }}
+                                            >
+                                                <Edit3 size={16} /> Modifier
+                                            </button>
+                                            <button
+                                                onClick={() => handleDeleteChild(child.id)}
+                                                style={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '10px',
+                                                    width: '100%',
+                                                    padding: '12px 16px',
+                                                    background: 'none',
+                                                    border: 'none',
+                                                    cursor: 'pointer',
+                                                    fontSize: '0.9rem',
+                                                    textAlign: 'left',
+                                                    color: '#ef4444'
+                                                }}
+                                            >
+                                                <Trash2 size={16} /> Supprimer
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
@@ -381,6 +503,106 @@ export const Dashboard = () => {
                                     style={{ width: '100%', justifyContent: 'center', marginTop: '10px' }}
                                 >
                                     {isSubmitting ? 'Création...' : 'Valider et ajouter'}
+                                </button>
+                            </form>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Edit Child Modal */}
+            <AnimatePresence>
+                {isEditModalOpen && (
+                    <div
+                        className="modal-overlay"
+                        style={{
+                            position: 'fixed',
+                            inset: 0,
+                            background: 'rgba(15, 23, 42, 0.7)',
+                            backdropFilter: 'blur(4px)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            zIndex: 2000,
+                            padding: '20px'
+                        }}
+                        onClick={() => { setIsEditModalOpen(false); setEditingChild(null); }}
+                    >
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            onClick={(e) => e.stopPropagation()}
+                            style={{
+                                background: 'white',
+                                borderRadius: 'var(--radius-lg)',
+                                width: '100%',
+                                maxWidth: '500px',
+                                padding: '40px',
+                                position: 'relative',
+                                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+                            }}
+                        >
+                            <button
+                                onClick={() => { setIsEditModalOpen(false); setEditingChild(null); }}
+                                style={{ position: 'absolute', top: '20px', right: '20px', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
+                            >
+                                <X size={24} />
+                            </button>
+
+                            <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+                                <div style={{ width: '60px', height: '60px', background: '#e0f2fe', color: '#0369a1', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+                                    <Edit3 size={30} />
+                                </div>
+                                <h2 style={{ fontSize: '1.8rem', marginBottom: '8px' }}>Modifier le profil</h2>
+                                <p style={{ color: 'var(--text-muted)' }}>Mettez à jour les informations de {editingChild?.first_name}.</p>
+                            </div>
+
+                            <form onSubmit={submitEditChild} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                                <div className="form-group">
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '0.9rem' }}>Prénom de l'enfant</label>
+                                    <div style={{ position: 'relative' }}>
+                                        <Heart size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                                        <input
+                                            type="text"
+                                            required
+                                            value={childForm.firstName}
+                                            onChange={(e) => setChildForm({ ...childForm, firstName: e.target.value })}
+                                            placeholder="Ex: Léo"
+                                            className="modal-input"
+                                            style={{ width: '100%', paddingLeft: '40px' }}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="form-group">
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '0.9rem' }}>Diagnostic ou trouble principal</label>
+                                    <div style={{ position: 'relative' }}>
+                                        <ShieldCheck size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                                        <select
+                                            required
+                                            value={childForm.diagnosis}
+                                            onChange={(e) => setChildForm({ ...childForm, diagnosis: e.target.value })}
+                                            className="modal-input"
+                                            style={{ width: '100%', paddingLeft: '40px' }}
+                                        >
+                                            <option value="">Choisir un diagnostic...</option>
+                                            <option value="TSA (Trouble du Spectre de l'Autisme)">TSA (Autisme)</option>
+                                            <option value="TDAH (Trouble de l'Attention)">TDAH</option>
+                                            <option value="Troubles DYS (Dyslexie, Dyspraxie...)">Troubles DYS</option>
+                                            <option value="Retard de développement">Retard de développement</option>
+                                            <option value="Autre">Autre</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    className="btn-primary"
+                                    disabled={isSubmitting}
+                                    style={{ width: '100%', justifyContent: 'center', marginTop: '10px' }}
+                                >
+                                    {isSubmitting ? 'Enregistrement...' : 'Enregistrer les modifications'}
                                 </button>
                             </form>
                         </motion.div>
