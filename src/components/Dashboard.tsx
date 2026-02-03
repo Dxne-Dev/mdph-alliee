@@ -38,13 +38,24 @@ export const Dashboard = () => {
     };
 
     const handleAddChildClick = () => {
+        console.log("Opening add child modal");
         setChildForm({ firstName: '', diagnosis: '' });
         setIsAddChildModalOpen(true);
     };
 
     const submitAddChild = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!childForm.firstName || !childForm.diagnosis) return;
+        console.log("Form submitted with:", childForm);
+
+        if (!user) {
+            console.error("No user found");
+            return;
+        }
+
+        if (!childForm.firstName || !childForm.diagnosis) {
+            console.warn("Form incomplete");
+            return;
+        }
 
         setIsSubmitting(true);
         try {
@@ -59,9 +70,14 @@ export const Dashboard = () => {
 
             if (error) throw error;
 
-            setChildren([...children, ...data]);
+            console.log("Child added successfully:", data);
+            if (data) {
+                setChildren([...children, ...data]);
+            }
             setIsAddChildModalOpen(false);
+            setChildForm({ firstName: '', diagnosis: '' });
         } catch (error: any) {
+            console.error("Supabase error:", error);
             alert("Erreur lors de l'ajout : " + error.message);
         } finally {
             setIsSubmitting(false);
