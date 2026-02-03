@@ -134,13 +134,19 @@ export const Dashboard = () => {
         setOpenMenuId(null);
 
         const deleteChild = async () => {
+            // First, delete associated submissions to avoid Foreign Key constraint errors
+            await supabase
+                .from('submissions')
+                .delete()
+                .eq('child_id', childId);
+
             const { error } = await supabase
                 .from('children')
                 .delete()
                 .eq('id', childId);
 
             if (error) throw error;
-            setChildren(children.filter(c => c.id !== childId));
+            setChildren(prev => prev.filter(c => c.id !== childId));
         };
 
         toast.promise(deleteChild(), {
@@ -168,9 +174,18 @@ export const Dashboard = () => {
 
             if (error) throw error;
 
-            if (data) {
-                setChildren(children.map(c => c.id === editingChild.id ? data[0] : c));
-            }
+            // Robust state update: Use returned data if available, fallback to form data
+            // This prevents "undefined" from entering children array and causing a white screen
+            setChildren(prev => prev.map(c => {
+                if (c.id === editingChild.id) {
+                    return data && data[0] ? data[0] : {
+                        ...c,
+                        first_name: childForm.firstName,
+                        diagnosis: childForm.diagnosis
+                    };
+                }
+                return c;
+            }));
             setIsEditModalOpen(false);
             setEditingChild(null);
             setChildForm({ firstName: '', diagnosis: '' });
