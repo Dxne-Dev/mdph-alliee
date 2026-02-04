@@ -1,22 +1,31 @@
-const https = require('https');
-const fs = require('fs');
+import https from 'https';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const url = 'https://www.monparcourshandicap.gouv.fr/sites/default/files/2023-09/Formulaire-demande-MDPH_cerfa_15692-01.pdf';
-const path = './public/cerfa_15692.pdf';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-if (!fs.existsSync('./public')) fs.mkdirSync('./public');
+const url = 'https://www.monparcourshandicap.gouv.fr/sites/default/files/2024-05/Formulaire-demande-MDPH_cerfa_15692-01.pdf';
+const dest = path.join(__dirname, 'public', 'cerfa_15692.pdf');
 
-const file = fs.createWriteStream(path);
+console.log(`Downloading from ${url} to ${dest}...`);
+
+const file = fs.createWriteStream(dest);
+
 https.get(url, (response) => {
-    if (response.statusCode !== 200) {
-        console.error(`Failed to get '${url}' (${response.statusCode})`);
-        return;
+    if (response.statusCode === 200) {
+        response.pipe(file);
+        file.on('finish', () => {
+            file.close();
+            console.log('Download complete!');
+            process.exit(0);
+        });
+    } else {
+        console.error(`Failed to download: ${response.statusCode}`);
+        process.exit(1);
     }
-    response.pipe(file);
-    file.on('finish', () => {
-        file.close();
-        console.log('Download Completed');
-    });
 }).on('error', (err) => {
-    console.error('Error: ' + err.message);
+    console.error(`Error: ${err.message}`);
+    process.exit(1);
 });

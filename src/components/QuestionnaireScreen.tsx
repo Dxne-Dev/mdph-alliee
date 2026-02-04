@@ -201,6 +201,18 @@ export const QuestionnaireScreen = () => {
                 if (!response.ok) throw new Error('CERFA local introuvable');
 
                 const existingPdfBytes = await response.arrayBuffer();
+
+                // Vérification de sécurité : est-ce vraiment un PDF ? 
+                // (évite de parser du HTML en cas de 404 sur le dev server)
+                const header = new Uint8Array(existingPdfBytes.slice(0, 5));
+                const headerString = String.fromCharCode(...header);
+
+                if (headerString !== '%PDF-') {
+                    console.warn("Le fichier local n'est pas un PDF valide. Remplissage ignoré.");
+                    toast.success('Synthèse générée !', { id: 'generating' });
+                    return;
+                }
+
                 const pdfDoc = await PDFDocument.load(existingPdfBytes);
                 const form = pdfDoc.getForm();
 
@@ -209,7 +221,7 @@ export const QuestionnaireScreen = () => {
                     form.getTextField('topmostSubform[0].Page1[0].NomFamille[0]')?.setText(completedAnswers.firstName?.toUpperCase() || '');
                     form.getTextField('topmostSubform[0].Page1[0].Prenom[0]')?.setText(completedAnswers.firstName || '');
                 } catch (e) {
-                    console.warn("Certains champs du CERFA n'ont pas pu être automatisés");
+                    console.warn("Automation partielle du CERFA");
                 }
 
                 const cerfaPdfBytes = await pdfDoc.save();

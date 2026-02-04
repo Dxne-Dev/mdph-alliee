@@ -489,6 +489,17 @@ export const Dashboard = () => {
                                                             if (!response.ok) throw new Error('Local CERFA not found');
 
                                                             const existingPdfBytes = await response.arrayBuffer();
+
+                                                            // Sécurité : Vérifier s'il s'agit d'un PDF
+                                                            const header = new Uint8Array(existingPdfBytes.slice(0, 5));
+                                                            const headerString = String.fromCharCode(...header);
+
+                                                            if (headerString !== '%PDF-') {
+                                                                console.warn("Le CERFA local n'est pas un PDF valide.");
+                                                                toast.success('Synthèse téléchargée !', { id: tid });
+                                                                return;
+                                                            }
+
                                                             const pdfDoc = await PDFDocument.load(existingPdfBytes);
 
                                                             // Pré-remplissage minimal
