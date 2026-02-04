@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
     },
     header: {
         marginBottom: 30,
-        borderBottom: 2,
+        borderBottomWidth: 2,
         borderBottomColor: '#2563eb',
         paddingBottom: 20,
     },
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#1e40af',
         marginBottom: 12,
-        borderLeft: 4,
+        borderLeftWidth: 4,
         borderLeftColor: '#2563eb',
         paddingLeft: 10,
         backgroundColor: '#f1f5f9',
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#f8fafc',
         padding: 20,
         borderRadius: 8,
-        border: 1,
+        borderWidth: 1,
         borderColor: '#e2e8f0',
         marginTop: 10,
     },
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
         bottom: 30,
         left: 50,
         right: 50,
-        borderTop: 1,
+        borderTopWidth: 1,
         borderTopColor: '#e2e8f0',
         paddingTop: 15,
         fontSize: 8,
@@ -242,7 +242,7 @@ export const MDPHDocument = ({ data, childName }: MDPHDocumentProps) => {
                     </View>
                 </View>
 
-                <View style={{ marginTop: 30, padding: 15, border: 1, borderColor: '#cbd5e1', borderStyle: 'dashed', borderRadius: 6 }}>
+                <View style={{ marginTop: 30, padding: 15, borderWidth: 1, borderColor: '#cbd5e1', borderStyle: 'dashed', borderRadius: 6 }}>
                     <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#475569', marginBottom: 5 }}>CONSEILS POUR L'ENVOI :</Text>
                     <Text style={{ fontSize: 9, color: '#64748b' }}>
                         1. Imprimez ce document et joignez-le à la section "Projet de Vie" du Cerfa.{"\n"}
