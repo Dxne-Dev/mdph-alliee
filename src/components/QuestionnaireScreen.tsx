@@ -217,9 +217,35 @@ export const QuestionnaireScreen = () => {
                 const form = pdfDoc.getForm();
 
                 try {
-                    // Tentative de remplissage Nom/Prénom
-                    form.getTextField('topmostSubform[0].Page1[0].NomFamille[0]')?.setText(completedAnswers.firstName?.toUpperCase() || '');
-                    form.getTextField('topmostSubform[0].Page1[0].Prenom[0]')?.setText(completedAnswers.firstName || '');
+                    // Liste des champs possibles pour le NOM
+                    const nomFields = [
+                        'topmostSubform[0].Page1[0].NomFamille[0]',
+                        'nom d\'usage',
+                        'nom de naissance',
+                        'Nom'
+                    ];
+
+                    // Liste des champs possibles pour le PRENOM
+                    const prenomFields = [
+                        'topmostSubform[0].Page1[0].Prenom[0]',
+                        'préno',
+                        'Prénom',
+                        'Prenom'
+                    ];
+
+                    const nom = completedAnswers.lastName?.toUpperCase() || '';
+                    const prenom = completedAnswers.firstName || '';
+
+                    // On remplit le premier champ trouvé dans chaque liste
+                    for (const f of nomFields) {
+                        const field = form.getTextField(f);
+                        if (field) { field.setText(nom); break; }
+                    }
+                    for (const f of prenomFields) {
+                        const field = form.getTextField(f);
+                        if (field) { field.setText(prenom); break; }
+                    }
+
                 } catch (e) {
                     console.warn("Automation partielle du CERFA");
                 }

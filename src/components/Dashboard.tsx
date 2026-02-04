@@ -502,11 +502,22 @@ export const Dashboard = () => {
 
                                                             const pdfDoc = await PDFDocument.load(existingPdfBytes);
 
-                                                            // Pré-remplissage minimal
                                                             const form = pdfDoc.getForm();
                                                             try {
-                                                                form.getTextField('topmostSubform[0].Page1[0].NomFamille[0]')?.setText(child.first_name?.toUpperCase() || '');
-                                                                form.getTextField('topmostSubform[0].Page1[0].Prenom[0]')?.setText(child.first_name || '');
+                                                                const lastName = activeSub.answers.lastName || '';
+                                                                const firstName = child.first_name || '';
+
+                                                                const nomFields = ['topmostSubform[0].Page1[0].NomFamille[0]', 'nom d\'usage', 'nom de naissance', 'Nom'];
+                                                                const prenomFields = ['topmostSubform[0].Page1[0].Prenom[0]', 'préno', 'Prénom', 'Prenom'];
+
+                                                                for (const f of nomFields) {
+                                                                    const field = form.getTextField(f);
+                                                                    if (field) { field.setText(lastName.toUpperCase()); break; }
+                                                                }
+                                                                for (const f of prenomFields) {
+                                                                    const field = form.getTextField(f);
+                                                                    if (field) { field.setText(firstName); break; }
+                                                                }
                                                             } catch (e) { }
 
                                                             const cerfaPdfBytes = await pdfDoc.save();

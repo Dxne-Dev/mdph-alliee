@@ -149,7 +149,7 @@ export const MDPHDocument = ({ data, childName }: MDPHDocumentProps) => {
                     <View style={styles.grid}>
                         <View style={styles.gridItem}>
                             <Text style={styles.label}>Nom / Prénom</Text>
-                            <Text style={styles.value}>{data.firstName || childName}</Text>
+                            <Text style={styles.value}>{(data.lastName || '').toUpperCase()} {data.firstName || childName}</Text>
                         </View>
                         <View style={styles.gridItem}>
                             <Text style={styles.label}>Date de Naissance</Text>

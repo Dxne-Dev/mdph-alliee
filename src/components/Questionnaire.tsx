@@ -117,14 +117,25 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
                         <div className="step-subtext">Quelques informations de base pour identifier le dossier.</div>
 
                         <div className="space-y-8">
-                            <div className="question-group">
-                                <label className="question-label">Prénom de l'enfant</label>
-                                <input
-                                    className="modal-input"
-                                    value={answers.firstName || ''}
-                                    onChange={e => setAnswer('firstName', e.target.value)}
-                                    placeholder="Ex: Léo"
-                                />
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                                <div className="question-group">
+                                    <label className="question-label">Prénom</label>
+                                    <input
+                                        className="modal-input"
+                                        value={answers.firstName || ''}
+                                        onChange={e => setAnswer('firstName', e.target.value)}
+                                        placeholder="Ex: Léo"
+                                    />
+                                </div>
+                                <div className="question-group">
+                                    <label className="question-label">Nom de famille</label>
+                                    <input
+                                        className="modal-input"
+                                        value={answers.lastName || ''}
+                                        onChange={e => setAnswer('lastName', e.target.value)}
+                                        placeholder="Ex: Dupont"
+                                    />
+                                </div>
                             </div>
 
                             <div className="question-group">
