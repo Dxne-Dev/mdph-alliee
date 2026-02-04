@@ -217,43 +217,33 @@ export const QuestionnaireScreen = () => {
                 const form = pdfDoc.getForm();
 
                 try {
-                    // Liste des champs possibles pour le NOM
-                    const nomFields = [
-                        'topmostSubform[0].Page1[0].NomFamille[0]',
-                        'Nom de naissance p2',
-                        'Nom d\'usage p2',
-                        'nom d\'usage',
-                        'nom de naissance',
-                        'Nom',
-                        'NOM BAS DE PAGE'
-                    ];
-
-                    // Liste des champs possibles pour le PRENOM
-                    const prenomFields = [
-                        'topmostSubform[0].Page1[0].Prenom[0]',
-                        'Prénoms p2',
-                        'Prénom p2',
-                        'préno',
-                        'Prénom',
-                        'Prenom',
-                        'PRENOM BAS DE PAGE'
-                    ];
-
+                    const allFields = form.getFields();
                     const nom = completedAnswers.lastName?.toUpperCase() || '';
                     const prenom = completedAnswers.firstName || '';
 
-                    // On remplit le premier champ trouvé dans chaque liste
-                    for (const f of nomFields) {
-                        const field = form.getTextField(f);
-                        if (field) { field.setText(nom); break; }
-                    }
-                    for (const f of prenomFields) {
-                        const field = form.getTextField(f);
-                        if (field) { field.setText(prenom); break; }
-                    }
+                    // On cherche les champs de type texte qui contiennent des mots clés
+                    allFields.forEach(field => {
+                        const name = field.getName().toLowerCase();
+                        if (field.constructor.name === 'PDFTextField') {
+                            const textField = field as any; // Cast for pdf-lib
+
+                            // Remplissage NOM (on cible les champs identité principaux)
+                            if (
+                                (name.includes('nom') && (name.includes('naissance') || name.includes('usage') || name.includes('famille'))) ||
+                                name === 'nom'
+                            ) {
+                                try { textField.setText(nom); } catch (e) { }
+                            }
+
+                            // Remplissage PRENOM
+                            if (name.includes('prenom') || name.includes('prénom') || name.includes('pr??no')) {
+                                try { textField.setText(prenom); } catch (e) { }
+                            }
+                        }
+                    });
 
                 } catch (e) {
-                    console.warn("Automation partielle du CERFA");
+                    console.warn("Erreur lors du remplissage auto:", e);
                 }
 
                 const cerfaPdfBytes = await pdfDoc.save();

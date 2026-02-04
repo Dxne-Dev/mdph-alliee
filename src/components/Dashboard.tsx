@@ -504,20 +504,22 @@ export const Dashboard = () => {
 
                                                             const form = pdfDoc.getForm();
                                                             try {
-                                                                const lastName = activeSub.answers.lastName || '';
+                                                                const allFields = form.getFields();
+                                                                const lastName = (activeSub.answers.lastName || '').toUpperCase();
                                                                 const firstName = child.first_name || '';
 
-                                                                const nomFields = ['topmostSubform[0].Page1[0].NomFamille[0]', 'Nom de naissance p2', 'Nom d\'usage p2', 'nom d\'usage', 'nom de naissance', 'Nom', 'NOM BAS DE PAGE'];
-                                                                const prenomFields = ['topmostSubform[0].Page1[0].Prenom[0]', 'Prénoms p2', 'Prénom p2', 'préno', 'Prénom', 'Prenom', 'PRENOM BAS DE PAGE'];
-
-                                                                for (const f of nomFields) {
-                                                                    const field = form.getTextField(f);
-                                                                    if (field) { field.setText(lastName.toUpperCase()); break; }
-                                                                }
-                                                                for (const f of prenomFields) {
-                                                                    const field = form.getTextField(f);
-                                                                    if (field) { field.setText(firstName); break; }
-                                                                }
+                                                                allFields.forEach(field => {
+                                                                    const name = field.getName().toLowerCase();
+                                                                    if (field.constructor.name === 'PDFTextField') {
+                                                                        const txt = field as any;
+                                                                        if ((name.includes('nom') && (name.includes('naissance') || name.includes('usage') || name.includes('famille'))) || name === 'nom') {
+                                                                            try { txt.setText(lastName); } catch (e) { }
+                                                                        }
+                                                                        if (name.includes('prenom') || name.includes('prénom') || name.includes('pr??no')) {
+                                                                            try { txt.setText(firstName); } catch (e) { }
+                                                                        }
+                                                                    }
+                                                                });
                                                             } catch (e) { }
 
                                                             const cerfaPdfBytes = await pdfDoc.save();
