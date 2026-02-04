@@ -195,7 +195,7 @@ export const QuestionnaireScreen = () => {
             try {
                 // Utilisation d'un chemin relatif (évite CORS et les DNS externes capricieux)
                 // Note : le fichier doit être présent dans le dossier /public/
-                const cerfaUrl = '/cerfa_15692.pdf';
+                const cerfaUrl = '/form_standard.pdf';
                 const response = await fetch(cerfaUrl);
 
                 if (!response.ok) throw new Error('CERFA local introuvable');
@@ -220,7 +220,7 @@ export const QuestionnaireScreen = () => {
                     const allFields = form.getFields();
                     const nom = (completedAnswers.lastName || '').toUpperCase();
                     const prenom = completedAnswers.firstName || '';
-                    
+
                     console.log(`[CERFA DEBUG] Filling for ${prenom} ${nom}`);
                     console.log(`[CERFA DEBUG] Fields found: ${allFields.length}`);
 

@@ -484,7 +484,7 @@ export const Dashboard = () => {
 
                                                         // 2. CERFA
                                                         try {
-                                                            const cerfaUrl = '/cerfa_15692.pdf';
+                                                            const cerfaUrl = '/form_standard.pdf';
                                                             const response = await fetch(cerfaUrl);
                                                             if (!response.ok) throw new Error('Local CERFA not found');
 

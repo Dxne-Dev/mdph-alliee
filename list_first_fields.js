@@ -3,7 +3,7 @@ import { PDFDocument } from 'pdf-lib';
 
 async function listFirstFields() {
     try {
-        const pdfBytes = fs.readFileSync('./public/cerfa_15692.pdf');
+        const pdfBytes = fs.readFileSync('./public/form_standard.pdf');
         const pdfDoc = await PDFDocument.load(pdfBytes);
         const form = pdfDoc.getForm();
         const fields = form.getFields();

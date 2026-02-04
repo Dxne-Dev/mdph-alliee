@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const url = 'https://www.monparcourshandicap.gouv.fr/sites/default/files/2024-05/Formulaire-demande-MDPH_cerfa_15692-01.pdf';
-const dest = path.join(__dirname, 'public', 'cerfa_15692.pdf');
+const dest = path.join(__dirname, 'public', 'form_standard.pdf');
 
 console.log(`Downloading from ${url} to ${dest}...`);
 
