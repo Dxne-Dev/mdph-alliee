@@ -4,7 +4,7 @@ import { Questionnaire } from './Questionnaire';
 import { toast } from 'react-hot-toast';
 import { pdf } from '@react-pdf/renderer';
 import { MDPHDocument } from './MDPHDocument';
-import { FileDown, CheckCircle2, ArrowLeft, Loader2, Sparkles, Edit3, CheckCircle, Package } from 'lucide-react';
+import { FileDown, ArrowLeft, Loader2, Sparkles, Edit3, Package } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { PDFDocument } from 'pdf-lib';
