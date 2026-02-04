@@ -41,7 +41,7 @@ serve(async (req: Request) => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                model: 'deepseek-r1-distill-llama-70b',
+                model: 'llama-3.3-70b-versatile',
                 messages: [{ role: 'user', content: prompt }],
                 temperature: 0.5,
                 max_tokens: 1500
@@ -49,15 +49,20 @@ serve(async (req: Request) => {
         })
 
         if (!response.ok) {
-            const errorData = await response.text();
-            console.error("Erreur Groq:", errorData);
-            throw new Error(`Groq API error: ${response.status}`);
+            const errorData = await response.json();
+            console.error("Détail Erreur Groq:", errorData);
+            return new Response(JSON.stringify({
+                error: "Erreur Groq",
+                details: errorData
+            }), {
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                status: response.status,
+            })
         }
 
         const result = await response.json()
         let expertText = result.choices[0]?.message?.content || "Désolé, je n'ai pas pu générer le texte.";
 
-        // Nettoyage rigoureux
         expertText = expertText.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
 
         return new Response(JSON.stringify({ expertText }), {
@@ -65,8 +70,10 @@ serve(async (req: Request) => {
             status: 200,
         })
     } catch (err: any) {
-        console.error("Erreur critique fonction:", err.message);
-        return new Response(JSON.stringify({ error: err.message }), {
+        return new Response(JSON.stringify({
+            error: "Critical Function Error",
+            message: err.message
+        }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 400,
         })

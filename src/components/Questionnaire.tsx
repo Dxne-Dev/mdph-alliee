@@ -27,13 +27,15 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ childId, onComplet
                 .eq('id', childId)
                 .single();
 
-            // 2. Load Existing Submission
+            // 2. Load Existing Submission (Draft)
             const { data: existing } = await supabase
                 .from('submissions')
                 .select('*')
                 .eq('child_id', childId)
                 .eq('status', 'draft')
-                .single();
+                .order('updated_at', { ascending: false })
+                .limit(1)
+                .maybeSingle();
 
             if (existing) {
                 setSubmissionId(existing.id);
