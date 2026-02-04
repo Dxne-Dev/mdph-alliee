@@ -484,8 +484,11 @@ export const Dashboard = () => {
 
                                                         // 2. CERFA
                                                         try {
-                                                            const cerfaUrl = 'https://www.placehandicap.fr/wp-content/uploads/2019/04/formulaire-demande-MDPH-Cerfa-15692-01.pdf';
-                                                            const existingPdfBytes = await fetch(cerfaUrl).then(res => res.arrayBuffer());
+                                                            const cerfaUrl = '/cerfa_15692.pdf';
+                                                            const response = await fetch(cerfaUrl);
+                                                            if (!response.ok) throw new Error('Local CERFA not found');
+
+                                                            const existingPdfBytes = await response.arrayBuffer();
                                                             const pdfDoc = await PDFDocument.load(existingPdfBytes);
 
                                                             // Pré-remplissage minimal

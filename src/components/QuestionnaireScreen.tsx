@@ -193,25 +193,21 @@ export const QuestionnaireScreen = () => {
 
             // 2. Préparation du CERFA Pré-rempli (Bonus)
             try {
-                // Lien direct vers un PDF Cerfa 15692*01 stable
-                const cerfaUrl = 'https://www.placehandicap.fr/wp-content/uploads/2019/04/formulaire-demande-MDPH-Cerfa-15692-01.pdf';
-                const existingPdfBytes = await fetch(cerfaUrl).then(res => res.arrayBuffer());
+                // Utilisation d'un chemin relatif (évite CORS et les DNS externes capricieux)
+                // Note : le fichier doit être présent dans le dossier /public/
+                const cerfaUrl = '/cerfa_15692.pdf';
+                const response = await fetch(cerfaUrl);
 
+                if (!response.ok) throw new Error('CERFA local introuvable');
+
+                const existingPdfBytes = await response.arrayBuffer();
                 const pdfDoc = await PDFDocument.load(existingPdfBytes);
                 const form = pdfDoc.getForm();
 
-                // Pré-remplissage des champs d'identité de base
-                // Sur le Cerfa 15692-01, les champs sont souvent nommés ainsi (ou approchant)
                 try {
-                    const fields = form.getFields();
-                    console.log("CERFA Fields detected:", fields.length);
-
-                    // Remplissage Nom/Prénom (Tentative sur les champs probables)
-                    const nameField = form.getTextField('topmostSubform[0].Page1[0].NomFamille[0]');
-                    if (nameField) nameField.setText(completedAnswers.firstName?.toUpperCase() || '');
-
-                    const firstNameField = form.getTextField('topmostSubform[0].Page1[0].Prenom[0]');
-                    if (firstNameField) firstNameField.setText(completedAnswers.firstName || '');
+                    // Tentative de remplissage Nom/Prénom
+                    form.getTextField('topmostSubform[0].Page1[0].NomFamille[0]')?.setText(completedAnswers.firstName?.toUpperCase() || '');
+                    form.getTextField('topmostSubform[0].Page1[0].Prenom[0]')?.setText(completedAnswers.firstName || '');
                 } catch (e) {
                     console.warn("Certains champs du CERFA n'ont pas pu être automatisés");
                 }
@@ -223,10 +219,10 @@ export const QuestionnaireScreen = () => {
                 cerfaLink.download = `CERFA_15692_PreRempli_${completedAnswers.firstName}.pdf`;
                 cerfaLink.click();
 
-                toast.success('Pack complet généré (Synthèse + CERFA) !', { id: 'generating' });
+                toast.success('Pack complet généré !', { id: 'generating' });
             } catch (cerfaErr) {
-                console.error('Error filling CERFA:', cerfaErr);
-                toast.success('Synthèse générée ! (Le CERFA officiel est indisponible actuellement)', { id: 'generating' });
+                console.error('Erreur CERFA:', cerfaErr);
+                toast.success('Synthèse générée !', { id: 'generating' });
             }
 
         } catch (error) {
