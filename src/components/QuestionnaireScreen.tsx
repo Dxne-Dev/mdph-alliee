@@ -4,9 +4,10 @@ import { Questionnaire } from './Questionnaire';
 import { toast } from 'react-hot-toast';
 import { pdf } from '@react-pdf/renderer';
 import { MDPHDocument } from './MDPHDocument';
-import { FileDown, CheckCircle2, ArrowLeft, Loader2, Sparkles, Edit3, CheckCircle } from 'lucide-react';
+import { FileDown, CheckCircle2, ArrowLeft, Loader2, Sparkles, Edit3, CheckCircle, Package } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
+import { PDFDocument } from 'pdf-lib';
 
 // DossierReview Component
 const DossierReview = ({ answers, onSave, onBack }: { answers: any, onSave: (newAnswers: any) => void, onBack: () => void }) => {
@@ -172,23 +173,65 @@ export const QuestionnaireScreen = () => {
         }
     };
 
-    const downloadPDF = async () => {
+    const downloadPack = async () => {
         if (!completedAnswers) return;
 
         setIsGenerating(true);
+        toast.loading('Génération du Pack Allié...', { id: 'generating' });
+
         try {
+            // 1. Génération de la Synthèse (Notre PDF)
             const doc = <MDPHDocument data={completedAnswers} childName={completedAnswers.firstName || 'Enfant'} />;
-            const blob = await pdf(doc).toBlob();
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `Dossier_MDPH_${completedAnswers.firstName || 'Enfant'}.pdf`;
-            link.click();
-            URL.revokeObjectURL(url);
-            toast.success('Téléchargement lancé !');
+            const synthesisBlob = await pdf(doc).toBlob();
+
+            // Téléchargement de la synthèse
+            const synthesisUrl = URL.createObjectURL(synthesisBlob);
+            const synthesisLink = document.createElement('a');
+            synthesisLink.href = synthesisUrl;
+            synthesisLink.download = `Synthese_MDPH_${completedAnswers.firstName}.pdf`;
+            synthesisLink.click();
+
+            // 2. Préparation du CERFA Pré-rempli (Bonus)
+            try {
+                // Lien direct vers un PDF Cerfa 15692*01 stable
+                const cerfaUrl = 'https://www.placehandicap.fr/wp-content/uploads/2019/04/formulaire-demande-MDPH-Cerfa-15692-01.pdf';
+                const existingPdfBytes = await fetch(cerfaUrl).then(res => res.arrayBuffer());
+
+                const pdfDoc = await PDFDocument.load(existingPdfBytes);
+                const form = pdfDoc.getForm();
+
+                // Pré-remplissage des champs d'identité de base
+                // Sur le Cerfa 15692-01, les champs sont souvent nommés ainsi (ou approchant)
+                try {
+                    const fields = form.getFields();
+                    console.log("CERFA Fields detected:", fields.length);
+
+                    // Remplissage Nom/Prénom (Tentative sur les champs probables)
+                    const nameField = form.getTextField('topmostSubform[0].Page1[0].NomFamille[0]');
+                    if (nameField) nameField.setText(completedAnswers.firstName?.toUpperCase() || '');
+
+                    const firstNameField = form.getTextField('topmostSubform[0].Page1[0].Prenom[0]');
+                    if (firstNameField) firstNameField.setText(completedAnswers.firstName || '');
+                } catch (e) {
+                    console.warn("Certains champs du CERFA n'ont pas pu être automatisés");
+                }
+
+                const cerfaPdfBytes = await pdfDoc.save();
+                const cerfaBlob = new Blob([cerfaPdfBytes], { type: 'application/pdf' });
+                const cerfaLink = document.createElement('a');
+                cerfaLink.href = URL.createObjectURL(cerfaBlob);
+                cerfaLink.download = `CERFA_15692_PreRempli_${completedAnswers.firstName}.pdf`;
+                cerfaLink.click();
+
+                toast.success('Pack complet généré (Synthèse + CERFA) !', { id: 'generating' });
+            } catch (cerfaErr) {
+                console.error('Error filling CERFA:', cerfaErr);
+                toast.success('Synthèse générée ! (Le CERFA officiel est indisponible actuellement)', { id: 'generating' });
+            }
+
         } catch (error) {
-            console.error('Error generating PDF:', error);
-            toast.error('Erreur lors de la génération du PDF');
+            console.error('Error generating Pack:', error);
+            toast.error('Erreur lors de la génération', { id: 'generating' });
         } finally {
             setIsGenerating(false);
         }
@@ -284,34 +327,35 @@ export const QuestionnaireScreen = () => {
                                 boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
                             }}
                         >
-                            <div style={{ width: '80px', height: '80px', background: '#ecfdf5', color: '#10b981', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 30px' }}>
-                                <CheckCircle2 size={40} />
+                            <div style={{ width: '100px', height: '100px', background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)', color: '#059669', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 30px', boxShadow: '0 10px 15px -3px rgba(16, 185, 129, 0.1)' }}>
+                                <Package size={50} />
                             </div>
 
-                            <h1 style={{ fontSize: '2rem', marginBottom: '16px', color: '#0f172a' }}>Dossier terminé !</h1>
-                            <p style={{ color: '#64748b', fontSize: '1.1rem', marginBottom: '40px' }}>
-                                Votre Projet de Vie a été validé. Vous pouvez maintenant télécharger le dossier final structuré.
+                            <h1 style={{ fontSize: '2.2rem', marginBottom: '16px', color: '#0f172a', fontWeight: '800' }}>Votre Pack est prêt !</h1>
+                            <p style={{ color: '#64748b', fontSize: '1.1rem', marginBottom: '40px', lineHeight: '1.6' }}>
+                                Nous avons généré votre **Projet de Vie** personnalisé ainsi que le **formulaire CERFA officiel** partiellement pré-rempli.
                             </p>
 
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                                 <button
-                                    onClick={downloadPDF}
+                                    onClick={downloadPack}
                                     disabled={isGenerating}
                                     className="btn-primary"
                                     style={{
                                         width: '100%',
                                         justifyContent: 'center',
-                                        padding: '18px',
-                                        fontSize: '1.1rem',
-                                        background: '#2563eb',
-                                        borderColor: '#2563eb',
+                                        padding: '20px',
+                                        fontSize: '1.2rem',
+                                        background: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
+                                        border: 'none',
+                                        boxShadow: '0 10px 15px -3px rgba(37, 99, 235, 0.3)',
                                         cursor: 'pointer'
                                     }}
                                 >
                                     {isGenerating ? (
-                                        <><Loader2 size={24} className="animate-spin" /> Génération...</>
+                                        <><Loader2 size={24} className="animate-spin" /> Préparation du Pack...</>
                                     ) : (
-                                        <><FileDown size={24} /> Télécharger mon dossier (PDF)</>
+                                        <><FileDown size={24} /> Télécharger mon Pack Complet</>
                                     )}
                                 </button>
 

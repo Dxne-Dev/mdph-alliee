@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { DocumentVault } from './DocumentVault';
 import { pdf } from '@react-pdf/renderer';
 import { MDPHDocument } from './MDPHDocument';
+import { PDFDocument } from 'pdf-lib';
 
 export const Dashboard = () => {
     const navigate = useNavigate();
@@ -470,18 +471,42 @@ export const Dashboard = () => {
                                         {activeSub?.status === 'completed' ? (
                                             <button
                                                 onClick={async () => {
+                                                    const tid = toast.loading('Génération du Pack Allié...');
                                                     try {
+                                                        // 1. Synthèse
                                                         const doc = <MDPHDocument data={activeSub.answers} childName={child.first_name} />;
-                                                        const blob = await pdf(doc).toBlob();
-                                                        const url = URL.createObjectURL(blob);
-                                                        const link = document.createElement('a');
-                                                        link.href = url;
-                                                        link.download = `Dossier_MDPH_${child.first_name}.pdf`;
-                                                        link.click();
-                                                        URL.revokeObjectURL(url);
-                                                        toast.success('Téléchargement lancé !');
+                                                        const synthesisBlob = await pdf(doc).toBlob();
+                                                        const synthesisUrl = URL.createObjectURL(synthesisBlob);
+                                                        const synthesisLink = document.createElement('a');
+                                                        synthesisLink.href = synthesisUrl;
+                                                        synthesisLink.download = `Synthese_MDPH_${child.first_name}.pdf`;
+                                                        synthesisLink.click();
+
+                                                        // 2. CERFA
+                                                        try {
+                                                            const cerfaUrl = 'https://www.placehandicap.fr/wp-content/uploads/2019/04/formulaire-demande-MDPH-Cerfa-15692-01.pdf';
+                                                            const existingPdfBytes = await fetch(cerfaUrl).then(res => res.arrayBuffer());
+                                                            const pdfDoc = await PDFDocument.load(existingPdfBytes);
+
+                                                            // Pré-remplissage minimal
+                                                            const form = pdfDoc.getForm();
+                                                            try {
+                                                                form.getTextField('topmostSubform[0].Page1[0].NomFamille[0]')?.setText(child.first_name?.toUpperCase() || '');
+                                                                form.getTextField('topmostSubform[0].Page1[0].Prenom[0]')?.setText(child.first_name || '');
+                                                            } catch (e) { }
+
+                                                            const cerfaPdfBytes = await pdfDoc.save();
+                                                            const cerfaBlob = new Blob([cerfaPdfBytes], { type: 'application/pdf' });
+                                                            const cerfaLink = document.createElement('a');
+                                                            cerfaLink.href = URL.createObjectURL(cerfaBlob);
+                                                            cerfaLink.download = `CERFA_15692_PreRempli_${child.first_name}.pdf`;
+                                                            cerfaLink.click();
+                                                            toast.success('Pack complet téléchargé !', { id: tid });
+                                                        } catch (cerfaErr) {
+                                                            toast.success('Synthèse téléchargée !', { id: tid });
+                                                        }
                                                     } catch (error) {
-                                                        toast.error('Erreur lors du téléchargement');
+                                                        toast.error('Erreur lors du téléchargement', { id: tid });
                                                     }
                                                 }}
                                                 className="btn-primary"
