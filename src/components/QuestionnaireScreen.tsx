@@ -218,32 +218,35 @@ export const QuestionnaireScreen = () => {
 
                 try {
                     const allFields = form.getFields();
-                    const nom = completedAnswers.lastName?.toUpperCase() || '';
+                    const nom = (completedAnswers.lastName || '').toUpperCase();
                     const prenom = completedAnswers.firstName || '';
+                    
+                    console.log(`[CERFA DEBUG] Filling for ${prenom} ${nom}`);
+                    console.log(`[CERFA DEBUG] Fields found: ${allFields.length}`);
 
-                    // On cherche les champs de type texte qui contiennent des mots clés
                     allFields.forEach(field => {
-                        const name = field.getName().toLowerCase();
-                        if (field.constructor.name === 'PDFTextField') {
-                            const textField = field as any; // Cast for pdf-lib
+                        try {
+                            const name = field.getName();
+                            const lowerName = name.toLowerCase();
 
-                            // Remplissage NOM (on cible les champs identité principaux)
-                            if (
-                                (name.includes('nom') && (name.includes('naissance') || name.includes('usage') || name.includes('famille'))) ||
-                                name === 'nom'
-                            ) {
-                                try { textField.setText(nom); } catch (e) { }
+                            // Logic for text fields
+                            if (typeof (field as any).setText === 'function') {
+                                const f = field as any;
+                                // NOM
+                                if ((lowerName.includes('nom') && (lowerName.includes('naissance') || lowerName.includes('usage') || lowerName.includes('famille') || lowerName.includes('p2'))) || lowerName === 'nom') {
+                                    f.setText(nom);
+                                    console.log(`[CERFA DEBUG] Filled NOM: ${name}`);
+                                }
+                                // PRENOM
+                                if (lowerName.includes('prenom') || lowerName.includes('prénom') || lowerName.includes('pr??no')) {
+                                    f.setText(prenom);
+                                    console.log(`[CERFA DEBUG] Filled PRENOM: ${name}`);
+                                }
                             }
-
-                            // Remplissage PRENOM
-                            if (name.includes('prenom') || name.includes('prénom') || name.includes('pr??no')) {
-                                try { textField.setText(prenom); } catch (e) { }
-                            }
-                        }
+                        } catch (e) { }
                     });
-
                 } catch (e) {
-                    console.warn("Erreur lors du remplissage auto:", e);
+                    console.error("Erreur cerfa:", e);
                 }
 
                 const cerfaPdfBytes = await pdfDoc.save();

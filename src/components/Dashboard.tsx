@@ -508,17 +508,23 @@ export const Dashboard = () => {
                                                                 const lastName = (activeSub.answers.lastName || '').toUpperCase();
                                                                 const firstName = child.first_name || '';
 
+                                                                console.log(`[DASHBOARD DEBUG] Filling CERFA for ${firstName} ${lastName}`);
+
                                                                 allFields.forEach(field => {
-                                                                    const name = field.getName().toLowerCase();
-                                                                    if (field.constructor.name === 'PDFTextField') {
-                                                                        const txt = field as any;
-                                                                        if ((name.includes('nom') && (name.includes('naissance') || name.includes('usage') || name.includes('famille'))) || name === 'nom') {
-                                                                            try { txt.setText(lastName); } catch (e) { }
+                                                                    try {
+                                                                        const name = field.getName();
+                                                                        const lowerName = name.toLowerCase();
+
+                                                                        if (typeof (field as any).setText === 'function') {
+                                                                            const txt = field as any;
+                                                                            if ((lowerName.includes('nom') && (lowerName.includes('naissance') || lowerName.includes('usage') || lowerName.includes('famille') || lowerName.includes('p2'))) || lowerName === 'nom') {
+                                                                                txt.setText(lastName);
+                                                                            }
+                                                                            if (lowerName.includes('prenom') || lowerName.includes('prénom') || lowerName.includes('pr??no')) {
+                                                                                txt.setText(firstName);
+                                                                            }
                                                                         }
-                                                                        if (name.includes('prenom') || name.includes('prénom') || name.includes('pr??no')) {
-                                                                            try { txt.setText(firstName); } catch (e) { }
-                                                                        }
-                                                                    }
+                                                                    } catch (e) { }
                                                                 });
                                                             } catch (e) { }
 
