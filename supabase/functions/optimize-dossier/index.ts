@@ -22,16 +22,21 @@ serve(async (req: Request) => {
 
         // Récupération sécurisée du texte utilisateur
         const userText = answers.expectations || "";
-        const childInfo = `${answers.firstName || 'L\'enfant'}, ${answers.diagnosis || 'handicap non spécifié'}`;
+        const school = answers.schoolLevel || "non spécifiée";
+        const childInfo = `${answers.firstName || 'L\'enfant'}, ${answers.diagnosis || 'handicap non spécifié'}, scolarité : ${school}`;
 
         const prompt = `
-      Tu es un expert MDPH. Transforme ces notes de parents en un Projet de Vie professionnel.
-      Structure le texte en 3 paragraphes.
+      Tu es un expert en rédaction de dossiers MDPH. Ton rôle est de rédiger le "Projet de Vie".
       
       CONTEXTE : ${childInfo}
-      NOTES DU PARENT : ${userText || "Aucune note fournie, rédige un texte de base sur l'accompagnement nécessaire."}
+      NOTES DU PARENT : ${userText || "L'enfant a besoin d'un accompagnement pour compenser ses difficultés au quotidien et à l'école."}
       
-      RÉPONSE (Directement le texte, sans introduction) :
+      CONSIGNES :
+      - Utilise un ton INSTITUTIONNEL, ADMINISTRATIF et FACTUEL.
+      - Ne parle PAS de "carrière professionnelle", de "productivité" ou d'entreprise.
+      - Concentre-toi sur : l'inclusion scolaire, l'autonomie quotidienne et les besoins de compensation.
+      - Utilise le "nous" (les parents) ou la 3ème personne pour parler de l'enfant.
+      - RÉPONSE (Le texte du projet de vie uniquement) :
     `
 
         const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
