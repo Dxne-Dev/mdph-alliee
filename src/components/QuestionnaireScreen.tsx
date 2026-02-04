@@ -220,17 +220,23 @@ export const QuestionnaireScreen = () => {
                     // Liste des champs possibles pour le NOM
                     const nomFields = [
                         'topmostSubform[0].Page1[0].NomFamille[0]',
+                        'Nom de naissance p2',
+                        'Nom d\'usage p2',
                         'nom d\'usage',
                         'nom de naissance',
-                        'Nom'
+                        'Nom',
+                        'NOM BAS DE PAGE'
                     ];
 
                     // Liste des champs possibles pour le PRENOM
                     const prenomFields = [
                         'topmostSubform[0].Page1[0].Prenom[0]',
+                        'Prénoms p2',
+                        'Prénom p2',
                         'préno',
                         'Prénom',
-                        'Prenom'
+                        'Prenom',
+                        'PRENOM BAS DE PAGE'
                     ];
 
                     const nom = completedAnswers.lastName?.toUpperCase() || '';

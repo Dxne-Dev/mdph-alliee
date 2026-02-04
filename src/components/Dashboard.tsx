@@ -507,8 +507,8 @@ export const Dashboard = () => {
                                                                 const lastName = activeSub.answers.lastName || '';
                                                                 const firstName = child.first_name || '';
 
-                                                                const nomFields = ['topmostSubform[0].Page1[0].NomFamille[0]', 'nom d\'usage', 'nom de naissance', 'Nom'];
-                                                                const prenomFields = ['topmostSubform[0].Page1[0].Prenom[0]', 'préno', 'Prénom', 'Prenom'];
+                                                                const nomFields = ['topmostSubform[0].Page1[0].NomFamille[0]', 'Nom de naissance p2', 'Nom d\'usage p2', 'nom d\'usage', 'nom de naissance', 'Nom', 'NOM BAS DE PAGE'];
+                                                                const prenomFields = ['topmostSubform[0].Page1[0].Prenom[0]', 'Prénoms p2', 'Prénom p2', 'préno', 'Prénom', 'Prenom', 'PRENOM BAS DE PAGE'];
 
                                                                 for (const f of nomFields) {
                                                                     const field = form.getTextField(f);
