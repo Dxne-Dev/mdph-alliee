@@ -250,7 +250,7 @@ export const QuestionnaireScreen = () => {
                 }
 
                 const cerfaPdfBytes = await pdfDoc.save();
-                const cerfaBlob = new Blob([cerfaPdfBytes], { type: 'application/pdf' });
+                const cerfaBlob = new Blob([cerfaPdfBytes as any], { type: 'application/pdf' });
                 const cerfaLink = document.createElement('a');
                 cerfaLink.href = URL.createObjectURL(cerfaBlob);
                 cerfaLink.download = `CERFA_15692_PreRempli_${completedAnswers.firstName}.pdf`;
