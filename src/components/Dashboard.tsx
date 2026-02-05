@@ -63,7 +63,19 @@ export const Dashboard = () => {
     const handleCreateNew = async () => {
         const newChildId = crypto.randomUUID();
         try {
-            const { error } = await supabase
+            // 1. D'abord créer l'enfant dans la table 'children'
+            const { error: childError } = await supabase
+                .from('children')
+                .insert([{
+                    id: newChildId,
+                    user_id: user.id,
+                    first_name: 'Nouvel enfant'
+                }]);
+
+            if (childError) throw childError;
+
+            // 2. Ensuite créer la soumission liée
+            const { error: subError } = await supabase
                 .from('submissions')
                 .insert([{
                     user_id: user.id,
@@ -72,7 +84,7 @@ export const Dashboard = () => {
                     answers: {}
                 }]);
 
-            if (error) throw error;
+            if (subError) throw subError;
 
             navigate(`/questionnaire/${newChildId}`);
         } catch (e) {
@@ -85,10 +97,15 @@ export const Dashboard = () => {
         if (!confirm('Êtes-vous sûr de vouloir supprimer ce dossier ? Cette action est irréversible.')) return;
 
         try {
+            // Supprimer d'abord les submissions (dépendance FK)
             await supabase.from('submissions').delete().eq('child_id', childId);
+            // Puis l'enfant
+            await supabase.from('children').delete().eq('id', childId);
+
             setChildren(prev => prev.filter(c => c.id !== childId));
             toast.success('Dossier supprimé');
         } catch (e) {
+            console.error('Erreur suppression:', e);
             toast.error('Erreur lors de la suppression');
         }
     };
