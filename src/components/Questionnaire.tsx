@@ -1,5 +1,9 @@
 import { useState } from 'react';
-import { ChevronRight, ChevronLeft, Check } from 'lucide-react';
+import {
+    ChevronRight, ChevronLeft, Check, User, Target, Brain,
+    MessageCircle, GraduationCap, Stethoscope, Home, FileText,
+    Heart, CheckCircle
+} from 'lucide-react';
 
 interface QuestionnaireProps {
     onComplete: (answers: QuestionnaireAnswers) => void;
@@ -80,14 +84,14 @@ export interface QuestionnaireAnswers {
 }
 
 const STEPS = [
-    { id: 1, title: 'Situation', icon: '👤' },
-    { id: 2, title: 'Autonomie', icon: '🎯' },
-    { id: 3, title: 'Comportement', icon: '💭' },
-    { id: 4, title: 'Communication', icon: '💬' },
-    { id: 5, title: 'Scolarité', icon: '🎓' },
-    { id: 6, title: 'Soins', icon: '🏥' },
-    { id: 7, title: 'Famille', icon: '🏠' },
-    { id: 8, title: 'Demande', icon: '📝' }
+    { id: 1, title: 'Situation', Icon: User },
+    { id: 2, title: 'Autonomie', Icon: Target },
+    { id: 3, title: 'Comportement', Icon: Brain },
+    { id: 4, title: 'Communication', Icon: MessageCircle },
+    { id: 5, title: 'Scolarité', Icon: GraduationCap },
+    { id: 6, title: 'Soins', Icon: Stethoscope },
+    { id: 7, title: 'Famille', Icon: Home },
+    { id: 8, title: 'Demande', Icon: FileText }
 ];
 
 export const Questionnaire: React.FC<QuestionnaireProps> = ({ onComplete, initialData }) => {
@@ -121,35 +125,65 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ onComplete, initia
         <div className="questionnaire-container" style={{ maxWidth: '800px', margin: '0 auto', padding: '40px 20px' }}>
             {/* Progress Bar */}
             <div style={{ marginBottom: '40px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-                    {STEPS.map((step) => (
-                        <div
-                            key={step.id}
-                            style={{
-                                fontSize: '24px',
-                                opacity: currentStep >= step.id ? 1 : 0.3,
-                                transition: 'opacity 0.3s'
-                            }}
-                        >
-                            {step.icon}
-                        </div>
-                    ))}
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+                    {STEPS.map((step) => {
+                        const StepIcon = step.Icon;
+                        const isActive = currentStep >= step.id;
+                        const isCurrent = currentStep === step.id;
+                        return (
+                            <div
+                                key={step.id}
+                                style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                    opacity: isActive ? 1 : 0.4,
+                                    transition: 'all 0.3s'
+                                }}
+                            >
+                                <div style={{
+                                    width: '40px',
+                                    height: '40px',
+                                    borderRadius: '50%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    background: isCurrent ? '#2563eb' : isActive ? '#dbeafe' : '#f1f5f9',
+                                    color: isCurrent ? 'white' : isActive ? '#2563eb' : '#94a3b8',
+                                    transition: 'all 0.3s',
+                                    boxShadow: isCurrent ? '0 4px 12px rgba(37, 99, 235, 0.3)' : 'none'
+                                }}>
+                                    <StepIcon size={20} />
+                                </div>
+                                <span style={{
+                                    fontSize: '11px',
+                                    fontWeight: isCurrent ? '600' : '500',
+                                    color: isCurrent ? '#2563eb' : '#64748b',
+                                    display: 'none'
+                                }}>
+                                    {step.title}
+                                </span>
+                            </div>
+                        );
+                    })}
                 </div>
                 <div style={{
                     height: '6px',
-                    background: '#f1f5f9',
+                    background: '#e2e8f0',
                     borderRadius: '999px',
                     overflow: 'hidden'
                 }}>
                     <div style={{
                         height: '100%',
-                        width: `${progress}%`,
-                        background: 'linear-gradient(90deg, #f97316, #ea580c)',
-                        transition: 'width 0.3s ease'
+                        width: `${progress}% `,
+                        background: 'linear-gradient(90deg, #2563eb, #1d4ed8)',
+                        transition: 'width 0.4s ease',
+                        borderRadius: '999px'
                     }} />
                 </div>
-                <div style={{ marginTop: '8px', textAlign: 'center', color: '#64748b', fontSize: '14px' }}>
-                    Étape {currentStep}/8 — {STEPS[currentStep - 1].title}
+                <div style={{ marginTop: '12px', textAlign: 'center', color: '#64748b', fontSize: '14px', fontWeight: '500' }}>
+                    Étape {currentStep} sur 8 — <span style={{ color: '#0f172a', fontWeight: '600' }}>{STEPS[currentStep - 1].title}</span>
                 </div>
             </div>
 
@@ -201,7 +235,7 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ onComplete, initia
 // Section Components
 const Section1Situation = ({ answers, updateAnswer }: any) => (
     <div>
-        <h2 style={{ marginBottom: '24px', color: '#0f172a' }}>📋 Situation Actuelle</h2>
+        <h2 style={{ marginBottom: '24px', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '12px' }}><User size={28} style={{ color: '#2563eb' }} /> Situation Actuelle</h2>
         <p style={{ color: '#64748b', marginBottom: '32px' }}>Commençons par quelques informations de base sur votre enfant.</p>
 
         <div style={{ display: 'grid', gap: '24px' }}>
@@ -345,7 +379,7 @@ const Section1Situation = ({ answers, updateAnswer }: any) => (
 
 const Section2Autonomie = ({ answers, updateAnswer }: any) => (
     <div>
-        <h2 style={{ marginBottom: '24px', color: '#0f172a' }}>🎯 Autonomie au Quotidien</h2>
+        <h2 style={{ marginBottom: '24px', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '12px' }}><Target size={28} style={{ color: '#2563eb' }} /> Autonomie au Quotidien</h2>
         <p style={{ color: '#64748b', marginBottom: '32px' }}>Comment votre enfant se débrouille-t-il pour les actes de la vie quotidienne ?</p>
 
         <div style={{ display: 'grid', gap: '28px' }}>
@@ -429,7 +463,7 @@ const Section2Autonomie = ({ answers, updateAnswer }: any) => (
 
 const Section3Comportement = ({ answers, updateAnswer }: any) => (
     <div>
-        <h2 style={{ marginBottom: '24px', color: '#0f172a' }}>💭 Comportement</h2>
+        <h2 style={{ marginBottom: '24px', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '12px' }}><Brain size={28} style={{ color: '#2563eb' }} /> Comportement</h2>
         <p style={{ color: '#64748b', marginBottom: '32px' }}>Parlons des aspects comportementaux et émotionnels.</p>
 
         <div style={{ display: 'grid', gap: '28px' }}>
@@ -518,7 +552,7 @@ const Section3Comportement = ({ answers, updateAnswer }: any) => (
 
 const Section4Communication = ({ answers, updateAnswer }: any) => (
     <div>
-        <h2 style={{ marginBottom: '24px', color: '#0f172a' }}>💬 Communication</h2>
+        <h2 style={{ marginBottom: '24px', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '12px' }}><MessageCircle size={28} style={{ color: '#2563eb' }} /> Communication</h2>
         <p style={{ color: '#64748b', marginBottom: '32px' }}>Comment votre enfant communique-t-il et interagit-il avec les autres ?</p>
 
         <div style={{ display: 'grid', gap: '28px' }}>
@@ -581,7 +615,7 @@ const Section4Communication = ({ answers, updateAnswer }: any) => (
 
 const Section5Scolarite = ({ answers, updateAnswer, toggleMultiSelect }: any) => (
     <div>
-        <h2 style={{ marginBottom: '24px', color: '#0f172a' }}>🎓 Scolarité</h2>
+        <h2 style={{ marginBottom: '24px', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '12px' }}><GraduationCap size={28} style={{ color: '#2563eb' }} /> Scolarité</h2>
         <p style={{ color: '#64748b', marginBottom: '32px' }}>Parlons de la vie scolaire de votre enfant.</p>
 
         <div style={{ display: 'grid', gap: '28px' }}>
@@ -665,7 +699,7 @@ const Section6Soins = ({ answers, updateAnswer }: any) => {
 
     return (
         <div>
-            <h2 style={{ marginBottom: '24px', color: '#0f172a' }}>🏥 Soins et Thérapies</h2>
+            <h2 style={{ marginBottom: '24px', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '12px' }}><Stethoscope size={28} style={{ color: '#2563eb' }} /> Soins et Thérapies</h2>
             <p style={{ color: '#64748b', marginBottom: '32px' }}>Quels sont les professionnels qui accompagnent votre enfant ?</p>
 
             <div style={{ display: 'grid', gap: '32px' }}>
@@ -693,8 +727,8 @@ const Section6Soins = ({ answers, updateAnswer }: any) => {
                                     className="input-field"
                                 />
                             </FormField>
-                            <p style={{ fontSize: '12px', color: '#64748b', marginTop: '8px' }}>
-                                💚 Généralement remboursé par la Sécurité Sociale
+                            <p style={{ fontSize: '12px', color: '#64748b', marginTop: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <Heart size={14} style={{ color: '#10b981' }} /> Généralement remboursé par la Sécurité Sociale
                             </p>
                         </div>
                     )}
@@ -815,13 +849,13 @@ const Section6Soins = ({ answers, updateAnswer }: any) => {
                 {/* Total */}
                 <div style={{
                     padding: '20px',
-                    background: 'linear-gradient(135deg, #fff3eb 0%, #ffe8d6 100%)',
+                    background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)',
                     borderRadius: '12px',
-                    border: '2px solid #f97316'
+                    border: '2px solid #2563eb'
                 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span style={{ fontWeight: 'bold', fontSize: '16px' }}>Reste à charge mensuel total :</span>
-                        <span style={{ fontWeight: 'bold', fontSize: '24px', color: '#ea580c' }}>
+                        <span style={{ fontWeight: 'bold', fontSize: '24px', color: '#1d4ed8' }}>
                             {calculateTotalCost()}€
                         </span>
                     </div>
@@ -833,7 +867,7 @@ const Section6Soins = ({ answers, updateAnswer }: any) => {
 
 const Section7Famille = ({ answers, updateAnswer }: any) => (
     <div>
-        <h2 style={{ marginBottom: '24px', color: '#0f172a' }}>🏠 Retentissement Familial</h2>
+        <h2 style={{ marginBottom: '24px', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '12px' }}><Home size={28} style={{ color: '#2563eb' }} /> Retentissement Familial</h2>
         <p style={{ color: '#64748b', marginBottom: '32px' }}>Comment le handicap impacte-t-il votre vie quotidienne et celle de votre famille ?</p>
 
         <div style={{ display: 'grid', gap: '28px' }}>
@@ -923,7 +957,7 @@ const Section7Famille = ({ answers, updateAnswer }: any) => (
 
 const Section8Demande = ({ answers, updateAnswer }: any) => (
     <div>
-        <h2 style={{ marginBottom: '24px', color: '#0f172a' }}>📝 Votre Demande</h2>
+        <h2 style={{ marginBottom: '24px', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '12px' }}><FileText size={28} style={{ color: '#2563eb' }} /> Votre Demande</h2>
         <p style={{ color: '#64748b', marginBottom: '32px' }}>Que souhaitez-vous demander à la MDPH ?</p>
 
         <div style={{ display: 'grid', gap: '28px' }}>
@@ -1037,8 +1071,8 @@ const Section8Demande = ({ answers, updateAnswer }: any) => (
                 border: '2px solid #3b82f6',
                 marginTop: '20px'
             }}>
-                <p style={{ fontWeight: 'bold', marginBottom: '12px', color: '#1e40af' }}>
-                    ✅ Vous avez terminé le questionnaire !
+                <p style={{ fontWeight: 'bold', marginBottom: '12px', color: '#1e40af', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <CheckCircle size={20} style={{ color: '#10b981' }} /> Vous avez terminé le questionnaire !
                 </p>
                 <p style={{ fontSize: '14px', color: '#475569' }}>
                     En cliquant sur "Terminer", vos réponses seront sauvegardées et nous générerons votre Synthèse Allié personnalisée.
@@ -1076,8 +1110,8 @@ const RadioGroup = ({ name, options, selected, onChange }: any) => (
                     alignItems: 'center',
                     padding: '12px 16px',
                     borderRadius: '8px',
-                    border: `2px solid ${selected === option.value ? '#f97316' : '#e2e8f0'}`,
-                    background: selected === option.value ? '#fff3eb' : 'white',
+                    border: `2px solid ${selected === option.value ? '#2563eb' : '#e2e8f0'} `,
+                    background: selected === option.value ? '#eff6ff' : 'white',
                     cursor: 'pointer',
                     transition: 'all 0.2s'
                 }}
@@ -1088,7 +1122,7 @@ const RadioGroup = ({ name, options, selected, onChange }: any) => (
                     value={option.value}
                     checked={selected === option.value}
                     onChange={() => onChange(option.value)}
-                    style={{ marginRight: '12px', accentColor: '#f97316', width: '18px', height: '18px' }}
+                    style={{ marginRight: '12px', accentColor: '#2563eb', width: '18px', height: '18px' }}
                 />
                 <span style={{ fontSize: '14px', color: '#1e293b' }}>{option.label}</span>
             </label>
@@ -1106,8 +1140,8 @@ const CheckboxGroup = ({ options, selected, onToggle }: any) => (
                     alignItems: 'center',
                     padding: '12px 16px',
                     borderRadius: '8px',
-                    border: `2px solid ${selected.includes(option.value) ? '#f97316' : '#e2e8f0'}`,
-                    background: selected.includes(option.value) ? '#fff3eb' : 'white',
+                    border: `2px solid ${selected.includes(option.value) ? '#2563eb' : '#e2e8f0'} `,
+                    background: selected.includes(option.value) ? '#eff6ff' : 'white',
                     cursor: 'pointer',
                     transition: 'all 0.2s'
                 }}
@@ -1116,7 +1150,7 @@ const CheckboxGroup = ({ options, selected, onToggle }: any) => (
                     type="checkbox"
                     checked={selected.includes(option.value)}
                     onChange={() => onToggle(option.value)}
-                    style={{ marginRight: '12px', accentColor: '#f97316', width: '18px', height: '18px' }}
+                    style={{ marginRight: '12px', accentColor: '#2563eb', width: '18px', height: '18px' }}
                 />
                 <span style={{ fontSize: '14px', color: '#1e293b' }}>{option.label}</span>
             </label>
