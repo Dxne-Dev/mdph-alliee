@@ -175,104 +175,148 @@ export const Dashboard = () => {
     }
 
     return (
-        <div style={{ minHeight: '100vh', backgroundColor: '#f1f5f9' }}>
-            <header style={{ backgroundColor: 'white', borderBottom: '1px solid #e2e8f0', padding: '16px 0', position: 'sticky', top: 0, zIndex: 10, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <div style={{ width: '36px', height: '36px', background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>
-                            <ClipboardList size={22} />
+        <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg-light)' }}>
+            <header style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                backdropFilter: 'blur(10px)',
+                borderBottom: '1px solid var(--border-subtle)',
+                padding: '20px 0',
+                position: 'sticky',
+                top: 0,
+                zIndex: 100,
+                boxShadow: 'var(--shadow-sm)'
+            }}>
+                <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                        <div style={{
+                            width: '40px',
+                            height: '40px',
+                            background: 'var(--gradient-text)',
+                            borderRadius: '12px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'white',
+                            boxShadow: '0 8px 16px rgba(249, 115, 22, 0.25)'
+                        }}>
+                            <ClipboardList size={24} />
                         </div>
-                        <h1 style={{ fontSize: '20px', fontWeight: '800', color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>L'Allié MDPH</h1>
+                        <h1 className="logo" style={{ fontSize: '24px', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ color: 'var(--primary)' }}>L'Allié</span> <span style={{ color: 'var(--accent)' }}>MDPH</span>
+                        </h1>
                     </div>
-                    <button
-                        onClick={() => supabase.auth.signOut().then(() => navigate('/'))}
-                        style={{ color: '#64748b', fontSize: '14px', fontWeight: '600', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
-                    >
-                        Quitter
-                    </button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+                        <span style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text-muted)' }}>Bonjour, <span style={{ color: 'var(--primary)' }}>{user?.email?.split('@')[0]}</span></span>
+                        <button
+                            onClick={() => supabase.auth.signOut().then(() => navigate('/'))}
+                            className="btn-outline"
+                            style={{ padding: '8px 20px', fontSize: '14px', border: '1px solid var(--border-subtle)' }}
+                        >
+                            Déconnexion
+                        </button>
+                    </div>
                 </div>
             </header>
 
-            <main className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 20px' }}>
-
-                {/* Notification Banner */}
+            <main className="container" style={{ padding: '48px 20px', position: 'relative' }}>
+                {/* Decorative background blur */}
                 <div style={{
-                    marginBottom: '32px',
-                    padding: '20px 24px',
-                    backgroundColor: 'white',
-                    borderRadius: '20px',
-                    border: '1px solid #e2e8f0',
+                    position: 'absolute',
+                    top: '0',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    width: '100%',
+                    height: '400px',
+                    background: 'radial-gradient(circle at top, rgba(249, 115, 22, 0.03) 0%, transparent 70%)',
+                    pointerEvents: 'none',
+                    zIndex: 0
+                }} />
+
+                {/* Notification Banner - Premium Orange */}
+                <div style={{
+                    marginBottom: '48px',
+                    padding: '24px 32px',
+                    backgroundColor: '#fff3eb',
+                    borderRadius: 'var(--radius-lg)',
+                    border: '1px solid rgba(249, 115, 22, 0.2)',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '20px',
-                    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)'
+                    gap: '24px',
+                    boxShadow: '0 10px 30px rgba(249, 115, 22, 0.05)'
                 }}>
                     <div style={{
-                        width: '48px', height: '48px',
-                        backgroundColor: '#eff6ff', color: '#2563eb',
-                        borderRadius: '14px',
+                        width: '56px', height: '56px',
+                        background: 'var(--gradient-text)', color: 'white',
+                        borderRadius: '16px',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        flexShrink: 0
+                        flexShrink: 0,
+                        boxShadow: '0 8px 16px rgba(249, 115, 22, 0.2)'
                     }}>
-                        <Bell size={24} />
+                        <Bell size={28} />
                     </div>
                     <div style={{ flex: 1 }}>
-                        <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#0f172a', marginBottom: '2px' }}>
-                            Notifications actives
+                        <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--primary)', marginBottom: '4px' }}>
+                            Notifications de suivi
                         </h3>
-                        <p style={{ color: '#64748b', fontSize: '14px', margin: 0 }}>
-                            Nous vous préviendrons par email 3 mois avant le renouvellement. Prochaine échéance : <span style={{ color: '#2563eb', fontWeight: '600' }}>05 Mars 2026</span>
+                        <p style={{ color: 'var(--text-main)', fontSize: '15px', margin: 0, opacity: 0.8 }}>
+                            Nous vous préviendrons par email 3 mois avant le renouvellement. Prochaine échéance : <span style={{ color: 'var(--accent)', fontWeight: '800' }}>05 Mars 2026</span>
                         </p>
+                    </div>
+                    <div className="btn-xs" style={{ margin: 0, background: 'white', color: 'var(--accent)', padding: '8px 16px', borderRadius: '8px' }}>
+                        Activé
                     </div>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '40px' }}>
                     <div>
-                        <h2 style={{ fontSize: '28px', fontWeight: '800', color: '#0f172a', marginBottom: '4px', letterSpacing: '-0.02em' }}>Mes Dossiers</h2>
-                        <p style={{ color: '#64748b', fontSize: '15px' }}>Gérez les demandes MDPH pour vos enfants</p>
+                        <h2 style={{ fontSize: '36px', fontWeight: '800', color: 'var(--primary)', marginBottom: '8px', letterSpacing: '-0.03em' }}>Mes Dossiers</h2>
+                        <p style={{ color: 'var(--text-muted)', fontSize: '17px', fontWeight: '500' }}>Gérez les demandes MDPH pour vos enfants</p>
                     </div>
                     <button
                         onClick={handleCreateNew}
-                        style={{
-                            display: 'flex', alignItems: 'center', gap: '10px',
-                            backgroundColor: '#2563eb', color: 'white',
-                            padding: '12px 24px', borderRadius: '12px',
-                            fontWeight: '600', transition: 'all 0.2s',
-                            cursor: 'pointer', border: 'none',
-                            boxShadow: '0 4px 12px rgba(37, 99, 235, 0.2)'
-                        }}
+                        className="btn-primary"
+                        style={{ padding: '16px 32px' }}
                     >
-                        <Plus size={20} />
+                        <Plus size={22} />
                         Nouveau dossier
                     </button>
                 </div>
 
                 {children.length === 0 ? (
                     <div style={{
-                        textAlign: 'center', padding: '80px 20px',
-                        backgroundColor: 'white', borderRadius: '24px', border: '2px dashed #e2e8f0',
-                        display: 'flex', flexDirection: 'column', alignItems: 'center'
+                        textAlign: 'center',
+                        padding: '100px 40px',
+                        backgroundColor: 'white',
+                        borderRadius: 'var(--radius-lg)',
+                        border: '2px dashed var(--border-subtle)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        boxShadow: 'inset 0 0 40px rgba(0,0,0,0.02)'
                     }}>
                         <div style={{
-                            width: '80px', height: '80px', backgroundColor: '#f8fafc',
-                            borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            margin: '0 auto 24px', color: '#94a3b8'
+                            width: '100px', height: '100px',
+                            background: '#f8fafc',
+                            borderRadius: '50%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            margin: '0 auto 32px',
+                            color: 'var(--accent)',
+                            border: '1px solid var(--border-subtle)'
                         }}>
-                            <FileText size={40} />
+                            <FileText size={48} />
                         </div>
-                        <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#0f172a', marginBottom: '12px' }}>Aucun dossier en cours</h3>
-                        <p style={{ color: '#64748b', marginBottom: '32px', maxWidth: '400px', lineHeight: '1.6' }}>
-                            Commencez par créer un dossier pour votre enfant. Nous vous guiderons pas à pas pour optimiser votre dossier.
+                        <h3 style={{ fontSize: '24px', fontWeight: '800', color: 'var(--primary)', marginBottom: '16px' }}>Aucun dossier en cours</h3>
+                        <p style={{ color: 'var(--text-muted)', marginBottom: '40px', maxWidth: '450px', lineHeight: '1.6', fontSize: '16px', fontWeight: '500' }}>
+                            Commencez par créer un dossier pour votre enfant. Nous vous guiderons pas à pas pour optimiser votre demande MDPH.
                         </p>
                         <button
                             onClick={handleCreateNew}
-                            style={{
-                                display: 'inline-flex', alignItems: 'center', gap: '10px',
-                                backgroundColor: '#2563eb', color: 'white',
-                                padding: '14px 28px', borderRadius: '12px',
-                                fontWeight: '600', cursor: 'pointer', border: 'none'
-                            }}
+                            className="btn-primary"
+                            style={{ padding: '18px 48px' }}
                         >
+                            <Plus size={22} />
                             Créer mon premier dossier
                         </button>
                     </div>
@@ -280,41 +324,50 @@ export const Dashboard = () => {
                     <div style={{ display: 'grid', gap: '32px' }}>
                         {children.map(child => (
                             <div key={child.id} style={{
-                                backgroundColor: 'white', borderRadius: '24px',
-                                border: '1px solid #e2e8f0', overflow: 'hidden',
-                                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.05)',
-                                transition: 'transform 0.2s ease'
+                                backgroundColor: 'white',
+                                borderRadius: 'var(--radius-lg)',
+                                border: '1px solid var(--border-subtle)',
+                                overflow: 'hidden',
+                                boxShadow: 'var(--shadow-lg)',
+                                transition: 'all 0.3s ease'
                             }}>
                                 <div style={{
-                                    padding: '24px 32px', borderBottom: '1px solid #f1f5f9',
-                                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                                    backgroundColor: '#fff'
+                                    padding: '32px 40px',
+                                    borderBottom: '1px solid var(--border-subtle)',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    background: 'linear-gradient(to right, #ffffff, #fcfcfc)'
                                 }}>
-                                    <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+                                    <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
                                         <div style={{
-                                            width: '56px', height: '56px', borderRadius: '16px',
-                                            backgroundColor: '#eff6ff', color: '#2563eb',
+                                            width: '64px', height: '64px',
+                                            borderRadius: '20px',
+                                            background: 'var(--gradient-text)',
+                                            color: 'white',
                                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                            fontSize: '22px', fontWeight: '800'
+                                            fontSize: '26px',
+                                            fontWeight: '800',
+                                            boxShadow: '0 8px 20px rgba(249, 115, 22, 0.2)'
                                         }}>
                                             {child.first_name[0]?.toUpperCase() || '?'}
                                         </div>
                                         <div>
-                                            <h3 style={{ fontSize: '22px', fontWeight: '800', color: '#0f172a', marginBottom: '4px', letterSpacing: '-0.01em' }}>
+                                            <h3 style={{ fontSize: '24px', fontWeight: '800', color: 'var(--primary)', marginBottom: '6px', letterSpacing: '-0.02em' }}>
                                                 {child.first_name}
                                             </h3>
-                                            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                            <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                                                 <span style={{
-                                                    display: 'inline-flex', alignItems: 'center', gap: '6px',
-                                                    fontSize: '12px', padding: '4px 12px', borderRadius: '99px',
-                                                    backgroundColor: child.status === 'completed' ? '#dcfce7' : '#fef9c3',
-                                                    color: child.status === 'completed' ? '#166534' : '#854d0e',
-                                                    fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.02em'
+                                                    display: 'inline-flex', alignItems: 'center', gap: '8px',
+                                                    fontSize: '13px', padding: '6px 14px', borderRadius: '99px',
+                                                    backgroundColor: child.status === 'completed' ? '#ecfdf5' : '#fff7ed',
+                                                    color: child.status === 'completed' ? '#059669' : '#d97706',
+                                                    fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em'
                                                 }}>
-                                                    {child.status === 'completed' ? <CheckCircle2 size={13} /> : <Clock size={13} />}
-                                                    {child.status === 'completed' ? 'Dossier complet' : 'Brouillon'}
+                                                    {child.status === 'completed' ? <CheckCircle2 size={15} /> : <Clock size={15} />}
+                                                    {child.status === 'completed' ? 'Dossier complet' : 'En rédaction'}
                                                 </span>
-                                                <span style={{ fontSize: '13px', color: '#94a3b8', fontWeight: '500' }}>
+                                                <span style={{ fontSize: '14px', color: 'var(--text-muted)', fontWeight: '600' }}>
                                                     Mis à jour le {new Date(child.last_updated).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}
                                                 </span>
                                             </div>
@@ -324,51 +377,66 @@ export const Dashboard = () => {
                                     <button
                                         onClick={() => handleDelete(child.id)}
                                         style={{
-                                            padding: '10px', color: '#94a3b8',
-                                            background: 'transparent', border: 'none', cursor: 'pointer',
-                                            borderRadius: '10px', transition: 'all 0.2s'
+                                            padding: '12px',
+                                            color: 'var(--text-muted)',
+                                            background: 'transparent',
+                                            border: 'none',
+                                            cursor: 'pointer',
+                                            borderRadius: '12px',
+                                            transition: 'all 0.2s'
                                         }}
                                         onMouseEnter={(e) => { e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.backgroundColor = '#fef2f2'; }}
-                                        onMouseLeave={(e) => { e.currentTarget.style.color = '#94a3b8'; e.currentTarget.style.backgroundColor = 'transparent'; }}
+                                        onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.backgroundColor = 'transparent'; }}
                                         title="Supprimer"
                                     >
-                                        <Trash2 size={20} />
+                                        <Trash2 size={22} />
                                     </button>
                                 </div>
 
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', backgroundColor: '#fff' }}>
-                                    {/* Étape 1 */}
-                                    <div style={{ padding: '32px', borderRight: '1px solid #f1f5f9' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
-                                            <div style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: '#2563eb', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 'bold' }}>1</div>
-                                            <h4 style={{ fontSize: '13px', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                    {/* Étape 1 - Rédaction */}
+                                    <div style={{ padding: '40px', borderRight: '1px solid var(--border-subtle)' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+                                            <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'var(--primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: '800' }}>1</div>
+                                            <h4 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                                                 Espace Rédaction
                                             </h4>
                                         </div>
 
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                                             <button
                                                 onClick={() => navigate(`/questionnaire/${child.id}`)}
                                                 style={{
                                                     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                                                    padding: '20px', borderRadius: '16px',
-                                                    backgroundColor: '#f8fafc', border: '1px solid #e2e8f0',
-                                                    color: '#0f172a', fontWeight: '600', cursor: 'pointer',
-                                                    transition: 'all 0.2s', textAlign: 'left'
+                                                    padding: '24px', borderRadius: '20px',
+                                                    backgroundColor: 'white', border: '1px solid var(--border-subtle)',
+                                                    color: 'var(--primary)', fontWeight: '700', cursor: 'pointer',
+                                                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', textAlign: 'left',
+                                                    boxShadow: '0 4px 6px rgba(0,0,0,0.02)'
                                                 }}
-                                                onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#2563eb'; e.currentTarget.style.backgroundColor = '#fff'; }}
-                                                onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.backgroundColor = '#f8fafc'; }}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.borderColor = 'var(--accent)';
+                                                    e.currentTarget.style.transform = 'translateY(-2px)';
+                                                    e.currentTarget.style.boxShadow = '0 10px 20px rgba(249, 115, 22, 0.08)';
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.borderColor = 'var(--border-subtle)';
+                                                    e.currentTarget.style.transform = 'translateY(0)';
+                                                    e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.02)';
+                                                }}
                                             >
-                                                <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                                                    <div style={{ color: '#2563eb' }}><FileText size={24} /></div>
+                                                <div style={{ display: 'flex', gap: '18px', alignItems: 'center' }}>
+                                                    <div style={{ color: 'var(--accent)', background: '#fff3eb', padding: '12px', borderRadius: '14px' }}>
+                                                        <FileText size={28} />
+                                                    </div>
                                                     <div>
-                                                        <div style={{ fontSize: '16px' }}>Questionnaire & Synthèse</div>
-                                                        <div style={{ fontSize: '12px', color: '#64748b', fontWeight: '500' }}>
-                                                            {child.status === 'completed' ? 'Consulter mon dossier' : 'Reprendre la rédaction'}
+                                                        <div style={{ fontSize: '17px', color: 'var(--primary)' }}>Synthèse & Projet</div>
+                                                        <div style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: '500', marginTop: '2px' }}>
+                                                            {child.status === 'completed' ? 'Voir ma synthèse' : 'Reprendre la rédaction'}
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <ChevronRight size={18} color="#cbd5e1" />
+                                                <ChevronRight size={20} color="var(--accent)" />
                                             </button>
 
                                             {child.status === 'completed' && (
@@ -377,65 +445,70 @@ export const Dashboard = () => {
                                                     disabled={isGenerating === child.id}
                                                     style={{
                                                         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                                                        padding: '20px', borderRadius: '16px',
-                                                        backgroundColor: '#eff6ff', border: '1px solid #dbeafe',
-                                                        color: '#1e40af', fontWeight: '700', cursor: 'pointer',
-                                                        transition: 'all 0.2s', textAlign: 'left'
+                                                        padding: '24px', borderRadius: '20px',
+                                                        backgroundColor: 'var(--primary)', border: 'none',
+                                                        color: 'white', fontWeight: '700', cursor: 'pointer',
+                                                        transition: 'all 0.3s ease', textAlign: 'left',
+                                                        boxShadow: '0 8px 16px rgba(15, 23, 42, 0.2)'
                                                     }}
-                                                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#dbeafe'; }}
-                                                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#eff6ff'; }}
+                                                    onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.backgroundColor = 'var(--primary-light)'; }}
+                                                    onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.backgroundColor = 'var(--primary)'; }}
                                                 >
-                                                    <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                                                        <div style={{ color: '#2563eb' }}>
-                                                            {isGenerating === child.id ? <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div> : <Download size={24} />}
+                                                    <div style={{ display: 'flex', gap: '18px', alignItems: 'center' }}>
+                                                        <div style={{ color: 'var(--accent)', background: 'rgba(255,255,255,0.1)', padding: '12px', borderRadius: '14px' }}>
+                                                            {isGenerating === child.id ? <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div> : <Download size={28} />}
                                                         </div>
                                                         <div>
-                                                            <div style={{ fontSize: '16px' }}>Télécharger le Pack Complet</div>
-                                                            <div style={{ fontSize: '12px', color: '#3b82f6' }}>Synthèse AI + CERFA pré-rempli</div>
+                                                            <div style={{ fontSize: '17px' }}>Télécharger mon pack</div>
+                                                            <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', fontWeight: '500' }}>Synthèse AI + CERFA</div>
                                                         </div>
                                                     </div>
-                                                    <ArrowRight size={18} />
+                                                    <ArrowRight size={20} />
                                                 </button>
                                             )}
                                         </div>
                                     </div>
 
-                                    {/* Étape 2 */}
-                                    <div style={{ padding: '32px', backgroundColor: '#fafafa' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
-                                            <div style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: '#10b981', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 'bold' }}>2</div>
-                                            <h4 style={{ fontSize: '13px', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                    {/* Étape 2 - Documents */}
+                                    <div style={{ padding: '40px', backgroundColor: '#fcfcfc' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+                                            <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#10b981', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: '800' }}>2</div>
+                                            <h4 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                                                 Espace Documents
                                             </h4>
                                         </div>
 
                                         <div style={{
-                                            padding: '24px', border: '1px solid #e2e8f0', borderRadius: '20px',
-                                            backgroundColor: 'white', textAlign: 'center'
+                                            padding: '28px',
+                                            border: '1px solid var(--border-subtle)',
+                                            borderRadius: '24px',
+                                            backgroundColor: 'white',
+                                            textAlign: 'center',
+                                            boxShadow: '0 4px 6px rgba(0,0,0,0.02)'
                                         }}>
                                             <div style={{
-                                                width: '56px', height: '56px', backgroundColor: '#ecfdf5', color: '#10b981',
-                                                borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                margin: '0 auto 16px'
+                                                width: '64px', height: '64px', backgroundColor: '#ecfdf5', color: '#10b981',
+                                                borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                margin: '0 auto 20px',
+                                                boxShadow: '0 8px 16px rgba(16, 185, 129, 0.1)'
                                             }}>
-                                                <Heart size={28} />
+                                                <Heart size={32} />
                                             </div>
-                                            <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#0f172a', marginBottom: '8px' }}>
-                                                Coffre-fort Numérique
+                                            <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--primary)', marginBottom: '8px' }}>
+                                                Coffre-fort L'Allié
                                             </h3>
-                                            <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '20px', lineHeight: '1.5' }}>
+                                            <p style={{ fontSize: '14px', color: 'var(--text-muted)', marginBottom: '24px', lineHeight: '1.6', fontWeight: '500' }}>
                                                 Centralisez vos certificats médicaux et bilans en un seul lieu sécurisé.
                                             </p>
                                             <button
                                                 onClick={() => setVaultOpenId(child.id)}
+                                                className="btn-outline"
                                                 style={{
-                                                    width: '100%', padding: '12px', borderRadius: '12px',
-                                                    backgroundColor: 'white', border: '1px solid #e2e8f0',
-                                                    color: '#0f172a', fontWeight: '600', cursor: 'pointer',
-                                                    transition: 'all 0.2s', boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                                                    width: '100%',
+                                                    padding: '14px',
+                                                    borderRadius: '14px',
+                                                    fontSize: '15px'
                                                 }}
-                                                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f8fafc'; }}
-                                                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'white'; }}
                                             >
                                                 Ouvrir mes documents
                                             </button>
