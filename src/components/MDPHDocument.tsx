@@ -8,7 +8,6 @@ const styles = StyleSheet.create({
         color: '#334155',
         backgroundColor: '#ffffff',
     },
-    // En-tête ultra-robuste
     header: {
         marginBottom: 30,
         paddingBottom: 20,
@@ -27,7 +26,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         color: '#0f172a',
-        marginBottom: 8, // Marge claire pour éviter le chevauchement
+        marginBottom: 8,
     },
     subtitle: {
         fontSize: 11,
@@ -41,7 +40,6 @@ const styles = StyleSheet.create({
         fontSize: 9,
         color: '#94a3b8',
     },
-    // Contenu
     card: {
         marginTop: 20,
         padding: 15,
@@ -76,19 +74,37 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#1e293b',
     },
-    projetBox: {
-        marginTop: 20,
-        padding: 20,
-        borderRadius: 8,
+    // Styles spécifiques pour la page Projet de Vie
+    projetPage: {
+        padding: 50,
+        fontFamily: 'Helvetica',
         backgroundColor: '#ffffff',
+    },
+    projetCard: {
+        marginTop: 10,
+        padding: 30,
+        borderRadius: 12,
+        backgroundColor: '#fcfdfe',
         borderWidth: 1,
         borderColor: '#2563eb',
-        borderLeftWidth: 5,
+        minHeight: 600, // Pour donner un aspect "page pleine"
+    },
+    projetTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#1e40af',
+        marginBottom: 20,
+        textAlign: 'center',
+        textTransform: 'uppercase',
+        borderBottomWidth: 1,
+        borderBottomColor: '#dbeafe',
+        paddingBottom: 15,
     },
     projetText: {
-        fontSize: 11,
-        lineHeight: 1.6,
+        fontSize: 12,
+        lineHeight: 1.8,
         textAlign: 'justify',
+        color: '#1e293b',
     },
     footer: {
         position: 'absolute',
@@ -101,6 +117,15 @@ const styles = StyleSheet.create({
         borderTopColor: '#f1f5f9',
         fontSize: 8,
         color: '#94a3b8',
+    },
+    watermark: {
+        position: 'absolute',
+        top: 400,
+        left: 100,
+        fontSize: 60,
+        color: '#f1f5f9',
+        transform: 'rotate(-45deg)',
+        zIndex: -1,
     }
 });
 
@@ -115,11 +140,12 @@ export const MDPHDocument = ({ data, childName }: MDPHDocumentProps) => {
 
     return (
         <Document>
+            {/* PAGE 1 : RÉSUMÉ ADMINISTRATIF */}
             <Page size="A4" style={styles.page}>
                 <View style={styles.header}>
                     <Text style={styles.brand}>L'Allié MDPH — Synthèse Officielle</Text>
                     <Text style={styles.title}>Dossier de Synthèse</Text>
-                    <Text style={styles.subtitle}>Aide à la complétion du projet de vie et évaluation des besoins</Text>
+                    <Text style={styles.subtitle}>Volet 1 : Résumé administratif et évaluation de l'autonomie</Text>
 
                     <View style={styles.metaRow}>
                         <Text>ENFANT : {fullName}</Text>
@@ -128,35 +154,58 @@ export const MDPHDocument = ({ data, childName }: MDPHDocumentProps) => {
                 </View>
 
                 <View style={styles.card}>
-                    <Text style={styles.sectionTitle}>Identification & Diagnostic</Text>
+                    <Text style={styles.sectionTitle}>I. Identification & Diagnostic</Text>
                     <View style={styles.grid}>
                         <View style={styles.infoBox}><Text style={styles.label}>Nom complet</Text><Text style={styles.value}>{fullName}</Text></View>
                         <View style={styles.infoBox}><Text style={styles.label}>Date de Naissance</Text><Text style={styles.value}>{data.birthDate || 'Non spécifiée'}</Text></View>
-                        <View style={styles.infoBox}><Text style={styles.label}>Diagnostic</Text><Text style={styles.value}>{data.diagnosis || 'Non spécifié'}</Text></View>
+                        <View style={styles.infoBox}><Text style={styles.label}>Diagnostic Principal</Text><Text style={styles.value}>{data.diagnosis || 'Non spécifié'}</Text></View>
                         <View style={styles.infoBox}><Text style={styles.label}>Niveau Scolaire</Text><Text style={styles.value}>{data.schoolLevel || 'Non spécifié'}</Text></View>
                     </View>
                 </View>
 
                 <View style={styles.card}>
-                    <Text style={styles.sectionTitle}>Autonomie & Vie Quotidienne</Text>
-                    <Text style={{ fontSize: 9, marginBottom: 8, color: '#475569' }}>
-                        Évaluation basique des actes essentiels de la vie (Hygiène, Habillage, Repas, Sommeil).
+                    <Text style={styles.sectionTitle}>II. Autonomie & Vie Quotidienne</Text>
+                    <Text style={{ fontSize: 9, marginBottom: 12, color: '#475569', fontStyle: 'italic' }}>
+                        Synthèse des points de vigilance sur les actes essentiels de la vie.
                     </Text>
                     <View style={styles.grid}>
-                        <View style={styles.infoBox}><Text style={styles.label}>Hygiène</Text><Text style={styles.value}>{data.toileting || 'Aide humaine'}</Text></View>
-                        <View style={styles.infoBox}><Text style={styles.label}>Habillage</Text><Text style={styles.value}>{data.dressing || 'Aide humaine'}</Text></View>
+                        <View style={styles.infoBox}><Text style={styles.label}>Hygiène / Toilettes</Text><Text style={styles.value}>{data.toileting || 'Aide humaine requise'}</Text></View>
+                        <View style={styles.infoBox}><Text style={styles.label}>Habillage / Déshabillage</Text><Text style={styles.value}>{data.dressing || 'Aide humaine requise'}</Text></View>
+                        <View style={styles.infoBox}><Text style={styles.label}>Prise des repas</Text><Text style={styles.value}>{data.eating || 'Guidance nécessaire'}</Text></View>
+                        <View style={styles.infoBox}><Text style={styles.label}>Qualité du Sommeil</Text><Text style={styles.value}>{data.sleep || 'Stable'}</Text></View>
                     </View>
                 </View>
 
-                <View style={styles.projetBox}>
-                    <Text style={styles.sectionTitle}>Projet de Vie (Synthèse IA)</Text>
-                    <Text style={styles.projetText}>
-                        {data.expectations || "L'expression des attentes n'a pas été finalisée lors de la saisie."}
+                <View style={{ marginTop: 30, padding: 15, backgroundColor: '#eff6ff', borderRadius: 8 }}>
+                    <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#1e40af', marginBottom: 5 }}>Note à l'attention de l'évaluateur CDAPH :</Text>
+                    <Text style={{ fontSize: 9, color: '#1e40af', lineHeight: 1.4 }}>
+                        Ce document résume les éléments clés saisis par la famille pour faciliter la lecture de la demande.
+                        Le "Projet de Vie" complet se trouve en page suivante.
                     </Text>
                 </View>
 
                 <Text style={styles.footer}>
-                    Ce document est une aide à la décision. L'Allié MDPH - {today} - Page 1/1
+                    L'Allié MDPH - Synthèse Page 1/2 - {today}
+                </Text>
+            </Page>
+
+            {/* PAGE 2 : PROJET DE VIE COMPLET */}
+            <Page size="A4" style={styles.projetPage}>
+                <View style={styles.header}>
+                    <Text style={styles.brand}>L'Allié MDPH — Synthèse Officielle</Text>
+                    <Text style={styles.title}>Le Projet de Vie</Text>
+                    <Text style={styles.subtitle}>Volet 2 : Expression des attentes et des besoins de l'enfant et de la famille</Text>
+                </View>
+
+                <View style={styles.projetCard}>
+                    <Text style={styles.projetTitle}>Expression de la Famille</Text>
+                    <Text style={styles.projetText}>
+                        {data.expectations || "L'expression des attentes n'a pas été finalisée. Ce document sert de base à la rédaction du projet de vie définitif."}
+                    </Text>
+                </View>
+
+                <Text style={styles.footer}>
+                    L'Allié MDPH - Projet de Vie Page 2/2 - {today}
                 </Text>
             </Page>
         </Document>
