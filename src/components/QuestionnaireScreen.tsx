@@ -195,10 +195,13 @@ export const QuestionnaireScreen = () => {
             try {
                 // Utilisation d'un chemin relatif (évite CORS et les DNS externes capricieux)
                 // Note : le fichier doit être présent dans le dossier /public/
-                const cerfaUrl = '/form_standard.pdf';
+                const cerfaUrl = '/support_client.pdf?v=1';
                 const response = await fetch(cerfaUrl);
-
-                if (!response.ok) throw new Error('CERFA local introuvable');
+                
+                if (!response.ok) {
+                    console.error("Fichier PDF introuvable sur le serveur.");
+                    throw new Error('CERFA local introuvable');
+                }
 
                 const existingPdfBytes = await response.arrayBuffer();
 

@@ -484,9 +484,12 @@ export const Dashboard = () => {
 
                                                         // 2. CERFA
                                                         try {
-                                                            const cerfaUrl = '/form_standard.pdf';
+                                                            const cerfaUrl = '/support_client.pdf?v=1';
                                                             const response = await fetch(cerfaUrl);
-                                                            if (!response.ok) throw new Error('Local CERFA not found');
+                                                            if (!response.ok) {
+                                                                console.warn("Fichier PDF introuvable sur le serveur.");
+                                                                throw new Error('Local PDF not found');
+                                                            }
 
                                                             const existingPdfBytes = await response.arrayBuffer();
 
