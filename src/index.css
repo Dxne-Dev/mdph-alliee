@@ -180,10 +180,155 @@ img {
     transition: all 0.2s;
 }
 
+/* Questionnaire Layout Helpers */
+.section-card {
+    position: relative;
+    z-index: 1;
+}
+
+.form-grid-2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.form-grid-1col {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+}
+
+.nested-form-grid {
+    padding-left: 32px;
+    border-left: 2px solid var(--border-subtle);
+    margin-top: -16px;
+    margin-bottom: 24px;
+}
+
+.sub-section-card {
+    padding: 24px;
+    background: #f8fafc;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-subtle);
+    transition: all 0.3s ease;
+}
+
+.sub-section-card:hover {
+    border-color: var(--accent);
+    background: white;
+    box-shadow: var(--shadow-sm);
+}
+
+.total-cost-card {
+    padding: 24px;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: var(--radius-md);
+    border: 2px solid var(--primary);
+    margin-top: 20px;
+}
+
+.completion-card {
+    padding: 30px;
+    background: linear-gradient(135deg, #fff3eb 0%, #fffaf7 100%);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--accent);
+    margin-top: 30px;
+}
+
+.info-text {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+}
+
+.optional-text {
+    color: var(--text-muted);
+    margin-left: 8px;
+    font-size: 0.85rem;
+    font-weight: normal;
+}
+
+.radio-group-container,
+.checkbox-group-container {
+    display: grid;
+    gap: 12px;
+    width: 100%;
+}
+
+.radio-tile,
+.checkbox-tile {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    background: white;
+}
+
+.radio-tile:hover,
+.checkbox-tile:hover {
+    border-color: var(--accent);
+    background: #fffaf7;
+    transform: translateX(6px);
+}
+
+.radio-tile.selected,
+.checkbox-tile.selected {
+    border-color: var(--accent);
+    background: #fff3eb;
+    box-shadow: 0 4px 20px rgba(249, 115, 22, 0.1);
+}
+
+.hidden-radio,
+.hidden-checkbox {
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    accent-color: var(--accent);
+    flex-shrink: 0;
+}
+
+.radio-content,
+.checkbox-content {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-main);
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .form-grid-2col {
+        grid-template-columns: 1fr;
+    }
+
+    .nested-form-grid {
+        padding-left: 16px;
+    }
+}
+
+.modal-input {
+    width: 100%;
+    padding: 16px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-subtle);
+    font-size: 1rem;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s;
+    line-height: 1.6;
+}
+
 .modal-input:focus {
     outline: none;
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(255, 90, 31, 0.1);
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
 }
 
 /* Questionnaire & Forms */

@@ -4,6 +4,7 @@ import {
     MessageCircle, GraduationCap, Stethoscope, Home, FileText,
     Heart, CheckCircle
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface QuestionnaireProps {
     onComplete: (answers: QuestionnaireAnswers) => void;
@@ -122,10 +123,37 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ onComplete, initia
     const progress = (currentStep / 8) * 100;
 
     return (
-        <div className="questionnaire-container" style={{ maxWidth: '800px', margin: '0 auto', padding: '40px 20px' }}>
-            {/* Progress Bar */}
-            <div style={{ marginBottom: '40px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+        <div className="questionnaire-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '40px 20px' }}>
+            {/* Progress Bar - Premium Style */}
+            <div style={{
+                marginBottom: '50px',
+                background: 'white',
+                padding: '30px',
+                borderRadius: 'var(--radius-lg)',
+                boxShadow: 'var(--shadow-md)',
+                border: '1px solid var(--border-subtle)'
+            }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px', position: 'relative' }}>
+                    <div style={{
+                        position: 'absolute',
+                        top: '20px',
+                        left: '0',
+                        right: '0',
+                        height: '2px',
+                        background: '#e2e8f0',
+                        zIndex: 0
+                    }}>
+                        <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${progress}%` }}
+                            transition={{ duration: 0.8, ease: "easeOut" }}
+                            style={{
+                                height: '100%',
+                                background: 'var(--gradient-text)',
+                                borderRadius: '999px'
+                            }}
+                        />
+                    </div>
                     {STEPS.map((step) => {
                         const StepIcon = step.Icon;
                         const isActive = currentStep >= step.id;
@@ -137,30 +165,37 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ onComplete, initia
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
-                                    gap: '6px',
-                                    opacity: isActive ? 1 : 0.4,
-                                    transition: 'all 0.3s'
+                                    gap: '8px',
+                                    zIndex: 2,
+                                    width: '12.5%'
                                 }}
                             >
                                 <div style={{
-                                    width: '40px',
-                                    height: '40px',
-                                    borderRadius: '50%',
+                                    width: '42px',
+                                    height: '42px',
+                                    borderRadius: '12px',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    background: isCurrent ? '#2563eb' : isActive ? '#dbeafe' : '#f1f5f9',
-                                    color: isCurrent ? 'white' : isActive ? '#2563eb' : '#94a3b8',
-                                    transition: 'all 0.3s',
-                                    boxShadow: isCurrent ? '0 4px 12px rgba(37, 99, 235, 0.3)' : 'none'
-                                }}>
-                                    <StepIcon size={20} />
+                                    background: isCurrent ? 'var(--gradient-text)' : isActive ? 'var(--primary)' : 'white',
+                                    color: (isCurrent || isActive) ? 'white' : '#94a3b8',
+                                    border: (isCurrent || isActive) ? 'none' : '2px solid #f1f5f9',
+                                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                    boxShadow: isCurrent ? '0 8px 16px -4px rgba(249, 115, 22, 0.4)' : 'none',
+                                    cursor: 'pointer'
+                                }}
+                                    onClick={() => setCurrentStep(step.id)}
+                                >
+                                    <StepIcon size={20} strokeWidth={isCurrent ? 2.5 : 2} />
                                 </div>
                                 <span style={{
-                                    fontSize: '11px',
-                                    fontWeight: isCurrent ? '600' : '500',
-                                    color: isCurrent ? '#2563eb' : '#64748b',
-                                    display: 'none'
+                                    fontSize: '10px',
+                                    fontWeight: '700',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.05em',
+                                    color: isCurrent ? 'var(--accent)' : isActive ? 'var(--primary)' : '#94a3b8',
+                                    transition: 'all 0.3s',
+                                    textAlign: 'center'
                                 }}>
                                     {step.title}
                                 </span>
@@ -168,282 +203,301 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ onComplete, initia
                         );
                     })}
                 </div>
-                <div style={{
-                    height: '6px',
-                    background: '#e2e8f0',
-                    borderRadius: '999px',
-                    overflow: 'hidden'
+            </div>
+            <div style={{ textAlign: 'center' }}>
+                <span style={{
+                    fontSize: '14px',
+                    color: 'var(--text-muted)',
+                    fontWeight: '500',
+                    background: '#f8fafc',
+                    padding: '6px 16px',
+                    borderRadius: '50px',
+                    border: '1px solid #f1f5f9'
                 }}>
-                    <div style={{
-                        height: '100%',
-                        width: `${progress}% `,
-                        background: 'linear-gradient(90deg, #2563eb, #1d4ed8)',
-                        transition: 'width 0.4s ease',
-                        borderRadius: '999px'
-                    }} />
-                </div>
-                <div style={{ marginTop: '12px', textAlign: 'center', color: '#64748b', fontSize: '14px', fontWeight: '500' }}>
-                    Étape {currentStep} sur 8 — <span style={{ color: '#0f172a', fontWeight: '600' }}>{STEPS[currentStep - 1].title}</span>
-                </div>
+                    Étape <span style={{ color: 'var(--accent)', fontWeight: '800' }}>{currentStep}</span> sur 8 — {STEPS[currentStep - 1].title}
+                </span>
             </div>
 
             {/* Section Content */}
-            <div className="question-section" style={{
-                background: 'white',
-                borderRadius: '16px',
-                padding: '40px',
-                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-                minHeight: '500px'
-            }}>
-                {currentStep === 1 && <Section1Situation answers={answers} updateAnswer={updateAnswer} />}
-                {currentStep === 2 && <Section2Autonomie answers={answers} updateAnswer={updateAnswer} />}
-                {currentStep === 3 && <Section3Comportement answers={answers} updateAnswer={updateAnswer} />}
-                {currentStep === 4 && <Section4Communication answers={answers} updateAnswer={updateAnswer} />}
-                {currentStep === 5 && <Section5Scolarite answers={answers} updateAnswer={updateAnswer} toggleMultiSelect={toggleMultiSelect} />}
-                {currentStep === 6 && <Section6Soins answers={answers} updateAnswer={updateAnswer} />}
-                {currentStep === 7 && <Section7Famille answers={answers} updateAnswer={updateAnswer} />}
-                {currentStep === 8 && <Section8Demande answers={answers} updateAnswer={updateAnswer} toggleMultiSelect={toggleMultiSelect} />}
-            </div>
+            <motion.div
+                key={currentStep}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                className="question-section"
+                style={{
+                    background: 'white',
+                    borderRadius: 'var(--radius-lg)',
+                    padding: '48px',
+                    boxShadow: 'var(--shadow-lg)',
+                    border: '1px solid var(--border-subtle)',
+                    minHeight: '600px',
+                    position: 'relative',
+                    overflow: 'hidden'
+                }}
+            >
+                {/* Decorative Background Element */}
+                <div style={{
+                    position: 'absolute',
+                    top: '-100px',
+                    right: '-100px',
+                    width: '300px',
+                    height: '300px',
+                    background: 'radial-gradient(circle, rgba(249, 115, 22, 0.03) 0%, transparent 70%)',
+                    zIndex: 0
+                }} />
+
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                    {currentStep === 1 && <Section1Situation answers={answers} updateAnswer={updateAnswer} />}
+                    {currentStep === 2 && <Section2Autonomie answers={answers} updateAnswer={updateAnswer} />}
+                    {currentStep === 3 && <Section3Comportement answers={answers} updateAnswer={updateAnswer} />}
+                    {currentStep === 4 && <Section4Communication answers={answers} updateAnswer={updateAnswer} />}
+                    {currentStep === 5 && <Section5Scolarite answers={answers} updateAnswer={updateAnswer} toggleMultiSelect={toggleMultiSelect} />}
+                    {currentStep === 6 && <Section6Soins answers={answers} updateAnswer={updateAnswer} />}
+                    {currentStep === 7 && <Section7Famille answers={answers} updateAnswer={updateAnswer} />}
+                    {currentStep === 8 && <Section8Demande answers={answers} updateAnswer={updateAnswer} toggleMultiSelect={toggleMultiSelect} />}
+                </div>
+            </motion.div>
 
             {/* Navigation */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '30px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '40px' }}>
                 <button
                     onClick={prevStep}
                     disabled={currentStep === 1}
                     className="btn-outline"
-                    style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                    style={{
+                        display: 'flex', alignItems: 'center', gap: '8px',
+                        opacity: currentStep === 1 ? 0.3 : 1,
+                        padding: '16px 32px'
+                    }}
                 >
-                    <ChevronLeft size={20} />
+                    <ChevronLeft size={22} />
                     Précédent
                 </button>
                 <button
                     onClick={nextStep}
                     className="btn-primary"
-                    style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                    style={{
+                        display: 'flex', alignItems: 'center', gap: '12px',
+                        padding: '16px 40px',
+                        fontSize: '1.1rem'
+                    }}
                 >
                     {currentStep === 8 ? (
-                        <>Terminer <Check size={20} /></>
+                        <>Valider mon dossier <Check size={22} /></>
                     ) : (
-                        <>Suivant <ChevronRight size={20} /></>
+                        <>Suivant <ChevronRight size={22} /></>
                     )}
                 </button>
             </div>
-        </div>
+        </div >
     );
 };
 
 // Section Components
 const Section1Situation = ({ answers, updateAnswer }: any) => (
-    <div>
-        <h2 style={{ marginBottom: '24px', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '12px' }}><User size={28} style={{ color: '#2563eb' }} /> Situation Actuelle</h2>
-        <p style={{ color: '#64748b', marginBottom: '32px' }}>Commençons par quelques informations de base sur votre enfant.</p>
+    <div className="section-card">
+        <h2 className="step-header" style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '16px', justifyContent: 'center' }}>
+            <User size={32} style={{ color: 'var(--accent)' }} /> Situation Actuelle
+        </h2>
+        <p className="step-subtext">Commençons par quelques informations de base sur votre enfant.</p>
 
-        <div style={{ display: 'grid', gap: '24px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                <FormField label="Prénom de l'enfant" required>
-                    <input
-                        type="text"
-                        value={answers.firstName || ''}
-                        onChange={(e) => updateAnswer('firstName', e.target.value)}
-                        placeholder="Timéo"
-                        className="input-field"
-                    />
-                </FormField>
-                <FormField label="Nom de famille" required>
-                    <input
-                        type="text"
-                        value={answers.lastName || ''}
-                        onChange={(e) => updateAnswer('lastName', e.target.value)}
-                        placeholder="Martin"
-                        className="input-field"
-                    />
-                </FormField>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                <FormField label="Date de naissance" required>
-                    <input
-                        type="date"
-                        value={answers.birthDate || ''}
-                        onChange={(e) => updateAnswer('birthDate', e.target.value)}
-                        className="input-field"
-                    />
-                </FormField>
-                <FormField label="Classe actuelle">
-                    <select
-                        value={answers.currentGrade || ''}
-                        onChange={(e) => updateAnswer('currentGrade', e.target.value)}
-                        className="input-field"
-                    >
-                        <option value="">Sélectionner...</option>
-                        <option value="PS">PS (Petite Section)</option>
-                        <option value="MS">MS (Moyenne Section)</option>
-                        <option value="GS">GS (Grande Section)</option>
-                        <option value="CP">CP</option>
-                        <option value="CE1">CE1</option>
-                        <option value="CE2">CE2</option>
-                        <option value="CM1">CM1</option>
-                        <option value="CM2">CM2</option>
-                        <option value="6eme">6ème</option>
-                        <option value="5eme">5ème</option>
-                        <option value="4eme">4ème</option>
-                        <option value="3eme">3ème</option>
-                        <option value="autre">Autre</option>
-                    </select>
-                </FormField>
-            </div>
-
-            <FormField label="Type d'établissement">
-                <RadioGroup
-                    name="schoolType"
-                    options={[
-                        { value: 'publique', label: 'École publique' },
-                        { value: 'privée', label: 'École privée' },
-                        { value: 'spécialisée', label: 'Établissement spécialisé' }
-                    ]}
-                    selected={answers.schoolType}
-                    onChange={(value: any) => updateAnswer('schoolType', value)}
+        <div className="form-grid-2col">
+            <FormField label="Prénom de l'enfant" required>
+                <input
+                    type="text"
+                    value={answers.firstName || ''}
+                    onChange={(e) => updateAnswer('firstName', e.target.value)}
+                    placeholder="Timéo"
+                    className="modal-input"
                 />
             </FormField>
+            <FormField label="Nom de famille" required>
+                <input
+                    type="text"
+                    value={answers.lastName || ''}
+                    onChange={(e) => updateAnswer('lastName', e.target.value)}
+                    placeholder="Martin"
+                    className="modal-input"
+                />
+            </FormField>
+        </div>
 
+        <div className="form-grid-2col">
+            <FormField label="Date de naissance" required>
+                <input
+                    type="date"
+                    value={answers.birthDate || ''}
+                    onChange={(e) => updateAnswer('birthDate', e.target.value)}
+                    className="modal-input"
+                />
+            </FormField>
+            <FormField label="Classe actuelle">
+                <select
+                    value={answers.currentGrade || ''}
+                    onChange={(e) => updateAnswer('currentGrade', e.target.value)}
+                    className="modal-input"
+                >
+                    <option value="">Sélectionner...</option>
+                    <option value="PS">PS (Petite Section)</option>
+                    <option value="MS">MS (Moyenne Section)</option>
+                    <option value="GS">GS (Grande Section)</option>
+                    <option value="CP">CP</option>
+                    <option value="CE1">CE1</option>
+                    <option value="CE2">CE2</option>
+                    <option value="CM1">CM1</option>
+                    <option value="CM2">CM2</option>
+                    <option value="6eme">6ème</option>
+                    <option value="5eme">5ème</option>
+                    <option value="4eme">4ème</option>
+                    <option value="3eme">3ème</option>
+                    <option value="autre">Autre</option>
+                </select>
+            </FormField>
+        </div>
+
+        <FormField label="Type d'établissement">
+            <RadioGroup
+                options={[
+                    { label: 'École Publique', value: 'publique' },
+                    { label: 'École Privée', value: 'privée' },
+                    { label: 'Établissement Spécialisé', value: 'spécialisée' }
+                ]}
+                selected={answers.schoolType}
+                onChange={(val: any) => updateAnswer('schoolType', val)}
+            />
+        </FormField>
+
+        <div className="form-grid-2col">
             <FormField label="Diagnostic principal" required>
                 <input
                     type="text"
                     value={answers.diagnosis || ''}
                     onChange={(e) => updateAnswer('diagnosis', e.target.value)}
-                    placeholder="Ex: TSA, TDAH, Trisomie 21..."
-                    className="input-field"
+                    placeholder="Ex: Autisme (TSA), TDAH..."
+                    className="modal-input"
                 />
             </FormField>
-
             <FormField label="Date du diagnostic">
                 <input
-                    type="month"
+                    type="date"
                     value={answers.diagnosisDate || ''}
                     onChange={(e) => updateAnswer('diagnosisDate', e.target.value)}
-                    className="input-field"
+                    className="modal-input"
                 />
             </FormField>
-
-            <FormField label="Type de demande">
-                <RadioGroup
-                    name="isRenewal"
-                    options={[
-                        { value: true, label: 'Renouvellement' },
-                        { value: false, label: 'Première demande' }
-                    ]}
-                    selected={answers.isRenewal}
-                    onChange={(value: any) => updateAnswer('isRenewal', value)}
-                />
-            </FormField>
-
-            <FormField label="Votre enfant a-t-il un AESH actuellement ?">
-                <RadioGroup
-                    name="hasAesh"
-                    options={[
-                        { value: true, label: 'Oui' },
-                        { value: false, label: 'Non' }
-                    ]}
-                    selected={answers.hasAesh}
-                    onChange={(value: any) => updateAnswer('hasAesh', value)}
-                />
-            </FormField>
-
-            {answers.hasAesh && (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', paddingLeft: '24px' }}>
-                    <FormField label="Nombre d'heures par semaine">
-                        <input
-                            type="text"
-                            value={answers.aeshHours || ''}
-                            onChange={(e) => updateAnswer('aeshHours', e.target.value)}
-                            placeholder="12h"
-                            className="input-field"
-                        />
-                    </FormField>
-                    <FormField label="Type d'AESH">
-                        <RadioGroup
-                            name="aeshType"
-                            options={[
-                                { value: 'individuel', label: 'Individuel' },
-                                { value: 'mutualisé', label: 'Mutualisé' }
-                            ]}
-                            selected={answers.aeshType}
-                            onChange={(value: any) => updateAnswer('aeshType', value)}
-                        />
-                    </FormField>
-                </div>
-            )}
         </div>
+
+        <FormField label="S'agit-il d'un renouvellement ?">
+            <RadioGroup
+                options={[
+                    { label: 'Oui, c\'est un renouvellement', value: true },
+                    { label: 'Non, c\'est une première demande', value: false }
+                ]}
+                selected={answers.isRenewal}
+                onChange={(val: any) => updateAnswer('isRenewal', val)}
+            />
+        </FormField>
+
+        <FormField label="Votre enfant a-t-il un AESH actuellement ?">
+            <RadioGroup
+                options={[
+                    { label: 'Oui', value: true },
+                    { label: 'Non', value: false }
+                ]}
+                selected={answers.hasAesh}
+                onChange={(val: any) => updateAnswer('hasAesh', val)}
+            />
+        </FormField>
+
+        {answers.hasAesh && (
+            <div className="form-grid-2col nested-form-grid">
+                <FormField label="Nombre d'heures par semaine">
+                    <input
+                        type="text"
+                        value={answers.aeshHours || ''}
+                        onChange={(e) => updateAnswer('aeshHours', e.target.value)}
+                        placeholder="12h"
+                        className="modal-input"
+                    />
+                </FormField>
+                <FormField label="Type d'AESH">
+                    <RadioGroup
+                        options={[
+                            { label: 'Individuel', value: 'individuel' },
+                            { label: 'Mutualisé', value: 'mutualisé' }
+                        ]}
+                        selected={answers.aeshType}
+                        onChange={(val: any) => updateAnswer('aeshType', val)}
+                    />
+                </FormField>
+            </div>
+        )}
     </div>
 );
 
 const Section2Autonomie = ({ answers, updateAnswer }: any) => (
-    <div>
-        <h2 style={{ marginBottom: '24px', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '12px' }}><Target size={28} style={{ color: '#2563eb' }} /> Autonomie au Quotidien</h2>
-        <p style={{ color: '#64748b', marginBottom: '32px' }}>Comment votre enfant se débrouille-t-il pour les actes de la vie quotidienne ?</p>
+    <div className="section-card">
+        <h2 className="step-header" style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '16px', justifyContent: 'center' }}><Target size={32} style={{ color: 'var(--accent)' }} /> Autonomie au Quotidien</h2>
+        <p className="step-subtext">Comment votre enfant se débrouille-t-il pour les actes de la vie quotidienne ?</p>
 
-        <div style={{ display: 'grid', gap: '28px' }}>
+        <div className="form-grid-1col">
             <FormField label="S'habille seul le matin ?">
                 <RadioGroup
-                    name="dressing"
                     options={[
-                        { value: 'seul', label: 'Oui, seul' },
-                        { value: 'aide_partielle', label: 'Avec aide partielle' },
-                        { value: 'aide_complete', label: 'Non, aide complète nécessaire' }
+                        { label: 'Oui, seul', value: 'seul' },
+                        { label: 'Avec aide partielle', value: 'aide_partielle' },
+                        { label: 'Non, aide complète nécessaire', value: 'aide_complete' }
                     ]}
                     selected={answers.dressing}
-                    onChange={(value: any) => updateAnswer('dressing', value)}
+                    onChange={(val: any) => updateAnswer('dressing', val)}
                 />
             </FormField>
 
             <FormField label="Se lave seul ?">
                 <RadioGroup
-                    name="bathing"
                     options={[
-                        { value: 'seul', label: 'Oui, seul' },
-                        { value: 'aide_partielle', label: 'Avec supervision' },
-                        { value: 'aide_complete', label: 'Non, aide complète nécessaire' }
+                        { label: 'Oui, seul', value: 'seul' },
+                        { label: 'Avec supervision', value: 'aide_partielle' },
+                        { label: 'Non, aide complète nécessaire', value: 'aide_complete' }
                     ]}
                     selected={answers.bathing}
-                    onChange={(value: any) => updateAnswer('bathing', value)}
+                    onChange={(val: any) => updateAnswer('bathing', val)}
                 />
             </FormField>
 
             <FormField label="Va aux toilettes seul ?">
                 <RadioGroup
-                    name="toileting"
                     options={[
-                        { value: 'seul', label: 'Oui, complètement autonome' },
-                        { value: 'rappels', label: 'Oui, mais besoin de rappels fréquents' },
-                        { value: 'aide_complete', label: 'Non, aide nécessaire' }
+                        { label: 'Oui, complètement autonome', value: 'seul' },
+                        { label: 'Oui, mais besoin de rappels fréquents', value: 'rappels' },
+                        { label: 'Non, aide nécessaire', value: 'aide_complete' }
                     ]}
                     selected={answers.toileting}
-                    onChange={(value: any) => updateAnswer('toileting', value)}
+                    onChange={(val: any) => updateAnswer('toileting', val)}
                 />
             </FormField>
 
             <FormField label="Mange seul ?">
                 <RadioGroup
-                    name="eating"
                     options={[
-                        { value: 'seul', label: 'Oui, sans difficulté' },
-                        { value: 'selectivite', label: 'Oui, mais sélectivité alimentaire / textures limitées' },
-                        { value: 'aide_complete', label: 'Non, aide nécessaire' }
+                        { label: 'Oui, sans difficulté', value: 'seul' },
+                        { label: 'Oui, mais sélectivité alimentaire / textures limitées', value: 'selectivite' },
+                        { label: 'Non, aide nécessaire', value: 'aide_complete' }
                     ]}
                     selected={answers.eating}
-                    onChange={(value: any) => updateAnswer('eating', value)}
+                    onChange={(val: any) => updateAnswer('eating', val)}
                 />
             </FormField>
 
             <FormField label="Peut rester seul à la maison ?">
                 <RadioGroup
-                    name="canStayAlone"
                     options={[
-                        { value: true, label: 'Oui' },
-                        { value: false, label: 'Non, surveillance constante nécessaire' }
+                        { label: 'Oui', value: true },
+                        { label: 'Non, surveillance constante nécessaire', value: false }
                     ]}
                     selected={answers.canStayAlone}
-                    onChange={(value: any) => updateAnswer('canStayAlone', value)}
+                    onChange={(val: any) => updateAnswer('canStayAlone', val)}
                 />
             </FormField>
 
@@ -452,7 +506,7 @@ const Section2Autonomie = ({ answers, updateAnswer }: any) => (
                     value={answers.autonomyNotes || ''}
                     onChange={(e) => updateAnswer('autonomyNotes', e.target.value)}
                     placeholder="Ex: Il ne sait pas lacer ses chaussures, je dois choisir ses vêtements sinon il met la même chose 5 jours de suite..."
-                    className="input-field"
+                    className="modal-input"
                     rows={4}
                     style={{ resize: 'vertical' }}
                 />
@@ -462,20 +516,19 @@ const Section2Autonomie = ({ answers, updateAnswer }: any) => (
 );
 
 const Section3Comportement = ({ answers, updateAnswer }: any) => (
-    <div>
-        <h2 style={{ marginBottom: '24px', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '12px' }}><Brain size={28} style={{ color: '#2563eb' }} /> Comportement</h2>
-        <p style={{ color: '#64748b', marginBottom: '32px' }}>Parlons des aspects comportementaux et émotionnels.</p>
+    <div className="section-card">
+        <h2 className="step-header" style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '16px', justifyContent: 'center' }}><Brain size={32} style={{ color: 'var(--accent)' }} /> Comportement</h2>
+        <p className="step-subtext">Parlons des aspects comportementaux et émotionnels.</p>
 
-        <div style={{ display: 'grid', gap: '28px' }}>
+        <div className="form-grid-1col">
             <FormField label="Votre enfant fait-il des crises lors de changements de programme ou de routine ?">
                 <RadioGroup
-                    name="hasCrises"
                     options={[
-                        { value: true, label: 'Oui' },
-                        { value: false, label: 'Non' }
+                        { label: 'Oui', value: true },
+                        { label: 'Non', value: false }
                     ]}
                     selected={answers.hasCrises}
-                    onChange={(value: any) => updateAnswer('hasCrises', value)}
+                    onChange={(val: any) => updateAnswer('hasCrises', val)}
                 />
             </FormField>
 
@@ -483,28 +536,26 @@ const Section3Comportement = ({ answers, updateAnswer }: any) => (
                 <>
                     <FormField label="À quelle fréquence ?">
                         <RadioGroup
-                            name="crisisFrequency"
                             options={[
-                                { value: 'quotidiennes', label: 'Tous les jours ou presque' },
-                                { value: 'hebdomadaires', label: 'Plusieurs fois par semaine' },
-                                { value: 'mensuelles', label: 'Quelques fois par mois' }
+                                { label: 'Tous les jours ou presque', value: 'quotidiennes' },
+                                { label: 'Plusieurs fois par semaine', value: 'hebdomadaires' },
+                                { label: 'Quelques fois par mois', value: 'mensuelles' }
                             ]}
                             selected={answers.crisisFrequency}
-                            onChange={(value: any) => updateAnswer('crisisFrequency', value)}
+                            onChange={(val: any) => updateAnswer('crisisFrequency', val)}
                         />
                     </FormField>
 
                     <FormField label="Durée moyenne d'une crise ?">
                         <RadioGroup
-                            name="crisisDuration"
                             options={[
-                                { value: '0-15min', label: 'Moins de 15 minutes' },
-                                { value: '15-30min', label: '15 à 30 minutes' },
-                                { value: '30-60min', label: '30 à 60 minutes' },
-                                { value: 'plus_1h', label: 'Plus d\'1 heure' }
+                                { label: 'Moins de 15 minutes', value: '0-15min' },
+                                { label: '15 à 30 minutes', value: '15-30min' },
+                                { label: '30 à 60 minutes', value: '30-60min' },
+                                { label: 'Plus d\'1 heure', value: 'plus_1h' }
                             ]}
                             selected={answers.crisisDuration}
-                            onChange={(value: any) => updateAnswer('crisisDuration', value)}
+                            onChange={(val: any) => updateAnswer('crisisDuration', val)}
                         />
                     </FormField>
                 </>
@@ -512,27 +563,25 @@ const Section3Comportement = ({ answers, updateAnswer }: any) => (
 
             <FormField label="Gestion des émotions ?">
                 <RadioGroup
-                    name="emotionRegulation"
                     options={[
-                        { value: 'bonne', label: 'Bonne' },
-                        { value: 'moyenne', label: 'Moyenne' },
-                        { value: 'difficile', label: 'Difficile' },
-                        { value: 'tres_difficile', label: 'Très difficile' }
+                        { label: 'Bonne', value: 'bonne' },
+                        { label: 'Moyenne', value: 'moyenne' },
+                        { label: 'Difficile', value: 'difficile' },
+                        { label: 'Très difficile', value: 'tres_difficile' }
                     ]}
                     selected={answers.emotionRegulation}
-                    onChange={(value: any) => updateAnswer('emotionRegulation', value)}
+                    onChange={(val: any) => updateAnswer('emotionRegulation', val)}
                 />
             </FormField>
 
             <FormField label="Rigidités / Routines fortes ?">
                 <RadioGroup
-                    name="hasRigidities"
                     options={[
-                        { value: true, label: 'Oui, quotidiennes' },
-                        { value: false, label: 'Non ou occasionnelles' }
+                        { label: 'Oui, quotidiennes', value: true },
+                        { label: 'Non ou occasionnelles', value: false }
                     ]}
                     selected={answers.hasRigidities}
-                    onChange={(value: any) => updateAnswer('hasRigidities', value)}
+                    onChange={(val: any) => updateAnswer('hasRigidities', val)}
                 />
             </FormField>
 
@@ -541,7 +590,7 @@ const Section3Comportement = ({ answers, updateAnswer }: any) => (
                     value={answers.behaviorExample || ''}
                     onChange={(e) => updateAnswer('behaviorExample', e.target.value)}
                     placeholder="Ex: La semaine dernière on a dû changer de route pour aller à l'école à cause de travaux. Il a hurlé 40 minutes dans la voiture..."
-                    className="input-field"
+                    className="modal-input"
                     rows={4}
                     style={{ resize: 'vertical' }}
                 />
@@ -551,62 +600,58 @@ const Section3Comportement = ({ answers, updateAnswer }: any) => (
 );
 
 const Section4Communication = ({ answers, updateAnswer }: any) => (
-    <div>
-        <h2 style={{ marginBottom: '24px', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '12px' }}><MessageCircle size={28} style={{ color: '#2563eb' }} /> Communication</h2>
-        <p style={{ color: '#64748b', marginBottom: '32px' }}>Comment votre enfant communique-t-il et interagit-il avec les autres ?</p>
+    <div className="section-card">
+        <h2 className="step-header" style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '16px', justifyContent: 'center' }}><MessageCircle size={32} style={{ color: 'var(--accent)' }} /> Communication</h2>
+        <p className="step-subtext">Comment votre enfant communique-t-il et interagit-il avec les autres ?</p>
 
-        <div style={{ display: 'grid', gap: '28px' }}>
+        <div className="form-grid-1col">
             <FormField label="Expression orale ?">
                 <RadioGroup
-                    name="oralExpression"
                     options={[
-                        { value: 'fluide', label: 'Fluide et variée' },
-                        { value: 'phrases_simples', label: 'Phrases simples, vocabulaire limité' },
-                        { value: 'mots_isoles', label: 'Mots isolés uniquement' },
-                        { value: 'non_verbal', label: 'Non verbal' }
+                        { label: 'Fluide et variée', value: 'fluide' },
+                        { label: 'Phrases simples, vocabulaire limité', value: 'phrases_simples' },
+                        { label: 'Mots isolés uniquement', value: 'mots_isoles' },
+                        { label: 'Non verbal', value: 'non_verbal' }
                     ]}
                     selected={answers.oralExpression}
-                    onChange={(value: any) => updateAnswer('oralExpression', value)}
+                    onChange={(val: any) => updateAnswer('oralExpression', val)}
                 />
             </FormField>
 
             <FormField label="Compréhension des consignes ?">
                 <RadioGroup
-                    name="comprehension"
                     options={[
-                        { value: 'bonne', label: 'Bonne compréhension' },
-                        { value: 'reformulation', label: 'Difficile, besoin de reformulation' },
-                        { value: 'difficile', label: 'Très difficile' }
+                        { label: 'Bonne compréhension', value: 'bonne' },
+                        { label: 'Difficile, besoin de reformulation', value: 'reformulation' },
+                        { label: 'Très difficile', value: 'difficile' }
                     ]}
                     selected={answers.comprehension}
-                    onChange={(value: any) => updateAnswer('comprehension', value)}
+                    onChange={(val: any) => updateAnswer('comprehension', val)}
                 />
             </FormField>
 
             <FormField label="Interactions avec les autres enfants ?">
                 <RadioGroup
-                    name="peerInteractions"
                     options={[
-                        { value: 'aisees', label: 'Aisées, a des amis' },
-                        { value: 'limitees', label: 'Limitées' },
-                        { value: 'tres_limitees', label: 'Très limitées' },
-                        { value: 'absentes', label: 'Absentes' }
+                        { label: 'Aisées, a des amis', value: 'aisees' },
+                        { label: 'Limitées', value: 'limitees' },
+                        { label: 'Très limitées', value: 'tres_limitees' },
+                        { label: 'Absentes', value: 'absentes' }
                     ]}
                     selected={answers.peerInteractions}
-                    onChange={(value: any) => updateAnswer('peerInteractions', value)}
+                    onChange={(val: any) => updateAnswer('peerInteractions', val)}
                 />
             </FormField>
 
             <FormField label="Contact visuel ?">
                 <RadioGroup
-                    name="eyeContact"
                     options={[
-                        { value: 'present', label: 'Présent' },
-                        { value: 'variable', label: 'Variable' },
-                        { value: 'fuyant', label: 'Fuyant' }
+                        { label: 'Présent', value: 'present' },
+                        { label: 'Variable', value: 'variable' },
+                        { label: 'Fuyant', value: 'fuyant' }
                     ]}
                     selected={answers.eyeContact}
-                    onChange={(value: any) => updateAnswer('eyeContact', value)}
+                    onChange={(val: any) => updateAnswer('eyeContact', val)}
                 />
             </FormField>
         </div>
@@ -614,20 +659,20 @@ const Section4Communication = ({ answers, updateAnswer }: any) => (
 );
 
 const Section5Scolarite = ({ answers, updateAnswer, toggleMultiSelect }: any) => (
-    <div>
-        <h2 style={{ marginBottom: '24px', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '12px' }}><GraduationCap size={28} style={{ color: '#2563eb' }} /> Scolarité</h2>
-        <p style={{ color: '#64748b', marginBottom: '32px' }}>Parlons de la vie scolaire de votre enfant.</p>
+    <div className="section-card">
+        <h2 className="step-header" style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '16px', justifyContent: 'center' }}><GraduationCap size={32} style={{ color: 'var(--accent)' }} /> Scolarité</h2>
+        <p className="step-subtext">Parlons de la vie scolaire de votre enfant.</p>
 
-        <div style={{ display: 'grid', gap: '28px' }}>
+        <div className="form-grid-1col">
             <FormField label="Principales difficultés en classe ? (plusieurs choix possibles)">
                 <CheckboxGroup
                     options={[
-                        { value: 'concentration', label: 'Concentration / Attention' },
-                        { value: 'bruit', label: 'Hypersensibilité au bruit' },
-                        { value: 'consignes', label: 'Compréhension des consignes' },
-                        { value: 'interactions', label: 'Interactions sociales' },
-                        { value: 'ecriture', label: 'Écriture / Graphisme' },
-                        { value: 'lecture', label: 'Lecture' }
+                        { label: 'Concentration / Attention', value: 'concentration' },
+                        { label: 'Hypersensibilité au bruit', value: 'bruit' },
+                        { label: 'Compréhension des consignes', value: 'consignes' },
+                        { label: 'Interactions sociales', value: 'interactions' },
+                        { label: 'Écriture / Graphisme', value: 'ecriture' },
+                        { label: 'Lecture', value: 'lecture' }
                     ]}
                     selected={answers.schoolDifficulties || []}
                     onToggle={(value: any) => toggleMultiSelect('schoolDifficulties', value)}
@@ -637,11 +682,11 @@ const Section5Scolarite = ({ answers, updateAnswer, toggleMultiSelect }: any) =>
             <FormField label="Aménagements déjà en place ? (plusieurs choix possibles)">
                 <CheckboxGroup
                     options={[
-                        { value: 'tiers_temps', label: 'Tiers-temps aux évaluations' },
-                        { value: 'place_isolee', label: 'Place isolée / au fond' },
-                        { value: 'supports_adaptes', label: 'Supports pédagogiques adaptés' },
-                        { value: 'pause', label: 'Possibilité de faire des pauses' },
-                        { value: 'aucun', label: 'Aucun pour le moment' }
+                        { label: 'Tiers-temps aux évaluations', value: 'tiers_temps' },
+                        { label: 'Place isolée / au fond', value: 'place_isolee' },
+                        { label: 'Supports pédagogiques adaptés', value: 'supports_adaptes' },
+                        { label: 'Possibilité de faire des pauses', value: 'pause' },
+                        { label: 'Aucun pour le moment', value: 'aucun' }
                     ]}
                     selected={answers.currentAccommodations || []}
                     onToggle={(value: any) => toggleMultiSelect('currentAccommodations', value)}
@@ -650,23 +695,22 @@ const Section5Scolarite = ({ answers, updateAnswer, toggleMultiSelect }: any) =>
 
             <FormField label="L'accompagnement AESH actuel est-il suffisant ?">
                 <RadioGroup
-                    name="aeshSufficient"
                     options={[
-                        { value: true, label: 'Oui, adapté' },
-                        { value: false, label: 'Non, insuffisant' }
+                        { label: 'Oui, adapté', value: true },
+                        { label: 'Non, insuffisant', value: false }
                     ]}
                     selected={answers.aeshSufficient}
-                    onChange={(value: any) => updateAnswer('aeshSufficient', value)}
+                    onChange={(val: any) => updateAnswer('aeshSufficient', val)}
                 />
             </FormField>
 
             <FormField label="Que souhaitez-vous demander ?">
                 <CheckboxGroup
                     options={[
-                        { value: 'plus_heures_aesh', label: 'Plus d\'heures AESH' },
-                        { value: 'aesh_individuel', label: 'Passage à un AESH individuel' },
-                        { value: 'amenagements_sup', label: 'Aménagements pédagogiques supplémentaires' },
-                        { value: 'materiel', label: 'Matériel pédagogique adapté' }
+                        { label: 'Plus d\'heures AESH', value: 'plus_heures_aesh' },
+                        { label: 'Passage à un AESH individuel', value: 'aesh_individuel' },
+                        { label: 'Aménagements pédagogiques supplémentaires', value: 'amenagements_sup' },
+                        { label: 'Matériel pédagogique adapté', value: 'materiel' }
                     ]}
                     selected={answers.requestedSupport || []}
                     onToggle={(value: any) => toggleMultiSelect('requestedSupport', value)}
@@ -678,7 +722,7 @@ const Section5Scolarite = ({ answers, updateAnswer, toggleMultiSelect }: any) =>
                     value={answers.schoolContext || ''}
                     onChange={(e) => updateAnswer('schoolContext', e.target.value)}
                     placeholder="Ex: La maîtresse fait ce qu'elle peut mais elle a 28 élèves. Timéo décroche au bout de 20 min. Il fugue parfois dans le couloir..."
-                    className="input-field"
+                    className="modal-input"
                     rows={4}
                     style={{ resize: 'vertical' }}
                 />
@@ -698,64 +742,62 @@ const Section6Soins = ({ answers, updateAnswer }: any) => {
     };
 
     return (
-        <div>
-            <h2 style={{ marginBottom: '24px', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '12px' }}><Stethoscope size={28} style={{ color: '#2563eb' }} /> Soins et Thérapies</h2>
-            <p style={{ color: '#64748b', marginBottom: '32px' }}>Quels sont les professionnels qui accompagnent votre enfant ?</p>
+        <div className="section-card">
+            <h2 className="step-header" style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '16px', justifyContent: 'center' }}><Stethoscope size={32} style={{ color: 'var(--accent)' }} /> Soins et Thérapies</h2>
+            <p className="step-subtext">Quels sont les professionnels qui accompagnent votre enfant ?</p>
 
-            <div style={{ display: 'grid', gap: '32px' }}>
+            <div className="form-grid-1col">
                 {/* Orthophoniste */}
-                <div style={{ padding: '20px', background: '#f8fafc', borderRadius: '12px' }}>
+                <div className="sub-section-card">
                     <FormField label="Orthophoniste">
                         <RadioGroup
-                            name="orthophonist"
                             options={[
-                                { value: true, label: 'Oui' },
-                                { value: false, label: 'Non' }
+                                { label: 'Oui', value: true },
+                                { label: 'Non', value: false }
                             ]}
                             selected={answers.orthophonist}
-                            onChange={(value: any) => updateAnswer('orthophonist', value)}
+                            onChange={(val: any) => updateAnswer('orthophonist', val)}
                         />
                     </FormField>
                     {answers.orthophonist && (
-                        <div style={{ marginTop: '16px' }}>
+                        <div className="nested-form-grid">
                             <FormField label="Fréquence">
                                 <input
                                     type="text"
                                     value={answers.orthophonistFreq || ''}
                                     onChange={(e) => updateAnswer('orthophonistFreq', e.target.value)}
                                     placeholder="Ex: 2x/semaine"
-                                    className="input-field"
+                                    className="modal-input"
                                 />
                             </FormField>
-                            <p style={{ fontSize: '12px', color: '#64748b', marginTop: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                <Heart size={14} style={{ color: '#10b981' }} /> Généralement remboursé par la Sécurité Sociale
+                            <p className="info-text">
+                                <Heart size={14} style={{ color: 'var(--success)' }} /> Généralement remboursé par la Sécurité Sociale
                             </p>
                         </div>
                     )}
                 </div>
 
                 {/* Psychomotricien */}
-                <div style={{ padding: '20px', background: '#f8fafc', borderRadius: '12px' }}>
+                <div className="sub-section-card">
                     <FormField label="Psychomotricien">
                         <RadioGroup
-                            name="psychomotrician"
                             options={[
-                                { value: true, label: 'Oui' },
-                                { value: false, label: 'Non' }
+                                { label: 'Oui', value: true },
+                                { label: 'Non', value: false }
                             ]}
                             selected={answers.psychomotrician}
-                            onChange={(value: any) => updateAnswer('psychomotrician', value)}
+                            onChange={(val: any) => updateAnswer('psychomotrician', val)}
                         />
                     </FormField>
                     {answers.psychomotrician && (
-                        <div style={{ marginTop: '16px' }}>
+                        <div className="nested-form-grid">
                             <FormField label="Coût mensuel (€)">
                                 <input
                                     type="number"
                                     value={answers.psychomotricianCost || ''}
                                     onChange={(e) => updateAnswer('psychomotricianCost', e.target.value)}
                                     placeholder="180"
-                                    className="input-field"
+                                    className="modal-input"
                                 />
                             </FormField>
                         </div>
@@ -763,27 +805,26 @@ const Section6Soins = ({ answers, updateAnswer }: any) => {
                 </div>
 
                 {/* Psychologue */}
-                <div style={{ padding: '20px', background: '#f8fafc', borderRadius: '12px' }}>
+                <div className="sub-section-card">
                     <FormField label="Psychologue">
                         <RadioGroup
-                            name="psychologist"
                             options={[
-                                { value: true, label: 'Oui' },
-                                { value: false, label: 'Non' }
+                                { label: 'Oui', value: true },
+                                { label: 'Non', value: false }
                             ]}
                             selected={answers.psychologist}
-                            onChange={(value: any) => updateAnswer('psychologist', value)}
+                            onChange={(val: any) => updateAnswer('psychologist', val)}
                         />
                     </FormField>
                     {answers.psychologist && (
-                        <div style={{ marginTop: '16px' }}>
+                        <div className="nested-form-grid">
                             <FormField label="Coût mensuel (€)">
                                 <input
                                     type="number"
                                     value={answers.psychologistCost || ''}
                                     onChange={(e) => updateAnswer('psychologistCost', e.target.value)}
                                     placeholder="100"
-                                    className="input-field"
+                                    className="modal-input"
                                 />
                             </FormField>
                         </div>
@@ -791,27 +832,26 @@ const Section6Soins = ({ answers, updateAnswer }: any) => {
                 </div>
 
                 {/* Ergothérapeute */}
-                <div style={{ padding: '20px', background: '#f8fafc', borderRadius: '12px' }}>
+                <div className="sub-section-card">
                     <FormField label="Ergothérapeute">
                         <RadioGroup
-                            name="ergotherapist"
                             options={[
-                                { value: true, label: 'Oui' },
-                                { value: false, label: 'Non' }
+                                { label: 'Oui', value: true },
+                                { label: 'Non', value: false }
                             ]}
                             selected={answers.ergotherapist}
-                            onChange={(value: any) => updateAnswer('ergotherapist', value)}
+                            onChange={(val: any) => updateAnswer('ergotherapist', val)}
                         />
                     </FormField>
                     {answers.ergotherapist && (
-                        <div style={{ marginTop: '16px' }}>
+                        <div className="nested-form-grid">
                             <FormField label="Coût mensuel (€)">
                                 <input
                                     type="number"
                                     value={answers.ergotherapistCost || ''}
                                     onChange={(e) => updateAnswer('ergotherapistCost', e.target.value)}
                                     placeholder="60"
-                                    className="input-field"
+                                    className="modal-input"
                                 />
                             </FormField>
                         </div>
@@ -819,27 +859,26 @@ const Section6Soins = ({ answers, updateAnswer }: any) => {
                 </div>
 
                 {/* Éducateur spécialisé */}
-                <div style={{ padding: '20px', background: '#f8fafc', borderRadius: '12px' }}>
+                <div className="sub-section-card">
                     <FormField label="Éducateur spécialisé">
                         <RadioGroup
-                            name="specializedEducator"
                             options={[
-                                { value: true, label: 'Oui' },
-                                { value: false, label: 'Non' }
+                                { label: 'Oui', value: true },
+                                { label: 'Non', value: false }
                             ]}
                             selected={answers.specializedEducator}
-                            onChange={(value: any) => updateAnswer('specializedEducator', value)}
+                            onChange={(val: any) => updateAnswer('specializedEducator', val)}
                         />
                     </FormField>
                     {answers.specializedEducator && (
-                        <div style={{ marginTop: '16px' }}>
+                        <div className="nested-form-grid">
                             <FormField label="Coût mensuel (€)">
                                 <input
                                     type="number"
                                     value={answers.educatorCost || ''}
                                     onChange={(e) => updateAnswer('educatorCost', e.target.value)}
                                     placeholder="150"
-                                    className="input-field"
+                                    className="modal-input"
                                 />
                             </FormField>
                         </div>
@@ -847,15 +886,10 @@ const Section6Soins = ({ answers, updateAnswer }: any) => {
                 </div>
 
                 {/* Total */}
-                <div style={{
-                    padding: '20px',
-                    background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)',
-                    borderRadius: '12px',
-                    border: '2px solid #2563eb'
-                }}>
+                <div className="total-cost-card">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span style={{ fontWeight: 'bold', fontSize: '16px' }}>Reste à charge mensuel total :</span>
-                        <span style={{ fontWeight: 'bold', fontSize: '24px', color: '#1d4ed8' }}>
+                        <span style={{ fontWeight: 'bold', fontSize: '24px', color: 'var(--primary)' }}>
                             {calculateTotalCost()}€
                         </span>
                     </div>
@@ -866,78 +900,73 @@ const Section6Soins = ({ answers, updateAnswer }: any) => {
 };
 
 const Section7Famille = ({ answers, updateAnswer }: any) => (
-    <div>
-        <h2 style={{ marginBottom: '24px', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '12px' }}><Home size={28} style={{ color: '#2563eb' }} /> Retentissement Familial</h2>
-        <p style={{ color: '#64748b', marginBottom: '32px' }}>Comment le handicap impacte-t-il votre vie quotidienne et celle de votre famille ?</p>
+    <div className="section-card">
+        <h2 className="step-header" style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '16px', justifyContent: 'center' }}><Home size={32} style={{ color: 'var(--accent)' }} /> Retentissement Familial</h2>
+        <p className="step-subtext">Comment le handicap impacte-t-il votre vie quotidienne et celle de votre famille ?</p>
 
-        <div style={{ display: 'grid', gap: '28px' }}>
+        <div className="form-grid-1col">
             <FormField label="Comment dort votre enfant ?">
                 <RadioGroup
-                    name="childSleep"
                     options={[
-                        { value: 'bon', label: 'Bon sommeil' },
-                        { value: 'reveils_occasionnels', label: 'Réveils occasionnels' },
-                        { value: 'reveils_frequents', label: 'Réveils fréquents' },
-                        { value: 'tres_perturbe', label: 'Très perturbé' }
+                        { label: 'Bon sommeil', value: 'bon' },
+                        { label: 'Réveils occasionnels', value: 'reveils_occasionnels' },
+                        { label: 'Réveils fréquents', value: 'reveils_frequents' },
+                        { label: 'Très perturbé', value: 'tres_perturbe' }
                     ]}
                     selected={answers.childSleep}
-                    onChange={(value: any) => updateAnswer('childSleep', value)}
+                    onChange={(val: any) => updateAnswer('childSleep', val)}
                 />
             </FormField>
 
             <FormField label="Et vous, comment dormez-vous ?">
                 <RadioGroup
-                    name="parentSleep"
                     options={[
-                        { value: 'plus_7h', label: 'Plus de 7h par nuit' },
-                        { value: '5-7h', label: '5 à 7h par nuit' },
-                        { value: 'moins_5h', label: 'Moins de 5h par nuit' },
-                        { value: 'moins_3h', label: 'Moins de 3h par nuit' }
+                        { label: 'Plus de 7h par nuit', value: 'plus_7h' },
+                        { label: '5 à 7h par nuit', value: '5-7h' },
+                        { label: 'Moins de 5h par nuit', value: 'moins_5h' },
+                        { label: 'Moins de 3h par nuit', value: 'moins_3h' }
                     ]}
                     selected={answers.parentSleep}
-                    onChange={(value: any) => updateAnswer('parentSleep', value)}
+                    onChange={(val: any) => updateAnswer('parentSleep', val)}
                 />
             </FormField>
 
             <FormField label="Impact sur votre travail ?">
                 <RadioGroup
-                    name="workImpact"
                     options={[
-                        { value: 'aucun', label: 'Aucun impact' },
-                        { value: 'amenagements', label: 'Aménagements horaires' },
-                        { value: 'temps_partiel', label: 'Temps partiel subi' },
-                        { value: 'arret', label: 'Arrêt de travail' }
+                        { label: 'Aucun impact', value: 'aucun' },
+                        { label: 'Aménagements horaires', value: 'amenagements' },
+                        { label: 'Temps partiel subi', value: 'temps_partiel' },
+                        { label: 'Arrêt de travail', value: 'arret' }
                     ]}
                     selected={answers.workImpact}
-                    onChange={(value: any) => updateAnswer('workImpact', value)}
+                    onChange={(val: any) => updateAnswer('workImpact', val)}
                 />
             </FormField>
 
             <FormField label="Impact sur la fratrie ?">
                 <RadioGroup
-                    name="siblingImpact"
                     options={[
-                        { value: 'aucun', label: 'Aucun / Pas de fratrie' },
-                        { value: 'leger', label: 'Léger' },
-                        { value: 'tensions', label: 'Tensions fréquentes' },
-                        { value: 'important', label: 'Impact important' }
+                        { label: 'Aucun / Pas de fratrie', value: 'aucun' },
+                        { label: 'Léger', value: 'leger' },
+                        { label: 'Tensions fréquentes', value: 'tensions' },
+                        { label: 'Impact important', value: 'important' }
                     ]}
                     selected={answers.siblingImpact}
-                    onChange={(value: any) => updateAnswer('siblingImpact', value)}
+                    onChange={(val: any) => updateAnswer('siblingImpact', val)}
                 />
             </FormField>
 
             <FormField label="Vie sociale de la famille ?">
                 <RadioGroup
-                    name="socialLife"
                     options={[
-                        { value: 'normale', label: 'Normale' },
-                        { value: 'reduite', label: 'Réduite' },
-                        { value: 'tres_limitee', label: 'Très limitée' },
-                        { value: 'inexistante', label: 'Quasi inexistante' }
+                        { label: 'Normale', value: 'normale' },
+                        { label: 'Réduite', value: 'reduite' },
+                        { label: 'Très limitée', value: 'tres_limitee' },
+                        { label: 'Quasi inexistante', value: 'inexistante' }
                     ]}
                     selected={answers.socialLife}
-                    onChange={(value: any) => updateAnswer('socialLife', value)}
+                    onChange={(val: any) => updateAnswer('socialLife', val)}
                 />
             </FormField>
 
@@ -946,7 +975,7 @@ const Section7Famille = ({ answers, updateAnswer }: any) => (
                     value={answers.familyImpact || ''}
                     onChange={(e) => updateAnswer('familyImpact', e.target.value)}
                     placeholder="Ex: Je suis à 80% au travail parce que je dois gérer les rdv. J'ai plus de vie sociale. Ma fille de 12 ans dit que je m'occupe que de Timéo..."
-                    className="input-field"
+                    className="modal-input"
                     rows={5}
                     style={{ resize: 'vertical' }}
                 />
@@ -956,31 +985,30 @@ const Section7Famille = ({ answers, updateAnswer }: any) => (
 );
 
 const Section8Demande = ({ answers, updateAnswer }: any) => (
-    <div>
-        <h2 style={{ marginBottom: '24px', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '12px' }}><FileText size={28} style={{ color: '#2563eb' }} /> Votre Demande</h2>
-        <p style={{ color: '#64748b', marginBottom: '32px' }}>Que souhaitez-vous demander à la MDPH ?</p>
+    <div className="section-card">
+        <h2 className="step-header" style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '16px', justifyContent: 'center' }}><FileText size={32} style={{ color: 'var(--accent)' }} /> Votre Demande</h2>
+        <p className="step-subtext">Que souhaitez-vous demander à la MDPH ?</p>
 
-        <div style={{ display: 'grid', gap: '28px' }}>
-            <div style={{ padding: '20px', background: '#f8fafc', borderRadius: '12px' }}>
+        <div className="form-grid-1col">
+            <div className="sub-section-card">
                 <FormField label="Demandez-vous l'AEEH (Allocation d'Éducation de l'Enfant Handicapé) ?">
                     <RadioGroup
-                        name="requestAeeh"
                         options={[
-                            { value: true, label: 'Oui' },
-                            { value: false, label: 'Non' }
+                            { label: 'Oui', value: true },
+                            { label: 'Non', value: false }
                         ]}
                         selected={answers.requestAeeh}
-                        onChange={(value: any) => updateAnswer('requestAeeh', value)}
+                        onChange={(val: any) => updateAnswer('requestAeeh', val)}
                     />
                 </FormField>
 
                 {answers.requestAeeh && (
-                    <div style={{ marginTop: '20px' }}>
+                    <div className="nested-form-grid">
                         <FormField label="Quel complément souhaitez-vous ?">
                             <select
                                 value={answers.aeehComplement || ''}
                                 onChange={(e) => updateAnswer('aeehComplement', e.target.value)}
-                                className="input-field"
+                                className="modal-input"
                             >
                                 <option value="">Sélectionner...</option>
                                 <option value="cat1">Catégorie 1 (Dépenses &lt; 230€/mois)</option>
@@ -995,60 +1023,56 @@ const Section8Demande = ({ answers, updateAnswer }: any) => (
                 )}
             </div>
 
-            <div style={{ padding: '20px', background: '#f8fafc', borderRadius: '12px' }}>
+            <div className="sub-section-card">
                 <FormField label="Demandez-vous la PCH (Prestation de Compensation du Handicap) ?">
                     <RadioGroup
-                        name="requestPch"
                         options={[
-                            { value: true, label: 'Oui' },
-                            { value: false, label: 'Non' }
+                            { label: 'Oui', value: true },
+                            { label: 'Non', value: false }
                         ]}
                         selected={answers.requestPch}
-                        onChange={(value: any) => updateAnswer('requestPch', value)}
+                        onChange={(val: any) => updateAnswer('requestPch', val)}
                     />
                 </FormField>
             </div>
 
-            <div style={{ padding: '20px', background: '#f8fafc', borderRadius: '12px' }}>
+            <div className="sub-section-card">
                 <FormField label="Demandez-vous plus d'heures d'AESH ?">
                     <RadioGroup
-                        name="requestMoreAesh"
                         options={[
-                            { value: true, label: 'Oui' },
-                            { value: false, label: 'Non' }
+                            { label: 'Oui', value: true },
+                            { label: 'Non', value: false }
                         ]}
                         selected={answers.requestMoreAesh}
-                        onChange={(value: any) => updateAnswer('requestMoreAesh', value)}
+                        onChange={(val: any) => updateAnswer('requestMoreAesh', val)}
                     />
                 </FormField>
 
                 {answers.requestMoreAesh && (
-                    <div style={{ marginTop: '20px' }}>
+                    <div className="nested-form-grid">
                         <FormField label="Type d'accompagnement souhaité">
                             <RadioGroup
-                                name="requestedAeshType"
                                 options={[
-                                    { value: 'plus_heures', label: 'Augmentation du nombre d\'heures' },
-                                    { value: 'individuel', label: 'Passage à un AESH individuel (ou les deux)' }
+                                    { label: 'Augmentation du nombre d\'heures', value: 'plus_heures' },
+                                    { label: 'Passage à un AESH individuel (ou les deux)', value: 'individuel' }
                                 ]}
                                 selected={answers.requestedAeshType}
-                                onChange={(value: any) => updateAnswer('requestedAeshType', value)}
+                                onChange={(val: any) => updateAnswer('requestedAeshType', val)}
                             />
                         </FormField>
                     </div>
                 )}
             </div>
 
-            <div style={{ padding: '20px', background: '#f8fafc', borderRadius: '12px' }}>
+            <div className="sub-section-card">
                 <FormField label="Demandez-vous du matériel pédagogique adapté ?">
                     <RadioGroup
-                        name="requestEquipment"
                         options={[
-                            { value: true, label: 'Oui (ordinateur, tablette, logiciels...)' },
-                            { value: false, label: 'Non' }
+                            { label: 'Oui (ordinateur, tablette, logiciels...)', value: true },
+                            { label: 'Non', value: false }
                         ]}
                         selected={answers.requestEquipment}
-                        onChange={(value: any) => updateAnswer('requestEquipment', value)}
+                        onChange={(val: any) => updateAnswer('requestEquipment', val)}
                     />
                 </FormField>
             </div>
@@ -1058,23 +1082,17 @@ const Section8Demande = ({ answers, updateAnswer }: any) => (
                     value={answers.finalNotes || ''}
                     onChange={(e) => updateAnswer('finalNotes', e.target.value)}
                     placeholder="Ex: Je fais tout ce que je peux. Je paye des soins que je peux pas vraiment me permettre. J'ai juste besoin qu'on m'aide un peu plus..."
-                    className="input-field"
+                    className="modal-input"
                     rows={5}
                     style={{ resize: 'vertical' }}
                 />
             </FormField>
 
-            <div style={{
-                padding: '24px',
-                background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)',
-                borderRadius: '12px',
-                border: '2px solid #3b82f6',
-                marginTop: '20px'
-            }}>
-                <p style={{ fontWeight: 'bold', marginBottom: '12px', color: '#1e40af', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <CheckCircle size={20} style={{ color: '#10b981' }} /> Vous avez terminé le questionnaire !
+            <div className="completion-card">
+                <p style={{ fontWeight: 'bold', marginBottom: '12px', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <CheckCircle size={20} style={{ color: 'var(--success)' }} /> Vous avez terminé le questionnaire !
                 </p>
-                <p style={{ fontSize: '14px', color: '#475569' }}>
+                <p style={{ fontSize: '14px', color: 'var(--text-muted)' }}>
                     En cliquant sur "Terminer", vos réponses seront sauvegardées et nous générerons votre Synthèse Allié personnalisée.
                 </p>
             </div>
@@ -1083,76 +1101,51 @@ const Section8Demande = ({ answers, updateAnswer }: any) => (
 );
 
 // Helper Components
-const FormField = ({ label, required, optional, children }: any) => (
-    <div>
-        <label style={{
-            display: 'block',
-            marginBottom: '8px',
-            fontWeight: '500',
-            color: '#0f172a',
-            fontSize: '14px'
-        }}>
-            {label}
-            {required && <span style={{ color: '#ef4444', marginLeft: '4px' }}>*</span>}
-            {optional && <span style={{ color: '#94a3b8', marginLeft: '8px', fontSize: '12px', fontWeight: 'normal' }}>(optionnel)</span>}
+const FormField = ({ label, children, required, optional }: any) => (
+    <div className="question-group">
+        <label className="question-label">
+            {label} {required && <span style={{ color: 'var(--accent)' }}>*</span>}
+            {optional && <span className="optional-text">(optionnel)</span>}
         </label>
         {children}
     </div>
 );
 
-const RadioGroup = ({ name, options, selected, onChange }: any) => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+const RadioGroup = ({ options, selected, onChange }: any) => (
+    <div className="radio-group-container">
         {options.map((option: any) => (
             <label
-                key={option.value}
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    padding: '12px 16px',
-                    borderRadius: '8px',
-                    border: `2px solid ${selected === option.value ? '#2563eb' : '#e2e8f0'} `,
-                    background: selected === option.value ? '#eff6ff' : 'white',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s'
-                }}
+                key={option.value.toString()}
+                className={`radio-tile ${selected === option.value ? 'selected' : ''}`}
             >
                 <input
                     type="radio"
-                    name={name}
+                    name={option.label}
                     value={option.value}
                     checked={selected === option.value}
                     onChange={() => onChange(option.value)}
-                    style={{ marginRight: '12px', accentColor: '#2563eb', width: '18px', height: '18px' }}
+                    className="hidden-radio"
                 />
-                <span style={{ fontSize: '14px', color: '#1e293b' }}>{option.label}</span>
+                <span className="radio-content">{option.label}</span>
             </label>
         ))}
     </div>
 );
 
 const CheckboxGroup = ({ options, selected, onToggle }: any) => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+    <div className="checkbox-group-container">
         {options.map((option: any) => (
             <label
                 key={option.value}
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    padding: '12px 16px',
-                    borderRadius: '8px',
-                    border: `2px solid ${selected.includes(option.value) ? '#2563eb' : '#e2e8f0'} `,
-                    background: selected.includes(option.value) ? '#eff6ff' : 'white',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s'
-                }}
+                className={`checkbox-tile ${selected.includes(option.value) ? 'selected' : ''}`}
             >
                 <input
                     type="checkbox"
                     checked={selected.includes(option.value)}
                     onChange={() => onToggle(option.value)}
-                    style={{ marginRight: '12px', accentColor: '#2563eb', width: '18px', height: '18px' }}
+                    className="hidden-checkbox"
                 />
-                <span style={{ fontSize: '14px', color: '#1e293b' }}>{option.label}</span>
+                <span className="checkbox-content">{option.label}</span>
             </label>
         ))}
     </div>

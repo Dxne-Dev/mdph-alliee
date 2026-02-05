@@ -25,78 +25,81 @@ const DossierReview = ({ answers, onSave, onBack }: { answers: any, onSave: (new
             style={{ maxWidth: '900px', margin: '0 auto' }}
         >
             <div style={{ marginBottom: '30px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <button onClick={onBack} className="btn-secondary" style={{ border: 'none', background: 'transparent' }}>
+                <button onClick={onBack} className="btn-outline" style={{ padding: '8px 16px', fontSize: '0.9rem' }}>
                     <ArrowLeft size={18} /> Retour
                 </button>
                 <div style={{ textAlign: 'center' }}>
-                    <h1 style={{ fontSize: '1.8rem', marginBottom: '5px' }}>Révision de votre dossier</h1>
-                    <p style={{ color: 'var(--text-muted)' }}>Vérifiez et ajustez les textes optimisés par l'Allié.</p>
+                    <h1 className="step-header" style={{ fontSize: '2rem', marginBottom: '5px' }}>Révision de votre dossier</h1>
+                    <p style={{ color: 'var(--text-muted)', fontWeight: '500' }}>Vérifiez et ajustez les textes optimisés par l'Allié.</p>
                 </div>
                 <div style={{ width: '100px' }}></div>
             </div>
 
             <div className="review-grid" style={{ display: 'grid', gap: '30px' }}>
-                {/* Simulated AI Insight Card */}
-                <div style={{ background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)', padding: '24px', borderRadius: 'var(--radius-lg)', border: '1px solid #bfdbfe', display: 'flex', gap: '20px', alignItems: 'center', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-                    <div style={{ background: 'white', padding: '15px', borderRadius: '12px', color: '#3b82f6' }}>
-                        <Sparkles size={30} />
+                {/* AI Insight Card - Premium Orange Theme */}
+                <div style={{
+                    background: 'linear-gradient(135deg, #fff3eb 0%, #fffaf7 100%)',
+                    padding: '32px',
+                    borderRadius: 'var(--radius-lg)',
+                    border: '1px solid var(--accent)',
+                    display: 'flex',
+                    gap: '24px',
+                    alignItems: 'center',
+                    boxShadow: '0 10px 20px rgba(249, 115, 22, 0.08)'
+                }}>
+                    <div style={{ background: 'var(--gradient-text)', padding: '18px', borderRadius: '16px', color: 'white', boxShadow: '0 8px 16px rgba(249, 115, 22, 0.2)' }}>
+                        <Sparkles size={32} />
                     </div>
                     <div>
-                        <h4 style={{ color: '#1e40af', marginBottom: '4px', fontWeight: '800' }}>Analyse de l'Allié terminée</h4>
-                        <p style={{ color: '#1e40af', opacity: 0.8, fontSize: '0.95rem' }}>J'ai structuré vos réponses pour qu'elles correspondent aux critères d'évaluation de la MDPH. Vous pouvez affiner le "Projet de Vie" ci-dessous.</p>
+                        <h4 style={{ color: 'var(--primary)', marginBottom: '6px', fontWeight: '800', fontSize: '1.2rem' }}>Analyse de l'Allié terminée</h4>
+                        <p style={{ color: 'var(--text-main)', opacity: 0.8, fontSize: '1rem', lineHeight: '1.5' }}>J'ai structuré vos réponses pour qu'elles correspondent aux critères d'évaluation de la MDPH. Vous pouvez affiner le "Projet de Vie" ci-dessous.</p>
                     </div>
                 </div>
 
                 {/* Summary Section */}
-                <div style={{ background: 'white', padding: '40px', borderRadius: 'var(--radius-lg)', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}>
-                    <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <Edit3 size={20} className="text-accent" /> Votre Projet de Vie
+                <div style={{ background: 'white', padding: '48px', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-lg)', border: '1px solid var(--border-subtle)' }}>
+                    <h3 style={{ fontSize: '1.3rem', fontWeight: '800', marginBottom: '28px', display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--primary)' }}>
+                        <Edit3 size={24} style={{ color: 'var(--accent)' }} /> Votre Projet de Vie
                     </h3>
 
-                    <div style={{ marginBottom: '30px' }}>
-                        <label style={{ display: 'block', fontWeight: '700', marginBottom: '10px', fontSize: '0.9rem', color: '#475569' }}>
+                    <div style={{ marginBottom: '32px' }}>
+                        <label className="question-label" style={{ fontSize: '0.9rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                             ATTENTES ET BESOINS (SECTION ÉLÉMENTAIRE)
                         </label>
                         <textarea
                             value={editedAnswers.expectations}
                             onChange={(e) => handleFieldChange('expectations', e.target.value)}
+                            className="modal-input"
                             style={{
-                                width: '100%',
-                                minHeight: '300px',
-                                padding: '20px',
-                                borderRadius: '12px',
-                                border: '1px solid #e2e8f0',
-                                lineHeight: '1.6',
-                                fontSize: '1rem',
-                                color: '#1e293b',
-                                background: '#f8fafc',
-                                resize: 'vertical'
+                                minHeight: '350px',
+                                marginTop: '12px',
+                                background: '#fcfcfc'
                             }}
                         />
-                        <p style={{ marginTop: '10px', fontSize: '0.85rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>
-                            Conseil : Ce texte sera l'élément central de votre dossier PDF.
-                        </p>
+                        <div className="info-text">
+                            <CheckCircle size={16} style={{ color: 'var(--accent)' }} /> Conseil : Ce texte sera l'élément central de votre dossier PDF.
+                        </div>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                        <div style={{ padding: '15px', background: '#f8fafc', borderRadius: '8px' }}>
-                            <span style={{ fontSize: '0.8rem', fontWeight: 'bold', color: '#64748b' }}>Diagnostic</span>
-                            <p style={{ fontWeight: '500', marginTop: '4px' }}>{editedAnswers.diagnosis}</p>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+                        <div style={{ padding: '20px', background: '#f8fafc', borderRadius: '14px', border: '1px solid #f1f5f9' }}>
+                            <span style={{ fontSize: '0.8rem', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Diagnostic</span>
+                            <p style={{ fontWeight: '600', marginTop: '6px', fontSize: '1.1rem', color: 'var(--primary)' }}>{editedAnswers.diagnosis || 'Non spécifié'}</p>
                         </div>
-                        <div style={{ padding: '15px', background: '#f8fafc', borderRadius: '8px' }}>
-                            <span style={{ fontSize: '0.8rem', fontWeight: 'bold', color: '#64748b' }}>Scolarité</span>
-                            <p style={{ fontWeight: '500', marginTop: '4px' }}>{editedAnswers.schoolLevel} ({editedAnswers.timeInSchool})</p>
+                        <div style={{ padding: '20px', background: '#f8fafc', borderRadius: '14px', border: '1px solid #f1f5f9' }}>
+                            <span style={{ fontSize: '0.8rem', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Scolarité</span>
+                            <p style={{ fontWeight: '600', marginTop: '6px', fontSize: '1.1rem', color: 'var(--primary)' }}>{editedAnswers.currentGrade} ({editedAnswers.schoolType})</p>
                         </div>
                     </div>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
                     <button
                         onClick={() => onSave(editedAnswers)}
                         className="btn-primary"
-                        style={{ padding: '16px 40px', fontSize: '1.1rem', background: '#059669', borderColor: '#059669', cursor: 'pointer' }}
+                        style={{ padding: '20px 60px', fontSize: '1.2rem' }}
                     >
-                        <CheckCircle size={20} /> Valider et continuer
+                        <CheckCircle size={22} /> Valider mon dossier
                     </button>
                 </div>
             </div>
@@ -312,34 +315,36 @@ export const QuestionnaireScreen = () => {
                                 boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.05)'
                             }}
                         >
-                            <div className="ai-loader" style={{ marginBottom: '30px', position: 'relative', height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <div className="ai-loader" style={{ marginBottom: '30px', position: 'relative', height: '120px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                 <motion.div
                                     animate={{ rotate: 360 }}
                                     transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                                     style={{
-                                        width: '80px',
-                                        height: '80px',
-                                        border: '4px solid #f3f4f6',
-                                        borderTop: '4px solid var(--primary)',
+                                        width: '100px',
+                                        height: '100px',
+                                        border: '4px solid #f1f5f9',
+                                        borderTop: '4px solid var(--accent)',
                                         borderRadius: '50%'
                                     }}
                                 />
-                                <Sparkles size={30} className="text-primary" style={{ position: 'absolute' }} />
+                                <div style={{ position: 'absolute', background: 'var(--gradient-text)', padding: '15px', borderRadius: '50%', color: 'white', boxShadow: '0 8px 16px rgba(249, 115, 22, 0.2)' }}>
+                                    <Sparkles size={30} />
+                                </div>
                             </div>
 
-                            <h2 style={{ fontSize: '1.5rem', marginBottom: '12px', background: 'linear-gradient(90deg, #1e293b, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: '800' }}>
+                            <h2 style={{ fontSize: '1.8rem', marginBottom: '16px', color: 'var(--primary)', fontWeight: '800', fontFamily: 'Outfit, sans-serif' }}>
                                 L'Allié prépare votre dossier
                             </h2>
-                            <p style={{ color: '#64748b', fontSize: '1rem', minHeight: '1.5em' }}>
+                            <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', minHeight: '1.5em', fontWeight: '500' }}>
                                 {optimizationMessage}
                             </p>
 
-                            <div style={{ width: '100%', height: '4px', background: '#f1f5f9', borderRadius: '2px', marginTop: '30px', overflow: 'hidden' }}>
+                            <div style={{ width: '100%', height: '6px', background: '#f1f5f9', borderRadius: '10px', marginTop: '40px', overflow: 'hidden' }}>
                                 <motion.div
                                     initial={{ width: "0%" }}
                                     animate={{ width: "100%" }}
                                     transition={{ duration: 6, ease: "easeInOut" }}
-                                    style={{ height: '100%', background: 'var(--primary)' }}
+                                    style={{ height: '100%', background: 'var(--gradient-text)' }}
                                 />
                             </div>
                         </motion.div>
@@ -396,9 +401,9 @@ export const QuestionnaireScreen = () => {
                                         justifyContent: 'center',
                                         padding: '20px',
                                         fontSize: '1.2rem',
-                                        background: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
+                                        background: 'var(--gradient-text)',
                                         border: 'none',
-                                        boxShadow: '0 10px 15px -3px rgba(37, 99, 235, 0.3)',
+                                        boxShadow: '0 10px 20px rgba(249, 115, 22, 0.3)',
                                         cursor: 'pointer'
                                     }}
                                 >
