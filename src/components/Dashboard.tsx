@@ -1,817 +1,424 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Plus, User, LogOut, LayoutDashboard, Settings, Bell, X, Baby, Heart, ShieldCheck, Trash2, Edit3, ArrowRight, FolderLock, FileDown } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import {
+    Plus, FileText, ChevronRight, Download, Trash2,
+    CheckCircle2, Clock, ArrowRight, Bell
+} from 'lucide-react';
+import toast from 'react-hot-toast';
 import { DocumentVault } from './DocumentVault';
+
+// Services de génération PDF
 import { pdf } from '@react-pdf/renderer';
-import { MDPHDocument } from './MDPHDocument';
 import { PDFDocument } from 'pdf-lib';
+import { MDPHDocument } from './MDPHDocument';
 
 export const Dashboard = () => {
     const navigate = useNavigate();
-    const [user, setUser] = useState<any>(null);
-    const [children, setChildren] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [children, setChildren] = useState<any[]>([]);
+    const [user, setUser] = useState<any>(null);
+    const [isGenerating, setIsGenerating] = useState<string | null>(null);
+    const [vaultOpenId, setVaultOpenId] = useState<string | null>(null);
 
-    // Modal state
-    const [isAddChildModalOpen, setIsAddChildModalOpen] = useState(false);
-    const [childForm, setChildForm] = useState({ firstName: '', diagnosis: '' });
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    // Settings dropdown & edit modal
-    const [openMenuId, setOpenMenuId] = useState<string | null>(null);
-    const [editingChild, setEditingChild] = useState<any>(null);
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [selectedChildForVault, setSelectedChildForVault] = useState<any>(null);
-    const [isVaultOpen, setIsVaultOpen] = useState(false);
-
+    // Initialisation
     useEffect(() => {
-        const fetchUserData = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            setUser(user);
-
-            if (user) {
-                const { data: childrenData } = await supabase
-                    .from('children')
-                    .select(`
-                        *,
-                        submissions (
-                            id,
-                            status,
-                            current_step,
-                            updated_at
-                        )
-                    `)
-                    .eq('parent_id', user.id);
-
-                setChildren(childrenData || []);
-            }
-            setLoading(false);
-        };
-
-        fetchUserData();
-    }, []);
-
-    const handleLogout = async () => {
-        await supabase.auth.signOut();
-        window.location.href = '/';
-    };
-
-    const handleAddChildClick = () => {
-        console.log("Opening add child modal");
-        setChildForm({ firstName: '', diagnosis: '' });
-        setIsAddChildModalOpen(true);
-    };
-
-    const submitAddChild = async (e: React.FormEvent) => {
-        e.preventDefault();
-        console.log("Form submitted with:", childForm);
-
-        if (!user) {
-            console.error("No user found");
-            return;
-        }
-
-        if (!childForm.firstName || !childForm.diagnosis) {
-            console.warn("Form incomplete");
-            return;
-        }
-
-        setIsSubmitting(true);
-
-        const saveChild = async () => {
-            console.log("Starting add child process for user:", user.id);
-
-            // 1. Check if profile exists
-            const { data: existingProfile } = await supabase
-                .from('profiles')
-                .select('id')
-                .eq('id', user.id)
-                .maybeSingle();
-
-            // 2. Create profile if missing
-            if (!existingProfile) {
-                const { error: insertError } = await supabase
-                    .from('profiles')
-                    .insert([{
-                        id: user.id,
-                        full_name: user.email?.split('@')[0] || 'Utilisateur'
-                    }]);
-
-                if (insertError) throw insertError;
-            }
-
-            // 3. Insert the child
-            const { data: childData, error: childError } = await supabase
-                .from('children')
-                .insert([{
-                    parent_id: user.id,
-                    first_name: childForm.firstName,
-                    diagnosis: childForm.diagnosis
-                }])
-                .select();
-
-            if (childError) throw childError;
-
-            if (childData) {
-                setChildren([...children, ...childData]);
-            }
-
-            setIsAddChildModalOpen(false);
-            setChildForm({ firstName: '', diagnosis: '' });
-            return childData;
-        };
-
-        toast.promise(saveChild(), {
-            loading: 'Enregistrement de l\'enfant...',
-            success: 'Enfant ajouté avec succès ! ✨',
-            error: (err) => `Erreur : ${err.message || 'Impossible d\'ajouter l\'enfant'}`
-        }).finally(() => {
-            setIsSubmitting(false);
-        });
-    };
-
-    const handleOpenVault = (child: any) => {
-        setOpenMenuId(null);
-        setSelectedChildForVault(child);
-        setIsVaultOpen(true);
-    };
-
-    const startQuestionnaire = (childId: string) => {
-        navigate(`/questionnaire/${childId}`);
-    };
-
-    const handleEditChild = (child: any) => {
-        setEditingChild(child);
-        setChildForm({ firstName: child.first_name, diagnosis: child.diagnosis });
-        setOpenMenuId(null);
-        setIsEditModalOpen(true);
-    };
-
-    const handleDeleteChild = async (childId: string) => {
-        setOpenMenuId(null);
-
-        const deleteChild = async () => {
-            // First, delete associated submissions to avoid Foreign Key constraint errors
-            await supabase
-                .from('submissions')
-                .delete()
-                .eq('child_id', childId);
-
-            const { error } = await supabase
-                .from('children')
-                .delete()
-                .eq('id', childId);
-
-            if (error) throw error;
-            setChildren(prev => prev.filter(c => c.id !== childId));
-        };
-
-        toast.promise(deleteChild(), {
-            loading: 'Suppression en cours...',
-            success: 'Profil enfant supprimé',
-            error: (err) => `Erreur : ${err.message}`
-        });
-    };
-
-    const submitEditChild = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!editingChild || !childForm.firstName || !childForm.diagnosis) return;
-
-        setIsSubmitting(true);
-
-        const updateChild = async () => {
-            const { data, error } = await supabase
-                .from('children')
-                .update({
-                    first_name: childForm.firstName,
-                    diagnosis: childForm.diagnosis
-                })
-                .eq('id', editingChild.id)
-                .select();
-
-            if (error) throw error;
-
-            // Robust state update: Use returned data if available, fallback to form data
-            // This prevents "undefined" from entering children array and causing a white screen
-            setChildren(prev => prev.map(c => {
-                if (c.id === editingChild.id) {
-                    return data && data[0] ? data[0] : {
-                        ...c,
-                        first_name: childForm.firstName,
-                        diagnosis: childForm.diagnosis
-                    };
+        const initDashboard = async () => {
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    navigate('/auth');
+                    return;
                 }
-                return c;
-            }));
-            setIsEditModalOpen(false);
-            setEditingChild(null);
-            setChildForm({ firstName: '', diagnosis: '' });
-            return data;
+                setUser(user);
+
+                const { data: submissions, error } = await supabase
+                    .from('submissions')
+                    .select('*')
+                    .eq('user_id', user.id);
+
+                if (error) throw error;
+
+                const childrenData = submissions?.map(sub => ({
+                    id: sub.child_id || sub.id,
+                    first_name: sub.answers?.firstName || 'Enfant sans nom',
+                    status: sub.status || 'draft',
+                    last_updated: sub.updated_at,
+                    answers: sub.answers
+                })) || [];
+
+                setChildren(childrenData);
+
+            } catch (error) {
+                console.error('Erreur chargement dashboard:', error);
+                toast.error('Impossible de charger vos dossiers.');
+            } finally {
+                setLoading(false);
+            }
         };
 
-        toast.promise(updateChild(), {
-            loading: 'Mise à jour...',
-            success: 'Profil mis à jour ! ✨',
-            error: (err) => `Erreur : ${err.message}`
-        }).finally(() => {
-            setIsSubmitting(false);
-        });
+        initDashboard();
+    }, [navigate]);
+
+    const handleCreateNew = async () => {
+        const newChildId = crypto.randomUUID();
+        try {
+            const { error } = await supabase
+                .from('submissions')
+                .insert([{
+                    user_id: user.id,
+                    child_id: newChildId,
+                    status: 'draft',
+                    answers: {}
+                }]);
+
+            if (error) throw error;
+
+            navigate(`/questionnaire/${newChildId}`);
+        } catch (e) {
+            console.error('Erreur création:', e);
+            toast.error('Impossible de créer un nouveau dossier');
+        }
     };
 
-    if (loading) return (
-        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc' }}>
-            <div style={{ textAlign: 'center' }}>
-                <div style={{ width: '40px', height: '40px', border: '3px solid var(--accent)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 20px' }}></div>
-                <p style={{ color: 'var(--text-muted)', fontWeight: '500' }}>Chargement de votre espace...</p>
+    const handleDelete = async (childId: string) => {
+        if (!confirm('Êtes-vous sûr de vouloir supprimer ce dossier ? Cette action est irréversible.')) return;
+
+        try {
+            await supabase.from('submissions').delete().eq('child_id', childId);
+            setChildren(prev => prev.filter(c => c.id !== childId));
+            toast.success('Dossier supprimé');
+        } catch (e) {
+            toast.error('Erreur lors de la suppression');
+        }
+    };
+
+    const handleDownloadPack = async (child: any) => {
+        const tid = toast.loading('Préparation du téléchargement...', { id: 'dl-' + child.id });
+        setIsGenerating(child.id);
+
+        try {
+            if (!child.answers) throw new Error("Aucune donnée");
+
+            // 1. Synthèse
+            const doc = <MDPHDocument data={child.answers} />;
+            const synthesisBlob = await pdf(doc).toBlob();
+
+            const synthesisUrl = URL.createObjectURL(synthesisBlob);
+            const a = document.createElement('a');
+            a.href = synthesisUrl;
+            a.download = `Synthese_Allie_${child.first_name}.pdf`;
+            a.click();
+
+            // 2. CERFA
+            try {
+                const response = await fetch('/support_client.pdf?v=1');
+                if (response.ok) {
+                    const existingPdfBytes = await response.arrayBuffer();
+                    const header = new Uint8Array(existingPdfBytes.slice(0, 5));
+                    if (String.fromCharCode(...header) === '%PDF-') {
+                        const pdfDoc = await PDFDocument.load(existingPdfBytes);
+                        const form = pdfDoc.getForm();
+
+                        try {
+                            form.getTextField('topmostSubform[0].Page1[0].NomFamille[0]')?.setText(child.answers.lastName?.toUpperCase() || '');
+                            form.getTextField('topmostSubform[0].Page1[0].Prenom[0]')?.setText(child.answers.firstName || '');
+                        } catch (e) { console.warn('Erreur remplissage partiel CERFA', e); }
+
+                        const cerfaBytes = await pdfDoc.save();
+                        const cerfaBlob = new Blob([cerfaBytes as any], { type: 'application/pdf' });
+                        const cerfaUrl = URL.createObjectURL(cerfaBlob);
+                        const b = document.createElement('a');
+                        b.href = cerfaUrl;
+                        b.download = `CERFA_PreRempli_${child.first_name}.pdf`;
+                        b.click();
+
+                        toast.success('Pack complet téléchargé !', { id: tid });
+                    }
+                }
+            } catch (cerfaError) {
+                console.warn("Échec génération CERFA", cerfaError);
+                toast.success('Synthèse téléchargée (CERFA indisponible)', { id: tid });
+            }
+
+        } catch (error) {
+            console.error('Erreur download:', error);
+            toast.error('Erreur lors du téléchargement', { id: tid });
+        } finally {
+            setIsGenerating(null);
+        }
+    };
+
+    if (loading) {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#f8fafc' }}>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
             </div>
-        </div>
-    );
+        );
+    }
 
     return (
-        <div className="dashboard-container" style={{ minHeight: '100vh', background: '#f8fafc' }}>
-            {/* Improved Navbar */}
-            <nav style={{
-                background: 'white',
-                borderBottom: '1px solid var(--border-subtle)',
-                position: 'sticky',
-                top: 0,
-                zIndex: 100,
-                padding: '15px 0'
-            }}>
-                <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div className="logo" style={{ cursor: 'pointer' }} onClick={() => window.location.href = '/'}>
-                        L'Allié <span className="highlight">MDPH</span>
+        <div style={{ minHeight: '100vh', backgroundColor: '#f8fafc' }}>
+            <header style={{ backgroundColor: 'white', borderBottom: '1px solid #e2e8f0', padding: '16px 0' }}>
+                <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{ width: '32px', height: '32px', background: '#2563eb', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>A</div>
+                        <h1 style={{ fontSize: '18px', fontWeight: 'bold', color: '#0f172a', margin: 0 }}>L'Allié MDPH</h1>
                     </div>
+                    <button
+                        onClick={() => supabase.auth.signOut().then(() => navigate('/'))}
+                        style={{ color: '#64748b', fontSize: '14px', fontWeight: '500', background: 'none', border: 'none', cursor: 'pointer' }}
+                    >
+                        Déconnexion
+                    </button>
+                </div>
+            </header>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '6px 12px', background: '#f1f5f9', borderRadius: '50px' }}>
-                            <div style={{ width: '32px', height: '32px', background: 'var(--primary)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
-                                <User size={16} />
-                            </div>
-                            <span style={{ fontSize: '0.85rem', fontWeight: '600', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                {user?.email}
-                            </span>
-                        </div>
+            <main className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 20px' }}>
 
-                        <div style={{ display: 'flex', gap: '10px' }}>
-                            <button style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '8px', borderRadius: '50%' }} className="nav-icon-btn">
-                                <Bell size={20} />
-                            </button>
-                            <button onClick={handleLogout} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '8px', borderRadius: '50%' }} title="Déconnexion">
-                                <LogOut size={20} />
-                            </button>
-                        </div>
+                {/* Notification Banner */}
+                <div style={{
+                    marginBottom: '40px',
+                    padding: '24px',
+                    backgroundColor: 'white',
+                    borderRadius: '16px',
+                    border: '1px solid #e2e8f0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '20px',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+                }}>
+                    <div style={{
+                        width: '48px', height: '48px',
+                        backgroundColor: '#f0f9ff', color: '#0ea5e9',
+                        borderRadius: '12px',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        flexShrink: 0
+                    }}>
+                        <Bell size={24} />
+                    </div>
+                    <div>
+                        <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#0f172a', marginBottom: '4px' }}>
+                            Notifications actives
+                        </h3>
+                        <p style={{ color: '#64748b', fontSize: '14px' }}>
+                            Nous vous préviendrons par email 3 mois avant le renouvellement de vos dossiers MDPH.
+                            <br />
+                            <span style={{ fontSize: '13px', color: '#2563eb', fontWeight: '500' }}>Prochaine vérification : 05 Mars 2026</span>
+                        </p>
                     </div>
                 </div>
-            </nav>
 
-            <main className="container" style={{ padding: '60px 20px' }}>
-                <header style={{ marginBottom: '50px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
                     <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--accent)', fontWeight: '700', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>
-                            <LayoutDashboard size={16} /> Tableau de bord
-                        </div>
-                        <h1 style={{ fontSize: '2.5rem', marginBottom: '8px', letterSpacing: '-1px' }}>Bonjour, ravi de vous revoir</h1>
-                        <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>Gérez les dossiers et les actualisations de vos enfants.</p>
+                        <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#0f172a', marginBottom: '4px' }}>Mes Dossiers</h2>
+                        <p style={{ color: '#64748b' }}>Gérez les demandes de vos enfants</p>
                     </div>
-                    <button onClick={handleAddChildClick} className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 24px', fontSize: '1rem', borderRadius: 'var(--radius-md)' }}>
-                        <Plus size={20} /> Ajouter un enfant
+                    <button
+                        onClick={handleCreateNew}
+                        style={{
+                            display: 'flex', alignItems: 'center', gap: '8px',
+                            backgroundColor: '#2563eb', color: 'white',
+                            padding: '10px 20px', borderRadius: '8px',
+                            fontWeight: '500', transition: 'all 0.2s',
+                            cursor: 'pointer', border: 'none'
+                        }}
+                    >
+                        <Plus size={20} />
+                        Nouveau dossier
                     </button>
-                </header>
+                </div>
 
-                <div className="dashboard-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: '30px' }}>
-                    {children.length === 0 ? (
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
+                {children.length === 0 ? (
+                    <div style={{
+                        textAlign: 'center', padding: '60px 20px',
+                        backgroundColor: 'white', borderRadius: '16px', border: '2px dashed #e2e8f0'
+                    }}>
+                        <div style={{
+                            width: '64px', height: '64px', backgroundColor: '#eff6ff',
+                            borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            margin: '0 auto 20px', color: '#2563eb'
+                        }}>
+                            <FileText size={32} />
+                        </div>
+                        <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#0f172a', marginBottom: '8px' }}>Aucun dossier en cours</h3>
+                        <p style={{ color: '#64748b', marginBottom: '24px', maxWidth: '400px', margin: '0 auto 24px' }}>
+                            Commencez par créer un dossier pour votre enfant. Nous vous guiderons étape par étape.
+                        </p>
+                        <button
+                            onClick={handleCreateNew}
                             style={{
-                                gridColumn: '1 / -1',
-                                textAlign: 'center',
-                                padding: '100px 40px',
-                                background: 'white',
-                                borderRadius: 'var(--radius-lg)',
-                                border: '2px dashed #e2e8f0',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center'
+                                display: 'inline-flex', alignItems: 'center', gap: '8px',
+                                backgroundColor: '#2563eb', color: 'white',
+                                padding: '12px 24px', borderRadius: '8px',
+                                fontWeight: '500', cursor: 'pointer', border: 'none'
                             }}
                         >
-                            <div style={{ width: '80px', height: '80px', background: '#fff3eb', color: 'var(--accent)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}>
-                                <User size={40} strokeWidth={1.5} />
-                            </div>
-                            <h2 style={{ fontSize: '1.8rem', marginBottom: '12px' }}>Votre espace est prêt</h2>
-                            <p style={{ color: 'var(--text-muted)', marginBottom: '32px', maxWidth: '450px', fontSize: '1.1rem' }}>Commencez par ajouter le profil de votre enfant pour que l'Allié puisse mémoriser ses besoins.</p>
-                            <button onClick={handleAddChildClick} className="btn-primary" style={{ padding: '16px 40px' }}>
-                                Ajouter mon premier enfant
-                            </button>
-                        </motion.div>
-                    ) : (
-                        children.map((child, index) => {
-                            const activeSub = child.submissions?.sort((a: any, b: any) =>
-                                new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-                            )[0];
-
-                            let statusLabel = 'À commencer';
-                            let progress = 0;
-                            let statusText = 'Aucun dossier généré pour le moment.';
-                            let statusColor = 'var(--accent)';
-                            let statusBg = '#fff3eb';
-
-                            if (activeSub) {
-                                if (activeSub.status === 'completed') {
-                                    statusLabel = 'Terminé';
-                                    progress = 100;
-                                    statusText = 'Dossier prêt à l\'envoi ! ✨';
-                                    statusColor = '#059669';
-                                    statusBg = '#ecfdf5';
-                                } else {
-                                    statusLabel = 'En cours';
-                                    progress = Math.round((activeSub.current_step / 5) * 100);
-                                    statusText = `Étape ${activeSub.current_step} sur 5 complétée.`;
-                                    statusColor = '#2563eb';
-                                    statusBg = '#eff6ff';
-                                }
-                            }
-
-                            return (
-                                <motion.div
-                                    key={child.id}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: index * 0.1 }}
-                                    className="child-card"
-                                    style={{
-                                        background: 'white',
-                                        padding: '32px',
-                                        borderRadius: 'var(--radius-lg)',
-                                        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02)',
-                                        border: '1px solid var(--border-subtle)',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        position: 'relative'
-                                    }}
-                                >
-                                    <div style={{ position: 'absolute', top: '32px', right: '32px' }}>
-                                        <button
-                                            onClick={() => setOpenMenuId(openMenuId === child.id ? null : child.id)}
-                                            style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '4px' }}
-                                        >
-                                            <Settings size={20} />
-                                        </button>
-
-                                        {openMenuId === child.id && (
-                                            <div style={{
-                                                position: 'absolute',
-                                                top: '100%',
-                                                right: 0,
-                                                background: 'white',
-                                                borderRadius: 'var(--radius-sm)',
-                                                boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
-                                                border: '1px solid var(--border-subtle)',
-                                                minWidth: '150px',
-                                                zIndex: 50,
-                                                overflow: 'hidden'
-                                            }}>
-                                                <button
-                                                    onClick={() => handleEditChild(child)}
-                                                    style={{
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        gap: '10px',
-                                                        width: '100%',
-                                                        padding: '12px 16px',
-                                                        background: 'none',
-                                                        border: 'none',
-                                                        cursor: 'pointer',
-                                                        fontSize: '0.9rem',
-                                                        textAlign: 'left'
-                                                    }}
-                                                >
-                                                    <Edit3 size={16} /> Modifier
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDeleteChild(child.id)}
-                                                    style={{
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        gap: '10px',
-                                                        width: '100%',
-                                                        padding: '12px 16px',
-                                                        background: 'none',
-                                                        border: 'none',
-                                                        cursor: 'pointer',
-                                                        fontSize: '0.9rem',
-                                                        textAlign: 'left',
-                                                        color: '#ef4444'
-                                                    }}
-                                                >
-                                                    <Trash2 size={16} /> Supprimer
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
-                                        <div style={{ width: '56px', height: '56px', background: 'var(--primary)', color: 'white', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: '800' }}>
-                                            {child.first_name.charAt(0)}
+                            Commencer maintenant
+                        </button>
+                    </div>
+                ) : (
+                    <div style={{ display: 'grid', gap: '24px' }}>
+                        {children.map(child => (
+                            <div key={child.id} style={{
+                                backgroundColor: 'white', borderRadius: '16px',
+                                border: '1px solid #e2e8f0', overflow: 'hidden',
+                                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.05)'
+                            }}>
+                                <div style={{
+                                    padding: '24px', borderBottom: '1px solid #f1f5f9',
+                                    display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start'
+                                }}>
+                                    <div style={{ display: 'flex', gap: '20px' }}>
+                                        <div style={{
+                                            width: '60px', height: '60px', borderRadius: '12px',
+                                            backgroundColor: '#eff6ff', color: '#2563eb',
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            fontSize: '24px', fontWeight: 'bold'
+                                        }}>
+                                            {child.first_name[0]?.toUpperCase() || '?'}
                                         </div>
                                         <div>
-                                            <h3 style={{ fontSize: '1.4rem', marginBottom: '4px' }}>{child.first_name}</h3>
-                                            <span style={{
-                                                background: '#e0f2fe',
-                                                color: '#0369a1',
-                                                padding: '4px 10px',
-                                                borderRadius: '50px',
-                                                fontSize: '0.75rem',
-                                                fontWeight: '700'
-                                            }}>
-                                                {child.diagnosis}
-                                            </span>
+                                            <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: '#0f172a', marginBottom: '4px' }}>
+                                                {child.first_name}
+                                            </h3>
+                                            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                                <span style={{
+                                                    display: 'inline-flex', alignItems: 'center', gap: '4px',
+                                                    fontSize: '12px', padding: '4px 10px', borderRadius: '99px',
+                                                    backgroundColor: child.status === 'completed' ? '#dcfce7' : '#fef9c3',
+                                                    color: child.status === 'completed' ? '#166534' : '#854d0e',
+                                                    fontWeight: '600'
+                                                }}>
+                                                    {child.status === 'completed' ? <CheckCircle2 size={12} /> : <Clock size={12} />}
+                                                    {child.status === 'completed' ? 'Dossier prêt' : 'En cours de rédaction'}
+                                                </span>
+                                                <span style={{ fontSize: '12px', color: '#94a3b8' }}>
+                                                    Dernière modif : {new Date(child.last_updated).toLocaleDateString()}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <div style={{
-                                        background: '#f8fafc',
-                                        padding: '24px',
-                                        borderRadius: 'var(--radius-md)',
-                                        marginBottom: '24px',
-                                        border: '1px solid #f1f5f9'
-                                    }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                                            <span style={{ fontSize: '0.9rem', fontWeight: '700' }}>Session MDPH 2026</span>
-                                            <span style={{
-                                                fontSize: '0.75rem',
-                                                color: statusColor,
-                                                fontWeight: '700',
-                                                background: statusBg,
-                                                padding: '2px 8px',
-                                                borderRadius: '4px'
-                                            }}>
-                                                {statusLabel}
-                                            </span>
-                                        </div>
-                                        <div style={{ height: '4px', background: '#e2e8f0', borderRadius: '2px', marginBottom: '12px' }}>
-                                            <div style={{
-                                                width: `${progress}%`,
-                                                height: '100%',
-                                                background: statusColor,
-                                                borderRadius: '2px',
-                                                transition: 'width 0.5s ease-out'
-                                            }}></div>
-                                        </div>
-                                        <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                                            {statusText}
-                                        </p>
-                                    </div>
-
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                                        {activeSub?.status === 'completed' ? (
-                                            <button
-                                                onClick={async () => {
-                                                    const tid = toast.loading('Génération du Pack Allié...');
-                                                    try {
-                                                        // 1. Synthèse
-                                                        const doc = <MDPHDocument data={activeSub.answers} childName={child.first_name} />;
-                                                        const synthesisBlob = await pdf(doc).toBlob();
-                                                        const synthesisUrl = URL.createObjectURL(synthesisBlob);
-                                                        const synthesisLink = document.createElement('a');
-                                                        synthesisLink.href = synthesisUrl;
-                                                        synthesisLink.download = `Synthese_MDPH_${child.first_name}.pdf`;
-                                                        synthesisLink.click();
-
-                                                        // 2. CERFA
-                                                        try {
-                                                            const cerfaUrl = '/support_client.pdf?v=1';
-                                                            const response = await fetch(cerfaUrl);
-                                                            if (!response.ok) {
-                                                                console.warn("Fichier PDF introuvable sur le serveur.");
-                                                                throw new Error('Local PDF not found');
-                                                            }
-
-                                                            const existingPdfBytes = await response.arrayBuffer();
-
-                                                            // Sécurité : Vérifier s'il s'agit d'un PDF
-                                                            const header = new Uint8Array(existingPdfBytes.slice(0, 5));
-                                                            const headerString = String.fromCharCode(...header);
-
-                                                            if (headerString !== '%PDF-') {
-                                                                console.warn("Le CERFA local n'est pas un PDF valide.");
-                                                                toast.success('Synthèse téléchargée !', { id: tid });
-                                                                return;
-                                                            }
-
-                                                            const pdfDoc = await PDFDocument.load(existingPdfBytes);
-
-                                                            const form = pdfDoc.getForm();
-                                                            try {
-                                                                const allFields = form.getFields();
-                                                                const lastName = (activeSub.answers.lastName || '').toUpperCase();
-                                                                const firstName = child.first_name || '';
-
-                                                                console.log(`[DASHBOARD DEBUG] Filling CERFA for ${firstName} ${lastName}`);
-
-                                                                allFields.forEach(field => {
-                                                                    try {
-                                                                        const name = field.getName();
-                                                                        const lowerName = name.toLowerCase();
-
-                                                                        if (typeof (field as any).setText === 'function') {
-                                                                            const txt = field as any;
-                                                                            if ((lowerName.includes('nom') && (lowerName.includes('naissance') || lowerName.includes('usage') || lowerName.includes('famille') || lowerName.includes('p2'))) || lowerName === 'nom') {
-                                                                                txt.setText(lastName);
-                                                                            }
-                                                                            if (lowerName.includes('prenom') || lowerName.includes('prénom') || lowerName.includes('pr??no')) {
-                                                                                txt.setText(firstName);
-                                                                            }
-                                                                        }
-                                                                    } catch (e) { }
-                                                                });
-                                                            } catch (e) { }
-
-                                                            const cerfaPdfBytes = await pdfDoc.save();
-                                                            const cerfaBlob = new Blob([cerfaPdfBytes as any], { type: 'application/pdf' });
-                                                            const cerfaLink = document.createElement('a');
-                                                            cerfaLink.href = URL.createObjectURL(cerfaBlob);
-                                                            cerfaLink.download = `CERFA_15692_PreRempli_${child.first_name}.pdf`;
-                                                            cerfaLink.click();
-                                                            toast.success('Pack complet téléchargé !', { id: tid });
-                                                        } catch (cerfaErr) {
-                                                            toast.success('Synthèse téléchargée !', { id: tid });
-                                                        }
-                                                    } catch (error) {
-                                                        toast.error('Erreur lors du téléchargement', { id: tid });
-                                                    }
-                                                }}
-                                                className="btn-primary"
-                                                style={{
-                                                    justifyContent: 'center',
-                                                    padding: '14px',
-                                                    fontSize: '0.9rem',
-                                                    background: '#059669',
-                                                    border: 'none',
-                                                    boxShadow: '0 4px 6px -1px rgba(5, 150, 105, 0.2)',
-                                                    borderRadius: 'var(--radius-md)',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: '6px'
-                                                }}
-                                            >
-                                                <FileDown size={16} /> Pack PDF
-                                            </button>
-                                        ) : (
-                                            <button
-                                                onClick={() => startQuestionnaire(child.id)}
-                                                className="btn-primary"
-                                                style={{
-                                                    justifyContent: 'center',
-                                                    padding: '14px',
-                                                    fontSize: '0.9rem',
-                                                    background: 'var(--accent)',
-                                                    border: 'none',
-                                                    boxShadow: '0 4px 6px -1px rgba(249, 115, 22, 0.2)',
-                                                    borderRadius: 'var(--radius-md)',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: '6px'
-                                                }}
-                                            >
-                                                {activeSub ? 'Reprendre' : 'Dossier'} <ArrowRight size={16} />
-                                            </button>
-                                        )}
+                                    <div style={{ display: 'flex', gap: '10px' }}>
                                         <button
-                                            onClick={() => handleOpenVault(child)}
-                                            className="btn-secondary"
+                                            onClick={() => handleDelete(child.id)}
                                             style={{
-                                                justifyContent: 'center',
-                                                padding: '14px',
-                                                fontSize: '0.9rem',
-                                                borderRadius: 'var(--radius-md)',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '6px',
-                                                background: 'white',
-                                                border: '1px solid var(--border-subtle)'
+                                                padding: '8px', color: '#ef4444',
+                                                background: 'transparent', border: 'none', cursor: 'pointer',
+                                                display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px'
                                             }}
+                                            title="Supprimer le dossier"
                                         >
-                                            <FolderLock size={16} /> Coffre-fort
+                                            <Trash2 size={18} />
                                         </button>
                                     </div>
-                                </motion.div>
-                            );
-                        })
-                    )}
-                </div>
+                                </div>
+
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0' }}>
+                                    <div style={{ padding: '24px', borderRight: '1px solid #f1f5f9' }}>
+                                        <h4 style={{ fontSize: '14px', fontWeight: '600', color: '#64748b', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                            ÉTAPE 1 : Questionnaire & Synthèse
+                                        </h4>
+
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                            <button
+                                                onClick={() => navigate(`/questionnaire/${child.id}`)}
+                                                style={{
+                                                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                                    padding: '16px', borderRadius: '8px',
+                                                    backgroundColor: '#f8fafc', border: '1px solid #e2e8f0',
+                                                    color: '#0f172a', fontWeight: '500', cursor: 'pointer',
+                                                    transition: 'all 0.2s', textAlign: 'left'
+                                                }}
+                                            >
+                                                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                                    <div style={{ color: '#2563eb' }}><FileText size={20} /></div>
+                                                    <div>
+                                                        <div style={{ fontWeight: '600' }}>Questionnaire MDPH</div>
+                                                        <div style={{ fontSize: '12px', color: '#64748b' }}>
+                                                            {child.status === 'completed' ? 'Revoir les réponses' : 'Continuer la rédaction'}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <ChevronRight size={16} color="#94a3b8" />
+                                            </button>
+
+                                            {child.status === 'completed' && (
+                                                <button
+                                                    onClick={() => handleDownloadPack(child)}
+                                                    disabled={isGenerating === child.id}
+                                                    style={{
+                                                        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                                        padding: '16px', borderRadius: '8px',
+                                                        backgroundColor: '#eff6ff', border: '1px solid #bfdbfe',
+                                                        color: '#1e40af', fontWeight: '500', cursor: 'pointer',
+                                                        transition: 'all 0.2s', textAlign: 'left'
+                                                    }}
+                                                >
+                                                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                                        <div style={{ color: '#1e40af' }}>
+                                                            {isGenerating === child.id ? <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-700"></div> : <Download size={20} />}
+                                                        </div>
+                                                        <div>
+                                                            <div style={{ fontWeight: '600' }}>Télécharger le Pack Allié</div>
+                                                            <div style={{ fontSize: '12px', color: '#60a5fa' }}>Synthèse PDF + CERFA pré-rempli</div>
+                                                        </div>
+                                                    </div>
+                                                    <ArrowRight size={16} color="#1e40af" />
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div style={{ padding: '24px', backgroundColor: '#fff', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                                        <h4 style={{ fontSize: '14px', fontWeight: '600', color: '#64748b', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '0.05em', alignSelf: 'flex-start' }}>
+                                            ÉTAPE 2 : Pièces Justificatives
+                                        </h4>
+
+                                        <div style={{ textAlign: 'center', padding: '20px' }}>
+                                            <div style={{
+                                                width: '64px', height: '64px', backgroundColor: '#f0fdf4', color: '#16a34a',
+                                                borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                margin: '0 auto 16px'
+                                            }}>
+                                                <FileText size={28} />
+                                            </div>
+                                            <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#0f172a', marginBottom: '8px' }}>
+                                                Gérez vos documents
+                                            </h3>
+                                            <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '20px' }}>
+                                                Stockez et organisez les certificats, bilans et autres justificatifs.
+                                            </p>
+                                            <button
+                                                onClick={() => setVaultOpenId(child.id)}
+                                                style={{
+                                                    display: 'inline-flex', alignItems: 'center', gap: '8px',
+                                                    padding: '10px 20px', borderRadius: '8px',
+                                                    backgroundColor: 'white', border: '1px solid #cbd5e1',
+                                                    color: '#0f172a', fontWeight: '500', cursor: 'pointer',
+                                                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                                                }}
+                                            >
+                                                Ouvrir le coffre-fort
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                {vaultOpenId && children.find(c => c.id === vaultOpenId) && (
+                    <DocumentVault
+                        isOpen={true}
+                        onClose={() => setVaultOpenId(null)}
+                        childId={vaultOpenId}
+                        childName={children.find(c => c.id === vaultOpenId)?.first_name || 'Enfant'}
+                    />
+                )}
             </main>
-
-            {/* Add Child Modal */}
-            <AnimatePresence>
-                {isAddChildModalOpen && (
-                    <div
-                        className="modal-overlay"
-                        style={{
-                            position: 'fixed',
-                            inset: 0,
-                            background: 'rgba(15, 23, 42, 0.7)',
-                            backdropFilter: 'blur(4px)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            zIndex: 2000,
-                            padding: '20px'
-                        }}
-                        onClick={() => setIsAddChildModalOpen(false)}
-                    >
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            onClick={(e) => e.stopPropagation()}
-                            style={{
-                                background: 'white',
-                                borderRadius: 'var(--radius-lg)',
-                                width: '100%',
-                                maxWidth: '500px',
-                                padding: '40px',
-                                position: 'relative',
-                                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
-                            }}
-                        >
-                            <button
-                                onClick={() => setIsAddChildModalOpen(false)}
-                                style={{ position: 'absolute', top: '20px', right: '20px', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
-                            >
-                                <X size={24} />
-                            </button>
-
-                            <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-                                <div style={{ width: '60px', height: '60px', background: '#fff3eb', color: 'var(--accent)', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-                                    <Baby size={30} />
-                                </div>
-                                <h2 style={{ fontSize: '1.8rem', marginBottom: '8px' }}>Ajouter un enfant</h2>
-                                <p style={{ color: 'var(--text-muted)' }}>Ces informations nous aident à personnaliser ses documents.</p>
-                            </div>
-
-                            <form onSubmit={submitAddChild} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                                <div className="form-group">
-                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '0.9rem' }}>Prénom de l'enfant</label>
-                                    <div style={{ position: 'relative' }}>
-                                        <Heart size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-                                        <input
-                                            type="text"
-                                            required
-                                            value={childForm.firstName}
-                                            onChange={(e) => setChildForm({ ...childForm, firstName: e.target.value })}
-                                            placeholder="Ex: Léo"
-                                            className="modal-input"
-                                            style={{ width: '100%', paddingLeft: '40px' }}
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="form-group">
-                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '0.9rem' }}>Diagnostic ou trouble principal</label>
-                                    <div style={{ position: 'relative' }}>
-                                        <ShieldCheck size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-                                        <select
-                                            required
-                                            value={childForm.diagnosis}
-                                            onChange={(e) => setChildForm({ ...childForm, diagnosis: e.target.value })}
-                                            className="modal-input"
-                                            style={{ width: '100%', paddingLeft: '40px' }}
-                                        >
-                                            <option value="">Choisir un diagnostic...</option>
-                                            <option value="TSA (Trouble du Spectre de l'Autisme)">TSA (Autisme)</option>
-                                            <option value="TDAH (Trouble de l'Attention)">TDAH</option>
-                                            <option value="Troubles DYS (Dyslexie, Dyspraxie...)">Troubles DYS</option>
-                                            <option value="Retard de développement">Retard de développement</option>
-                                            <option value="Autre">Autre</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <button
-                                    type="submit"
-                                    className="btn-primary"
-                                    disabled={isSubmitting}
-                                    style={{ width: '100%', justifyContent: 'center', marginTop: '10px' }}
-                                >
-                                    {isSubmitting ? 'Création...' : 'Valider et ajouter'}
-                                </button>
-                            </form>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
-
-            {/* Edit Child Modal */}
-            <AnimatePresence>
-                {isEditModalOpen && (
-                    <div
-                        className="modal-overlay"
-                        style={{
-                            position: 'fixed',
-                            inset: 0,
-                            background: 'rgba(15, 23, 42, 0.7)',
-                            backdropFilter: 'blur(4px)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            zIndex: 2000,
-                            padding: '20px'
-                        }}
-                        onClick={() => { setIsEditModalOpen(false); setEditingChild(null); }}
-                    >
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            onClick={(e) => e.stopPropagation()}
-                            style={{
-                                background: 'white',
-                                borderRadius: 'var(--radius-lg)',
-                                width: '100%',
-                                maxWidth: '500px',
-                                padding: '40px',
-                                position: 'relative',
-                                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
-                            }}
-                        >
-                            <button
-                                onClick={() => { setIsEditModalOpen(false); setEditingChild(null); }}
-                                style={{ position: 'absolute', top: '20px', right: '20px', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
-                            >
-                                <X size={24} />
-                            </button>
-
-                            <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-                                <div style={{ width: '60px', height: '60px', background: '#e0f2fe', color: '#0369a1', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-                                    <Edit3 size={30} />
-                                </div>
-                                <h2 style={{ fontSize: '1.8rem', marginBottom: '8px' }}>Modifier le profil</h2>
-                                <p style={{ color: 'var(--text-muted)' }}>Mettez à jour les informations de {editingChild?.first_name}.</p>
-                            </div>
-
-                            <form onSubmit={submitEditChild} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                                <div className="form-group">
-                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '0.9rem' }}>Prénom de l'enfant</label>
-                                    <div style={{ position: 'relative' }}>
-                                        <Heart size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-                                        <input
-                                            type="text"
-                                            required
-                                            value={childForm.firstName}
-                                            onChange={(e) => setChildForm({ ...childForm, firstName: e.target.value })}
-                                            placeholder="Ex: Léo"
-                                            className="modal-input"
-                                            style={{ width: '100%', paddingLeft: '40px' }}
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="form-group">
-                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '0.9rem' }}>Diagnostic ou trouble principal</label>
-                                    <div style={{ position: 'relative' }}>
-                                        <ShieldCheck size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-                                        <select
-                                            required
-                                            value={childForm.diagnosis}
-                                            onChange={(e) => setChildForm({ ...childForm, diagnosis: e.target.value })}
-                                            className="modal-input"
-                                            style={{ width: '100%', paddingLeft: '40px' }}
-                                        >
-                                            <option value="">Choisir un diagnostic...</option>
-                                            <option value="TSA (Trouble du Spectre de l'Autisme)">TSA (Autisme)</option>
-                                            <option value="TDAH (Trouble de l'Attention)">TDAH</option>
-                                            <option value="Troubles DYS (Dyslexie, Dyspraxie...)">Troubles DYS</option>
-                                            <option value="Retard de développement">Retard de développement</option>
-                                            <option value="Autre">Autre</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <button
-                                    type="submit"
-                                    className="btn-primary"
-                                    disabled={isSubmitting}
-                                    style={{ width: '100%', justifyContent: 'center', marginTop: '10px' }}
-                                >
-                                    {isSubmitting ? 'Enregistrement...' : 'Enregistrer les modifications'}
-                                </button>
-                            </form>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
-            {/* Document Vault Modal */}
-            <DocumentVault
-                isOpen={isVaultOpen}
-                onClose={() => { setIsVaultOpen(false); setSelectedChildForVault(null); }}
-                childId={selectedChildForVault?.id}
-                childName={selectedChildForVault?.first_name}
-            />
         </div>
     );
 };
