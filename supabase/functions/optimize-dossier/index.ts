@@ -1,3 +1,4 @@
+// @ts-ignore: Deno module
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
 const corsHeaders = {
@@ -272,7 +273,8 @@ serve(async (req: Request) => {
 
         console.log("Optimisation pour:", answers.firstName || "Inconnu");
 
-        const GROQ_API_KEY = Deno.env.get('GROQ_API_KEY')
+        // @ts-ignore: Deno is provided by the execution environment
+        const GROQ_API_KEY = (globalThis as any).Deno.env.get('GROQ_API_KEY')
         if (!GROQ_API_KEY) throw new Error('GROQ_API_KEY not configured');
 
         // Calcul de l'âge approximatif

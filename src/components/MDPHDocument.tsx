@@ -24,15 +24,17 @@ const styles = StyleSheet.create({
         letterSpacing: 1,
     },
     title: {
-        fontSize: 24,
+        fontSize: 20,
         fontWeight: 'bold',
         color: '#0f172a',
         marginBottom: 8,
+        lineHeight: 1.2,
     },
     subtitle: {
         fontSize: 11,
         color: '#64748b',
         fontWeight: 'normal',
+        lineHeight: 1.4,
     },
     metaRow: {
         marginTop: 15,
@@ -105,7 +107,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fcfdfe',
         borderWidth: 1,
         borderColor: '#2563eb',
-        minHeight: 600,
+        minHeight: 400,
     },
     projetTitle: {
         fontSize: 18,
@@ -472,7 +474,7 @@ export const MDPHDocument = ({ data }: MDPHDocumentProps) => {
                 </View>
 
                 {/* SECTION 5: PROJET DE VIE (AI Optimized or Manual) */}
-                <View style={[styles.card, { minHeight: 650 }]}>
+                <View style={[styles.card, { minHeight: 400 }]}>
                     <Text style={styles.sectionTitle}>V. Projet de Vie</Text>
                     {data.expectations ? (
                         <View>
@@ -518,13 +520,23 @@ export const MDPHDocument = ({ data }: MDPHDocumentProps) => {
                             <Text style={styles.paragraph}>
                                 {getFamilyImpactDescription()}
                             </Text>
+                            {data.familyImpact && (
+                                <View style={styles.highlight}>
+                                    <Text style={{ fontSize: 9, fontWeight: 'bold', marginBottom: 6, color: '#ea580c' }}>
+                                        Observations complémentaires :
+                                    </Text>
+                                    <Text style={{ fontSize: 9, lineHeight: 1.5, color: '#475569' }}>
+                                        {data.familyImpact}
+                                    </Text>
+                                </View>
+                            )}
                         </View>
                     )}
                 </View>
 
-                {/* SECTION 6: SOINS */}
-                <View style={styles.card}>
-                    <Text style={styles.sectionTitle}>VI. Soins en Cours et Reste à Charge</Text>
+                {/* SECTION 6/7: SOINS */}
+                <View style={styles.card} wrap={false}>
+                    <Text style={styles.sectionTitle}>{data.expectations ? 'VI.' : 'VII.'} Soins en Cours et Reste à Charge</Text>
                     <View style={styles.table}>
                         <View style={styles.tableRow}>
                             <Text style={[styles.tableHeader, { width: '50%' }]}>Professionnel</Text>
@@ -572,28 +584,8 @@ export const MDPHDocument = ({ data }: MDPHDocumentProps) => {
                     </Text>
                 </View>
 
-                {/* SECTION 7: FAMILLE (Only if no AI expectations) */}
-                {!data.expectations && (
-                    <View style={styles.card}>
-                        <Text style={styles.sectionTitle}>VII. Retentissement sur la Vie Familiale</Text>
-                        <Text style={styles.paragraph}>
-                            {getFamilyImpactDescription()}
-                        </Text>
-                        {data.familyImpact && (
-                            <View style={styles.highlight}>
-                                <Text style={{ fontSize: 9, fontWeight: 'bold', marginBottom: 6, color: '#ea580c' }}>
-                                    Expression de la famille :
-                                </Text>
-                                <Text style={{ fontSize: 9, lineHeight: 1.5, color: '#475569' }}>
-                                    {data.familyImpact}
-                                </Text>
-                            </View>
-                        )}
-                    </View>
-                )}
-
-                {/* SECTION 8: DEMANDE */}
-                <View style={styles.card}>
+                {/* SECTION DEMANDE (Re-numbered) */}
+                <View style={styles.card} wrap={false}>
                     <Text style={styles.sectionTitle}>{data.expectations ? 'VII.' : 'VIII.'} Notre Demande</Text>
                     <Text style={styles.paragraph}>
                         Nous sollicitons :
