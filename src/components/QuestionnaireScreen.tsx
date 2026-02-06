@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Questionnaire } from './Questionnaire';
 import { toast } from 'react-hot-toast';
@@ -112,8 +112,64 @@ export const QuestionnaireScreen = () => {
     const navigate = useNavigate();
     const [stage, setStage] = useState<'questionnaire' | 'optimizing' | 'review' | 'payment' | 'success'>('questionnaire');
     const [completedAnswers, setCompletedAnswers] = useState<any>(null);
+    const [initialData, setInitialData] = useState<any>(null);
+    const [isLoading, setIsLoading] = useState(true);
     const [isGenerating, setIsGenerating] = useState(false);
     const [optimizationMessage, setOptimizationMessage] = useState('Analyse des réponses...');
+
+    useEffect(() => {
+        const loadSubmission = async () => {
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    navigate('/auth');
+                    return;
+                }
+
+                const { data, error } = await supabase
+                    .from('submissions')
+                    .select('*')
+                    .eq('child_id', childId)
+                    .eq('user_id', user.id)
+                    .single();
+
+                if (error && error.code !== 'PGRST116') throw error;
+
+                if (data) {
+                    if (data.status === 'completed') {
+                        setCompletedAnswers(data.answers);
+                        setStage('review');
+                    } else {
+                        setInitialData(data.answers || {});
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading submission:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadSubmission();
+    }, [childId, navigate]);
+
+    const handleAutoSave = async (answers: any) => {
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                await supabase
+                    .from('submissions')
+                    .update({
+                        answers,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('child_id', childId)
+                    .eq('user_id', user.id);
+            }
+        } catch (error) {
+            console.error('Auto-save error:', error);
+        }
+    };
 
     const handleComplete = async (answers: any) => {
         setCompletedAnswers(answers);
@@ -286,7 +342,18 @@ export const QuestionnaireScreen = () => {
         <div className="questionnaire-screen" style={{ minHeight: '100vh', background: '#f8fafc' }}>
             <main className="container" style={{ padding: '40px 20px 80px' }}>
                 <AnimatePresence mode="wait">
-                    {stage === 'questionnaire' && (
+                    {isLoading ? (
+                        <motion.div
+                            key="loading"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60vh' }}
+                        >
+                            <Loader2 size={48} className="animate-spin" style={{ color: 'var(--accent)', marginBottom: '20px' }} />
+                            <p style={{ color: 'var(--text-muted)', fontWeight: '500' }}>Chargement de votre dossier...</p>
+                        </motion.div>
+                    ) : stage === 'questionnaire' && (
                         <motion.div
                             key="questionnaire"
                             initial={{ opacity: 0 }}
@@ -295,6 +362,8 @@ export const QuestionnaireScreen = () => {
                         >
                             <Questionnaire
                                 onComplete={handleComplete}
+                                onSave={handleAutoSave}
+                                initialData={initialData}
                             />
                         </motion.div>
                     )}

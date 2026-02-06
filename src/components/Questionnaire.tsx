@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     ChevronRight, ChevronLeft, Check, User, Target, Brain,
     MessageCircle, GraduationCap, Stethoscope, Home, FileText,
@@ -8,6 +9,7 @@ import { motion } from 'framer-motion';
 
 interface QuestionnaireProps {
     onComplete: (answers: QuestionnaireAnswers) => void;
+    onSave?: (answers: Partial<QuestionnaireAnswers>) => void;
     initialData?: Partial<QuestionnaireAnswers>;
 }
 
@@ -96,9 +98,19 @@ const STEPS = [
     { id: 8, title: 'Demande', Icon: FileText }
 ];
 
-export const Questionnaire: React.FC<QuestionnaireProps> = ({ onComplete, initialData }) => {
+export const Questionnaire: React.FC<QuestionnaireProps> = ({ onComplete, onSave, initialData }) => {
+    const navigate = useNavigate();
     const [currentStep, setCurrentStep] = useState(1);
     const [answers, setAnswers] = useState<Partial<QuestionnaireAnswers>>(initialData || {});
+
+    // Auto-save logic
+    useEffect(() => {
+        if (!onSave) return;
+        const timer = setTimeout(() => {
+            onSave(answers);
+        }, 1000); // 1s debounce
+        return () => clearTimeout(timer);
+    }, [answers, onSave]);
 
     const updateAnswer = (field: keyof QuestionnaireAnswers, value: any) => {
         setAnswers(prev => ({ ...prev, [field]: value }));
@@ -124,7 +136,25 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ onComplete, initia
     const progress = (currentStep / 8) * 100;
 
     return (
-        <div className="questionnaire-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '40px 20px' }}>
+        <div className="questionnaire-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '10px 20px 40px' }}>
+            <div style={{ marginBottom: '20px' }}>
+                <button
+                    onClick={() => navigate('/dashboard')}
+                    className="btn-outline"
+                    style={{
+                        padding: '10px 20px',
+                        fontSize: '0.9rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        border: 'none',
+                        color: 'var(--text-muted)'
+                    }}
+                >
+                    <ChevronLeft size={18} /> Retour au tableau de bord
+                </button>
+            </div>
+
             {/* Progress Bar - Premium Style */}
             <div style={{
                 marginBottom: '50px',
