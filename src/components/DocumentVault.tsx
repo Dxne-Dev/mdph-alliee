@@ -16,6 +16,11 @@ export const DocumentVault: React.FC<DocumentVaultProps> = ({ isOpen, onClose, c
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
     const [deleteConfirmItem, setDeleteConfirmItem] = useState<any>(null);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [metadata, setMetadata] = useState({
+        type: 'autre',
+        date: new Date().toISOString().split('T')[0]
+    });
 
     useEffect(() => {
         if (isOpen && childId) {
@@ -42,29 +47,34 @@ export const DocumentVault: React.FC<DocumentVaultProps> = ({ isOpen, onClose, c
         }
     };
 
-    const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        // Validation - Max 5MB
         if (file.size > 5 * 1024 * 1024) {
             toast.error('Le fichier est trop volumineux (max 5Mo)');
             return;
         }
+
+        setSelectedFile(file);
+    };
+
+    const handleConfirmUpload = async () => {
+        if (!selectedFile) return;
 
         setUploading(true);
         try {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) throw new Error('Non authentifié');
 
-            const fileExt = file.name.split('.').pop();
+            const fileExt = selectedFile.name.split('.').pop();
             const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
             const filePath = `${user.id}/${childId}/${fileName}`;
 
             // 1. Upload to Supabase Storage
             const { error: uploadError } = await supabase.storage
                 .from('child_documents')
-                .upload(filePath, file);
+                .upload(filePath, selectedFile);
 
             if (uploadError) throw uploadError;
 
@@ -74,15 +84,18 @@ export const DocumentVault: React.FC<DocumentVaultProps> = ({ isOpen, onClose, c
                 .insert([{
                     child_id: childId,
                     user_id: user.id,
-                    name: file.name,
+                    name: selectedFile.name,
                     file_path: filePath,
-                    file_type: file.type,
-                    size: file.size
+                    file_type: selectedFile.type,
+                    size: selectedFile.size,
+                    category: metadata.type,
+                    document_date: metadata.date
                 }]);
 
             if (dbError) throw dbError;
 
             toast.success('Document ajouté ! ✨');
+            setSelectedFile(null);
             fetchDocuments();
         } catch (error: any) {
             console.error('Error uploading:', error);
@@ -231,52 +244,107 @@ export const DocumentVault: React.FC<DocumentVaultProps> = ({ isOpen, onClose, c
                         <div style={{ padding: '30px', overflowY: 'auto', flex: 1 }}>
                             {/* Upload Area - Premium */}
                             <div style={{ marginBottom: '40px' }}>
-                                <label
-                                    style={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        padding: '48px',
-                                        border: '2px dashed #e2e8f0',
-                                        borderRadius: 'var(--radius-lg)',
-                                        cursor: 'pointer',
-                                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                                        background: uploading ? '#f8fafc' : 'linear-gradient(to bottom, #ffffff, #fafafa)',
-                                        boxShadow: 'inset 0 0 20px rgba(0,0,0,0.01)'
-                                    }}
-                                    className="upload-zone"
-                                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.background = '#fffafa'; }}
-                                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.background = 'linear-gradient(to bottom, #ffffff, #fafafa)'; }}
-                                >
-                                    {uploading ? (
-                                        <>
-                                            <Loader2 size={40} className="animate-spin" style={{ color: 'var(--accent)' }} />
-                                            <span style={{ marginTop: '16px', fontWeight: '700', color: 'var(--primary)', fontSize: '1.1rem' }}>Sécurisation en cours...</span>
-                                            <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '4px' }}>Votre fichier est en cours de transfert</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <div style={{
-                                                width: '64px', height: '64px',
-                                                background: '#fff3eb',
-                                                color: 'var(--accent)',
-                                                borderRadius: '20px',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                marginBottom: '20px',
-                                                boxShadow: '0 4px 12px rgba(249, 115, 22, 0.1)'
-                                            }}>
-                                                <Upload size={30} />
+                                {!selectedFile ? (
+                                    <label
+                                        style={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            padding: '48px',
+                                            border: '2px dashed #e2e8f0',
+                                            borderRadius: 'var(--radius-lg)',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                            background: uploading ? '#f8fafc' : 'linear-gradient(to bottom, #ffffff, #fafafa)',
+                                            boxShadow: 'inset 0 0 20px rgba(0,0,0,0.01)'
+                                        }}
+                                        className="upload-zone"
+                                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.background = '#fffafa'; }}
+                                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.background = 'linear-gradient(to bottom, #ffffff, #fafafa)'; }}
+                                    >
+                                        <div style={{
+                                            width: '64px', height: '64px',
+                                            background: '#fff3eb',
+                                            color: 'var(--accent)',
+                                            borderRadius: '20px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            marginBottom: '20px',
+                                            boxShadow: '0 4px 12px rgba(249, 115, 22, 0.1)'
+                                        }}>
+                                            <Upload size={30} />
+                                        </div>
+                                        <span style={{ fontWeight: '800', marginBottom: '6px', fontSize: '1.1rem', color: 'var(--primary)' }}>Ajouter un document</span>
+                                        <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: '500' }}>Cliquer pour parcourir (Max 5Mo)</span>
+                                        <input type="file" onChange={handleFileSelect} hidden accept=".pdf,.jpg,.jpeg,.png" />
+                                    </label>
+                                ) : (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        style={{
+                                            padding: '24px',
+                                            background: 'var(--bg-light)',
+                                            borderRadius: 'var(--radius-lg)',
+                                            border: '1px solid var(--accent)',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            gap: '20px'
+                                        }}
+                                    >
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                <FileText size={20} style={{ color: 'var(--accent)' }} />
+                                                <span style={{ fontWeight: '700', color: 'var(--primary)', fontSize: '0.95rem' }}>{selectedFile.name}</span>
                                             </div>
-                                            <span style={{ fontWeight: '800', marginBottom: '6px', fontSize: '1.1rem', color: 'var(--primary)' }}>Ajouter un nouveau document</span>
-                                            <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: '500' }}>Glisser-déposer ou cliquer pour parcourir (Max 5Mo)</span>
-                                            <span style={{ color: '#94a3b8', fontSize: '0.8rem', marginTop: '12px' }}>Formats acceptés: PDF, JPG, PNG</span>
-                                        </>
-                                    )}
-                                    <input type="file" onChange={handleUpload} hidden disabled={uploading} accept=".pdf,.jpg,.jpeg,.png" />
-                                </label>
+                                            <button
+                                                onClick={() => setSelectedFile(null)}
+                                                style={{ padding: '4px', background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer' }}
+                                            >
+                                                <X size={18} />
+                                            </button>
+                                        </div>
+
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                                            <div className="form-group">
+                                                <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '8px' }}>Type de document</label>
+                                                <select
+                                                    value={metadata.type}
+                                                    onChange={(e) => setMetadata({ ...metadata, type: e.target.value })}
+                                                    style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid var(--border-subtle)', background: 'white' }}
+                                                >
+                                                    <option value="certificat_medical">Certificat Médical</option>
+                                                    <option value="identite">Pièce d'identité</option>
+                                                    <option value="domicile">Justificatif de domicile</option>
+                                                    <option value="photo">Photo d'identité</option>
+                                                    <option value="bilans">Bilan / Compte-rendu</option>
+                                                    <option value="autre">Autre document</option>
+                                                </select>
+                                            </div>
+                                            <div className="form-group">
+                                                <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '8px' }}>Date du document</label>
+                                                <input
+                                                    type="date"
+                                                    value={metadata.date}
+                                                    onChange={(e) => setMetadata({ ...metadata, date: e.target.value })}
+                                                    style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid var(--border-subtle)', background: 'white' }}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <button
+                                            onClick={handleConfirmUpload}
+                                            disabled={uploading}
+                                            className="btn-primary"
+                                            style={{ width: '100%', padding: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+                                        >
+                                            {uploading ? <Loader2 size={18} className="animate-spin" /> : <Upload size={18} />}
+                                            {uploading ? 'Sécurisation...' : 'Confirmer l\'ajout'}
+                                        </button>
+                                    </motion.div>
+                                )}
                             </div>
 
                             {/* Documents List */}
@@ -326,17 +394,59 @@ export const DocumentVault: React.FC<DocumentVaultProps> = ({ isOpen, onClose, c
                                                     <FileText size={24} />
                                                 </div>
                                                 <div style={{ flex: 1, minWidth: 0 }}>
-                                                    <h4 style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--primary)', marginBottom: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                                        {doc.name}
-                                                    </h4>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                                                        <h4 style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', margin: 0 }}>
+                                                            {doc.name}
+                                                        </h4>
+                                                        {doc.category === 'certificat_medical' && (
+                                                            <span style={{
+                                                                fontSize: '10px',
+                                                                padding: '2px 8px',
+                                                                borderRadius: '99px',
+                                                                background: '#eff6ff',
+                                                                color: '#2563eb',
+                                                                fontWeight: '700'
+                                                            }}>
+                                                                Certificat Médical
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                         <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: '500' }}>
                                                             {(doc.size / 1024).toFixed(1)} Ko
                                                         </span>
                                                         <span style={{ color: '#cbd5e1' }}>•</span>
                                                         <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: '500' }}>
-                                                            {new Date(doc.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+                                                            {doc.document_date ? new Date(doc.document_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }) : new Date(doc.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
                                                         </span>
+
+                                                        {doc.category === 'certificat_medical' && doc.document_date && (
+                                                            (() => {
+                                                                const docDate = new Date(doc.document_date);
+                                                                const twelveMonthsAgo = new Date();
+                                                                twelveMonthsAgo.setFullYear(twelveMonthsAgo.getFullYear() - 1);
+                                                                if (docDate < twelveMonthsAgo) {
+                                                                    return (
+                                                                        <div style={{
+                                                                            display: 'flex',
+                                                                            alignItems: 'center',
+                                                                            gap: '4px',
+                                                                            color: '#ef4444',
+                                                                            fontSize: '12px',
+                                                                            fontWeight: '700',
+                                                                            marginLeft: '8px',
+                                                                            background: '#fef2f2',
+                                                                            padding: '2px 8px',
+                                                                            borderRadius: '6px'
+                                                                        }}>
+                                                                            <AlertCircle size={14} />
+                                                                            Expiré (+12 mois)
+                                                                        </div>
+                                                                    );
+                                                                }
+                                                                return null;
+                                                            })()
+                                                        )}
                                                     </div>
                                                 </div>
                                                 <div style={{ display: 'flex', gap: '8px' }}>

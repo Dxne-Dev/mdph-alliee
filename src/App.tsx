@@ -7,6 +7,8 @@ import { Dashboard } from './components/Dashboard';
 import { QuestionnaireScreen } from './components/QuestionnaireScreen';
 import { Modal, type ModalMode } from './components/Modal';
 import { Toaster } from 'react-hot-toast';
+import { LegalPage } from './components/LegalPage';
+import { MentionsLegalesContent, ConfidentialityContent } from './LegalContent';
 
 function App() {
     const [session, setSession] = useState<any>(null);
@@ -74,6 +76,10 @@ function App() {
                 <Route path="/questionnaire/:childId" element={
                     session ? <QuestionnaireScreen /> : <Navigate to="/auth" />
                 } />
+
+                {/* Legal Routes */}
+                <Route path="/mentions-legales" element={<LegalPage title="Mentions Légales" content={<MentionsLegalesContent />} />} />
+                <Route path="/confidentialite" element={<LegalPage title="Politique de Confidentialité" content={<ConfidentialityContent />} />} />
 
                 {/* Catch-all to landing */}
                 <Route path="*" element={<Navigate to="/" />} />

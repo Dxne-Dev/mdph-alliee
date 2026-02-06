@@ -18,6 +18,8 @@ export interface QuestionnaireAnswers {
     firstName: string;
     lastName: string;
     birthDate: string;
+    birthPlace?: string; // Ajouté
+    representativeName?: string; // Ajouté (ex: Nom du parent)
     currentGrade: string;
     schoolType: 'publique' | 'privée' | 'spécialisée';
     diagnosis: string;
@@ -360,6 +362,27 @@ const Section1Situation = ({ answers, updateAnswer }: any) => (
                     type="date"
                     value={answers.birthDate || ''}
                     onChange={(e) => updateAnswer('birthDate', e.target.value)}
+                    className="modal-input"
+                />
+            </FormField>
+            <FormField label="Lieu de naissance">
+                <input
+                    type="text"
+                    value={answers.birthPlace || ''}
+                    onChange={(e) => updateAnswer('birthPlace', e.target.value)}
+                    placeholder="Paris (75)"
+                    className="modal-input"
+                />
+            </FormField>
+        </div>
+
+        <div className="form-grid-2col">
+            <FormField label="Représentant légal (Parent 1)" required>
+                <input
+                    type="text"
+                    value={answers.representativeName || ''}
+                    onChange={(e) => updateAnswer('representativeName', e.target.value)}
+                    placeholder="Nom Complet"
                     className="modal-input"
                 />
             </FormField>

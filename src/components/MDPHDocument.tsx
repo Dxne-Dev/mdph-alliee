@@ -480,9 +480,22 @@ export const MDPHDocument = ({ data }: MDPHDocumentProps) => {
                                 Ce projet de vie a été structuré pour mettre en lumière les besoins de compensation et les limitations d'activité de {data.firstName} de manière experte.
                             </Text>
                             <View style={{ marginTop: 15, padding: 20, backgroundColor: '#fcfdfe', borderLeftWidth: 3, borderLeftColor: '#2563eb' }}>
-                                <Text style={[styles.projetText, { fontSize: 10 }]}>
-                                    {data.expectations}
-                                </Text>
+                                {data.expectations.split('\n').map((line, i) => {
+                                    const cleanLine = line.replace(/^###?\s*/, '').replace(/^\*\*\s*/, '').replace(/\*\*\s*$/, '').trim();
+                                    if (!cleanLine) return <View key={i} style={{ height: 10 }} />;
+
+                                    const isHeader = line.startsWith('#');
+                                    const isListItem = line.trim().startsWith('-') || line.trim().startsWith('*');
+
+                                    return (
+                                        <Text key={i} style={[
+                                            styles.projetText,
+                                            { fontSize: isHeader ? 11 : 10, fontWeight: isHeader ? 'bold' : 'normal', marginBottom: 6, marginLeft: isListItem ? 10 : 0 }
+                                        ]}>
+                                            {isListItem ? `• ${cleanLine.replace(/^[-*]\s*/, '')}` : cleanLine}
+                                        </Text>
+                                    );
+                                })}
                             </View>
                         </View>
                     ) : (

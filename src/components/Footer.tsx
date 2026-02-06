@@ -1,5 +1,6 @@
 import React, { useState, type FormEvent } from 'react';
 import { Mail, ShieldCheck, Heart } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface FooterProps {
     onWaitlistSubmit: (email: string) => void;
@@ -74,8 +75,8 @@ export const Footer: React.FC<FooterProps> = ({ onWaitlistSubmit }) => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '24px' }}>
                     <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.4)' }}>&copy; 2026 L'Allié MDPH. Tous droits réservés.</p>
                     <div style={{ display: 'flex', gap: '32px' }}>
-                        <a href="#" style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.4)' }}>Mentions Légales</a>
-                        <a href="#" style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.4)' }}>Confidentialité</a>
+                        <Link to="/mentions-legales" style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.4)' }}>Mentions Légales</Link>
+                        <Link to="/confidentialite" style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.4)' }}>Confidentialité</Link>
                     </div>
                 </div>
             </div>

@@ -296,6 +296,8 @@ export const QuestionnaireScreen = () => {
                     const allFields = form.getFields();
                     const nom = (completedAnswers.lastName || '').toUpperCase();
                     const prenom = completedAnswers.firstName || '';
+                    const villeNaissance = completedAnswers.birthPlace || '';
+                    const representant = completedAnswers.representativeName || '';
 
                     allFields.forEach(field => {
                         try {
@@ -304,11 +306,22 @@ export const QuestionnaireScreen = () => {
 
                             if (typeof (field as any).setText === 'function') {
                                 const f = field as any;
+
+                                // Nom
                                 if ((lowerName.includes('nom') && (lowerName.includes('naissance') || lowerName.includes('usage') || lowerName.includes('famille') || lowerName.includes('p2'))) || lowerName === 'nom') {
                                     f.setText(nom);
                                 }
+                                // Prénom
                                 if (lowerName.includes('prenom') || lowerName.includes('prénom') || lowerName.includes('pr??no')) {
                                     f.setText(prenom);
+                                }
+                                // Lieu de naissance
+                                if (lowerName.includes('lieunaissance') || lowerName.includes('ville_naissance') || lowerName.includes('lieu_naiss')) {
+                                    f.setText(villeNaissance);
+                                }
+                                // Représentant légal
+                                if (lowerName.includes('representant') || lowerName.includes('représentant') || lowerName.includes('autorite_parentale')) {
+                                    f.setText(representant);
                                 }
                             }
                         } catch (e) { }

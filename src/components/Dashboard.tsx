@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 import {
     Plus, FileText, ChevronRight, Download, Trash2,
-    CheckCircle2, Clock, ArrowRight, Bell, ClipboardList, Heart
+    CheckCircle2, Clock, ArrowRight, Bell, ClipboardList, Heart, AlertCircle
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { DocumentVault } from './DocumentVault';
@@ -21,64 +21,103 @@ export const Dashboard = () => {
     const [isGenerating, setIsGenerating] = useState<string | null>(null);
     const [vaultOpenId, setVaultOpenId] = useState<string | null>(null);
 
-    // Initialisation
-    useEffect(() => {
-        const initDashboard = async () => {
-            try {
-                const { data: { user } } = await supabase.auth.getUser();
-                if (!user) {
-                    navigate('/auth');
-                    return;
-                }
-                setUser(user);
+    const fetchDashboardData = async () => {
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                navigate('/auth');
+                return;
+            }
+            setUser(user);
 
-                const { data: submissions, error } = await supabase
-                    .from('submissions')
-                    .select('*')
-                    .eq('user_id', user.id);
+            const { data: submissions, error } = await supabase
+                .from('submissions')
+                .select('*')
+                .eq('user_id', user.id);
 
-                if (error) throw error;
+            if (error) throw error;
 
-                const childrenData = submissions?.map(sub => ({
-                    id: sub.child_id || sub.id,
+            const { data: childrenDocs } = await supabase
+                .from('documents')
+                .select('*')
+                .eq('user_id', user.id);
+
+            const childrenData = submissions?.map(sub => {
+                const childId = sub.child_id || sub.id;
+                const childDocs = childrenDocs?.filter(d => d.child_id === childId) || [];
+
+                // Vérifier si un certificat médical est expiré (+12 mois)
+                const twelveMonthsAgo = new Date();
+                twelveMonthsAgo.setFullYear(twelveMonthsAgo.getFullYear() - 1);
+
+                const hasExpiredDoc = childDocs.some(d =>
+                    d.category === 'certificat_medical' &&
+                    d.document_date &&
+                    new Date(d.document_date) < twelveMonthsAgo
+                );
+
+                const hasMedicalCert = childDocs.some(d => d.category === 'certificat_medical');
+                const hasId = childDocs.some(d => d.category === 'identite');
+                const hasAddress = childDocs.some(d => d.category === 'domicile');
+                const hasPhoto = childDocs.some(d => d.category === 'photo');
+
+                return {
+                    id: childId,
                     first_name: sub.answers?.firstName || 'Enfant sans nom',
                     status: sub.status || 'draft',
                     last_updated: sub.updated_at,
-                    answers: sub.answers
-                })) || [];
+                    answers: sub.answers,
+                    docCount: childDocs.length,
+                    hasExpiredDoc,
+                    docs: {
+                        medical: hasMedicalCert,
+                        identite: hasId,
+                        domicile: hasAddress,
+                        photo: hasPhoto
+                    }
+                };
+            }) || [];
 
-                setChildren(childrenData);
+            setChildren(childrenData);
+        } catch (err) {
+            console.error('Refresh error:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-            } catch (error) {
-                console.error('Erreur chargement dashboard:', error);
-                toast.error('Impossible de charger vos dossiers.');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        initDashboard();
+    // Initialisation
+    useEffect(() => {
+        fetchDashboardData();
     }, [navigate]);
+
+    const handleVaultClose = () => {
+        setVaultOpenId(null);
+        fetchDashboardData(); // Rafraîchir les compteurs
+    };
 
     const handleCreateNew = async () => {
         const newChildId = crypto.randomUUID();
         try {
-            // 1. Créer l'enfant dans la table 'children' (utiliser parent_id au lieu de user_id)
+            const { data: { user: currentUser } } = await supabase.auth.getUser();
+            if (!currentUser) return;
+
+            // 1. Créer l'enfant
             const { error: childError } = await supabase
                 .from('children')
                 .insert([{
                     id: newChildId,
-                    parent_id: user.id, // Correction ici
+                    parent_id: currentUser.id,
                     first_name: 'Nouvel enfant'
                 }]);
 
             if (childError) throw childError;
 
-            // 2. Créer la soumission liée
+            // 2. Créer la soumission
             const { error: subError } = await supabase
                 .from('submissions')
                 .insert([{
-                    user_id: user.id,
+                    user_id: currentUser.id,
                     child_id: newChildId,
                     status: 'draft',
                     answers: {}
@@ -94,7 +133,7 @@ export const Dashboard = () => {
     };
 
     const handleDelete = async (childId: string) => {
-        if (!confirm('Êtes-vous sûr de vouloir supprimer ce dossier ? Cette action est irréversible.')) return;
+        if (!confirm('Êtes-vous sûr de vouloir supprimer ce dossier ?')) return;
 
         try {
             // Supprimer d'abord les submissions (dépendance FK)
@@ -370,6 +409,18 @@ export const Dashboard = () => {
                                                 <span style={{ fontSize: '14px', color: 'var(--text-muted)', fontWeight: '600' }}>
                                                     Mis à jour le {new Date(child.last_updated).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}
                                                 </span>
+                                                {child.hasExpiredDoc && (
+                                                    <div style={{
+                                                        display: 'flex', alignItems: 'center', gap: '6px',
+                                                        color: '#ef4444', backgroundColor: '#fef2f2',
+                                                        padding: '6px 14px', borderRadius: '99px',
+                                                        fontSize: '13px', fontWeight: '800',
+                                                        border: '1px solid #fee2e2'
+                                                    }}>
+                                                        <AlertCircle size={15} />
+                                                        Certificat Médical Expiré
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -479,38 +530,68 @@ export const Dashboard = () => {
                                         </div>
 
                                         <div style={{
-                                            padding: '28px',
+                                            padding: '24px',
                                             border: '1px solid var(--border-subtle)',
                                             borderRadius: '24px',
                                             backgroundColor: 'white',
-                                            textAlign: 'center',
                                             boxShadow: '0 4px 6px rgba(0,0,0,0.02)'
                                         }}>
-                                            <div style={{
-                                                width: '64px', height: '64px', backgroundColor: '#ecfdf5', color: '#10b981',
-                                                borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                margin: '0 auto 20px',
-                                                boxShadow: '0 8px 16px rgba(16, 185, 129, 0.1)'
-                                            }}>
-                                                <Heart size={32} />
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
+                                                <div style={{
+                                                    width: '48px', height: '48px', backgroundColor: child.docCount >= 5 ? '#ecfdf5' : '#fefce8',
+                                                    color: child.docCount >= 5 ? '#10b981' : '#ca8a04',
+                                                    borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                                }}>
+                                                    <Heart size={24} />
+                                                </div>
+                                                <div style={{ textAlign: 'left' }}>
+                                                    <h3 style={{ fontSize: '16px', fontWeight: '800', color: 'var(--primary)' }}>
+                                                        Checklist Pièces
+                                                    </h3>
+                                                    <div style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: '600' }}>
+                                                        {child.docCount} / 5 documents chargés
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--primary)', marginBottom: '8px' }}>
-                                                Coffre-fort L'Allié
-                                            </h3>
-                                            <p style={{ fontSize: '14px', color: 'var(--text-muted)', marginBottom: '24px', lineHeight: '1.6', fontWeight: '500' }}>
-                                                Centralisez vos certificats médicaux et bilans en un seul lieu sécurisé.
-                                            </p>
+
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
+                                                {[
+                                                    { label: 'Certificat Médical MDPH', isProvided: child.docs.medical },
+                                                    { label: 'Pièce d\'identité enfant', isProvided: child.docs.identite },
+                                                    { label: 'Justificatif de domicile', isProvided: child.docs.domicile },
+                                                    { label: 'Photo d\'identité', isProvided: child.docs.photo },
+                                                    { label: 'Bilans & Bilans (Optionnel)', isProvided: child.docCount > 4 }
+                                                ].map((doc, idx) => (
+                                                    <div key={idx} style={{
+                                                        display: 'flex', alignItems: 'center', gap: '10px',
+                                                        fontSize: '13px', color: doc.isProvided ? 'var(--primary)' : 'var(--text-muted)',
+                                                        fontWeight: '500'
+                                                    }}>
+                                                        <div style={{
+                                                            width: '18px', height: '18px', borderRadius: '50%',
+                                                            backgroundColor: doc.isProvided ? '#ecfdf5' : '#f1f5f9',
+                                                            color: doc.isProvided ? '#10b981' : '#cbd5e1',
+                                                            display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                                        }}>
+                                                            {doc.isProvided ? <CheckCircle2 size={12} /> : <div style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: '#cbd5e1' }} />}
+                                                        </div>
+                                                        {doc.label}
+                                                    </div>
+                                                ))}
+                                            </div>
+
                                             <button
                                                 onClick={() => setVaultOpenId(child.id)}
                                                 className="btn-outline"
                                                 style={{
                                                     width: '100%',
-                                                    padding: '14px',
-                                                    borderRadius: '14px',
-                                                    fontSize: '15px'
+                                                    padding: '12px',
+                                                    borderRadius: '12px',
+                                                    fontSize: '14px',
+                                                    fontWeight: '700'
                                                 }}
                                             >
-                                                Ouvrir mes documents
+                                                Gérer mes documents
                                             </button>
                                         </div>
                                     </div>
@@ -523,7 +604,7 @@ export const Dashboard = () => {
                 {vaultOpenId && children.find(c => c.id === vaultOpenId) && (
                     <DocumentVault
                         isOpen={true}
-                        onClose={() => setVaultOpenId(null)}
+                        onClose={handleVaultClose}
                         childId={vaultOpenId}
                         childName={children.find(c => c.id === vaultOpenId)?.first_name || 'Enfant'}
                     />
