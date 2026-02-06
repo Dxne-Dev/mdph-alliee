@@ -471,19 +471,39 @@ export const MDPHDocument = ({ data }: MDPHDocumentProps) => {
                     </Text>
                 </View>
 
-                {/* SECTION 5: SCOLARITÉ */}
-                <View style={styles.card}>
-                    <Text style={styles.sectionTitle}>V. Retentissement Scolaire</Text>
-                    <Text style={styles.paragraph}>
-                        {getSchoolDescription()}
-                    </Text>
-                    {data.schoolContext && (
-                        <View style={styles.highlight}>
-                            <Text style={{ fontSize: 9, fontWeight: 'bold', marginBottom: 6, color: '#ea580c' }}>
-                                Contexte scolaire au quotidien :
+                {/* SECTION 5: PROJET DE VIE (AI Optimized or Manual) */}
+                <View style={[styles.card, { minHeight: 650 }]}>
+                    <Text style={styles.sectionTitle}>V. Projet de Vie</Text>
+                    {data.expectations ? (
+                        <View>
+                            <Text style={styles.paragraph}>
+                                Ce projet de vie a été structuré pour mettre en lumière les besoins de compensation et les limitations d'activité de {data.firstName} de manière experte.
                             </Text>
-                            <Text style={{ fontSize: 9, lineHeight: 1.5, color: '#475569' }}>
-                                {data.schoolContext}
+                            <View style={{ marginTop: 15, padding: 20, backgroundColor: '#fcfdfe', borderLeftWidth: 3, borderLeftColor: '#2563eb' }}>
+                                <Text style={[styles.projetText, { fontSize: 10 }]}>
+                                    {data.expectations}
+                                </Text>
+                            </View>
+                        </View>
+                    ) : (
+                        <View>
+                            <Text style={styles.paragraph}>
+                                {getSchoolDescription()}
+                            </Text>
+                            {data.schoolContext && (
+                                <View style={styles.highlight}>
+                                    <Text style={{ fontSize: 9, fontWeight: 'bold', marginBottom: 6, color: '#ea580c' }}>
+                                        Contexte scolaire au quotidien :
+                                    </Text>
+                                    <Text style={{ fontSize: 9, lineHeight: 1.5, color: '#475569' }}>
+                                        {data.schoolContext}
+                                    </Text>
+                                </View>
+                            )}
+
+                            <Text style={[styles.sectionTitle, { marginTop: 20 }]}>VI. Retentissement Familial</Text>
+                            <Text style={styles.paragraph}>
+                                {getFamilyImpactDescription()}
                             </Text>
                         </View>
                     )}
@@ -537,32 +557,31 @@ export const MDPHDocument = ({ data }: MDPHDocumentProps) => {
                     <Text style={[styles.paragraph, { fontWeight: 'bold', marginTop: 10 }]}>
                         Reste à charge mensuel total : {calculateTotalCost()}€
                     </Text>
-                    <Text style={styles.paragraph}>
-                        Ces soins, non pris en charge intégralement, représentent une charge financière significative.
-                    </Text>
                 </View>
 
-                {/* SECTION 7: FAMILLE */}
-                <View style={styles.card}>
-                    <Text style={styles.sectionTitle}>VII. Retentissement sur la Vie Familiale</Text>
-                    <Text style={styles.paragraph}>
-                        {getFamilyImpactDescription()}
-                    </Text>
-                    {data.familyImpact && (
-                        <View style={styles.highlight}>
-                            <Text style={{ fontSize: 9, fontWeight: 'bold', marginBottom: 6, color: '#ea580c' }}>
-                                Expression de la famille :
-                            </Text>
-                            <Text style={{ fontSize: 9, lineHeight: 1.5, color: '#475569' }}>
-                                {data.familyImpact}
-                            </Text>
-                        </View>
-                    )}
-                </View>
+                {/* SECTION 7: FAMILLE (Only if no AI expectations) */}
+                {!data.expectations && (
+                    <View style={styles.card}>
+                        <Text style={styles.sectionTitle}>VII. Retentissement sur la Vie Familiale</Text>
+                        <Text style={styles.paragraph}>
+                            {getFamilyImpactDescription()}
+                        </Text>
+                        {data.familyImpact && (
+                            <View style={styles.highlight}>
+                                <Text style={{ fontSize: 9, fontWeight: 'bold', marginBottom: 6, color: '#ea580c' }}>
+                                    Expression de la famille :
+                                </Text>
+                                <Text style={{ fontSize: 9, lineHeight: 1.5, color: '#475569' }}>
+                                    {data.familyImpact}
+                                </Text>
+                            </View>
+                        )}
+                    </View>
+                )}
 
                 {/* SECTION 8: DEMANDE */}
                 <View style={styles.card}>
-                    <Text style={styles.sectionTitle}>VIII. Notre Demande</Text>
+                    <Text style={styles.sectionTitle}>{data.expectations ? 'VII.' : 'VIII.'} Notre Demande</Text>
                     <Text style={styles.paragraph}>
                         Nous sollicitons :
                     </Text>

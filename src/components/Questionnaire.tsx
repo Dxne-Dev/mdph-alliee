@@ -82,6 +82,7 @@ export interface QuestionnaireAnswers {
     requestedAeshType?: 'individuel' | 'plus_heures';
     requestEquipment: boolean;
     finalNotes?: string;
+    expectations?: string;
 }
 
 const STEPS = [
