@@ -8,7 +8,7 @@ import { QuestionnaireScreen } from './components/QuestionnaireScreen';
 import { Modal, type ModalMode } from './components/Modal';
 import { Toaster } from 'react-hot-toast';
 import { LegalPage } from './components/LegalPage';
-import { MentionsLegalesContent, ConfidentialityContent } from './LegalContent';
+import { MentionsLegalesContent, ConfidentialityContent, CGVContent, CGUContent } from './LegalContent';
 
 function App() {
     const [session, setSession] = useState<any>(null);
@@ -80,6 +80,8 @@ function App() {
                 {/* Legal Routes */}
                 <Route path="/mentions-legales" element={<LegalPage title="Mentions Légales" content={<MentionsLegalesContent />} />} />
                 <Route path="/confidentialite" element={<LegalPage title="Politique de Confidentialité" content={<ConfidentialityContent />} />} />
+                <Route path="/cgv" element={<LegalPage title="Conditions Générales de Vente" content={<CGVContent />} />} />
+                <Route path="/cgu" element={<LegalPage title="Conditions Générales d'Utilisation" content={<CGUContent />} />} />
 
                 {/* Catch-all to landing */}
                 <Route path="*" element={<Navigate to="/" />} />

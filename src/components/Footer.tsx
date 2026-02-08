@@ -76,6 +76,8 @@ export const Footer: React.FC<FooterProps> = ({ onWaitlistSubmit }) => {
                     <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.4)' }}>&copy; 2026 L'Allié MDPH. Tous droits réservés.</p>
                     <div style={{ display: 'flex', gap: '32px' }}>
                         <Link to="/mentions-legales" style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.4)' }}>Mentions Légales</Link>
+                        <Link to="/cgv" style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.4)' }}>CGV</Link>
+                        <Link to="/cgu" style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.4)' }}>CGU</Link>
                         <Link to="/confidentialite" style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.4)' }}>Confidentialité</Link>
                     </div>
                 </div>

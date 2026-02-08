@@ -5,6 +5,7 @@ import {
     MessageCircle, GraduationCap, Stethoscope, Home, FileText,
     Heart, CheckCircle
 } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 import { motion } from 'framer-motion';
 
 interface QuestionnaireProps {
@@ -15,6 +16,7 @@ interface QuestionnaireProps {
 
 export interface QuestionnaireAnswers {
     // Section 1: Situation Actuelle
+    consent: boolean; // Ajouté
     firstName: string;
     lastName: string;
     birthDate: string;
@@ -127,6 +129,10 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ onComplete, onSave
     };
 
     const nextStep = () => {
+        if (currentStep === 1 && !answers.consent) {
+            toast.error("Veuillez accepter le traitement des données sensibles pour continuer.");
+            return;
+        }
         if (currentStep < 8) setCurrentStep(currentStep + 1);
         else onComplete(answers as QuestionnaireAnswers);
     };
@@ -334,6 +340,34 @@ const Section1Situation = ({ answers, updateAnswer }: any) => (
             <User size={32} style={{ color: 'var(--accent)' }} /> Situation Actuelle
         </h2>
         <p className="step-subtext">Commençons par quelques informations de base sur votre enfant.</p>
+
+        <div className="consent-block" style={{
+            background: '#fff7ed',
+            border: '1px solid #fed7aa',
+            padding: '20px',
+            borderRadius: '12px',
+            marginBottom: '30px',
+            color: '#9a3412'
+        }}>
+            <h3 style={{ fontSize: '1rem', fontWeight: '700', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                ⚠️ Données de santé
+            </h3>
+            <p style={{ fontSize: '0.9rem', marginBottom: '15px', lineHeight: '1.5' }}>
+                Les informations que vous allez saisir concernent la santé et le handicap de votre enfant.
+                Ces données sont protégées et utilisées uniquement pour générer votre dossier.
+            </p>
+            <label style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', cursor: 'pointer' }}>
+                <input
+                    type="checkbox"
+                    checked={answers.consent || false}
+                    onChange={(e) => updateAnswer('consent', e.target.checked)}
+                    style={{ marginTop: '4px' }}
+                />
+                <span style={{ fontSize: '0.9rem', fontWeight: '500' }}>
+                    Je consens au traitement de ces données sensibles conformément à la <a href="/confidentialite" target="_blank" style={{ color: '#c2410c', textDecoration: 'underline' }}>Politique de Confidentialité</a>.
+                </span>
+            </label>
+        </div>
 
         <div className="form-grid-2col">
             <FormField label="Prénom de l'enfant" required>

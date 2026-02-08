@@ -204,6 +204,15 @@ export const Auth: React.FC<AuthProps> = ({ onBack, onSuccess }) => {
                                     <p style={{ color: '#ef4444', fontSize: '0.85rem', textAlign: 'center' }}>{error}</p>
                                 )}
 
+                                {mode === 'signup' && (
+                                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                                        <input type="checkbox" required style={{ marginTop: '4px' }} />
+                                        <span>
+                                            J'accepte les <a href="/cgu" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>CGU</a> et la <a href="/confidentialite" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>Politique de Confidentialité</a>.
+                                        </span>
+                                    </div>
+                                )}
+
                                 <button type="submit" className="btn-primary" disabled={loading} style={{ width: '100%', justifyContent: 'center' }}>
                                     {loading ? <Loader2 className="animate-spin" /> : (mode === 'signup' ? "S'inscrire" : mode === 'login' ? "Se connecter" : "Envoyer le lien")}
                                 </button>
