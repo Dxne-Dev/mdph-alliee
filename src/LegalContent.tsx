@@ -57,7 +57,7 @@ export const CGVContent = () => (
         <p>4.4 — Les documents générés utilisent l'intelligence artificielle. Malgré les mesures prises pour assurer la qualité des contenus, l'utilisateur doit vérifier et adapter les textes générés avant utilisation.</p>
 
         <h3>ARTICLE 5 — PRIX ET PAIEMENT</h3>
-        <p>5.1 — Le prix du service est de 29,00 € TTC (vingt-neuf euros toutes taxes comprises).</p>
+        <p>5.1 — Le prix du service est celui indiqué sur le site internet au moment de l'achat.</p>
         <p>5.2 — Le paiement est unique. Il donne accès au service de manière illimitée dans le temps, y compris les mises à jour et les régénérations de documents.</p>
         <p>5.3 — Le paiement est effectué par carte bancaire via le prestataire sécurisé Stripe. Les données de paiement ne sont ni collectées ni stockées par L'Allié MDPH.</p>
         <p>5.4 — Des tarifs promotionnels peuvent être proposés ponctuellement. Ils n'ouvrent droit à aucun remboursement de la différence pour les achats effectués à un tarif antérieur.</p>

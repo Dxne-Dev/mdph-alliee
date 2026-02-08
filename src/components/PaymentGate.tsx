@@ -114,9 +114,9 @@ export const PaymentGate: React.FC<PaymentGateProps> = ({ childName, onPaymentSu
                 display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'
             }}>
                 <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-                    <span style={{ fontSize: '1rem', color: '#64748b', textDecoration: 'line-through' }}>150€</span>
-                    <div style={{ fontSize: '3.5rem', fontWeight: '800', color: '#0f172a', lineHeight: '1' }}>29€<span style={{ fontSize: '1rem', color: '#64748b', fontWeight: 'normal' }}>/unique</span></div>
-                    <p style={{ color: '#64748b', marginTop: '8px' }}>Accès à vie pour ce dossier</p>
+                    <span style={{ fontSize: '1rem', color: '#64748b', textDecoration: 'line-through' }}>49€</span>
+                    <div style={{ fontSize: '3.5rem', fontWeight: '800', color: '#0f172a', lineHeight: '1' }}>19€<span style={{ fontSize: '1rem', color: '#64748b', fontWeight: 'normal' }}>/unique</span></div>
+                    <p style={{ color: '#64748b', marginTop: '8px' }}>Accès Bêta illimité à vie</p>
                 </div>
 
                 <button
