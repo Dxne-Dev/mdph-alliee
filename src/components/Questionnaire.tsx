@@ -164,15 +164,15 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ onComplete, onSave
             </div>
 
             {/* Progress Bar - Premium Style */}
-            <div style={{
+            <div className="progress-step-container" style={{
                 marginBottom: '50px',
                 background: 'white',
-                padding: '30px',
+                padding: '20px 10px',
                 borderRadius: 'var(--radius-lg)',
                 boxShadow: 'var(--shadow-md)',
                 border: '1px solid var(--border-subtle)'
             }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px', position: 'relative' }}>
+                <div className="progress-step-wrapper" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px', position: 'relative' }}>
                     <div style={{
                         position: 'absolute',
                         top: '20px',
@@ -227,7 +227,7 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ onComplete, onSave
                                 >
                                     <StepIcon size={20} strokeWidth={isCurrent ? 2.5 : 2} />
                                 </div>
-                                <span style={{
+                                <span className="step-indicator-label" style={{
                                     fontSize: '10px',
                                     fontWeight: '700',
                                     textTransform: 'uppercase',

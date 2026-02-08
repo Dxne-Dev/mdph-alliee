@@ -46,14 +46,14 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3, duration: 0.6 }}
-                    style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginTop: '50px' }}
+                    style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginTop: '50px', flexWrap: 'wrap' }}
                 >
                     <button onClick={onCtaClick} className="btn-primary" style={{ padding: '20px 45px', fontSize: '1.1rem' }}>
-                        Commencer mon dossier
+                        Renouvelez mon Dossier
                         <ArrowRight size={20} />
                     </button>
-                    <button onClick={onCtaClick} className="btn-outline" style={{ padding: '20px 45px' }}>
-                        Découvrir comment ça marche
+                    <button onClick={onCtaClick} className="btn-outline" style={{ padding: '20px 45px', fontSize: '1.1rem' }}>
+                        Démarrer première demande
                     </button>
                 </motion.div>
 

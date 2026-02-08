@@ -312,6 +312,18 @@ img {
     .nested-form-grid {
         padding-left: 16px;
     }
+
+    .questionnaire-container {
+        padding: 10px 10px 40px !important;
+    }
+
+    .step-indicator-label {
+        display: none;
+    }
+
+    .progress-step-wrapper {
+        gap: 0 !important;
+    }
 }
 
 .modal-input {
@@ -1061,17 +1073,70 @@ img {
 }
 
 /* Mobile Responsiveness */
+@media (max-width: 1024px) {
+    .container {
+        padding: 0 24px;
+    }
+}
+
 @media (max-width: 768px) {
+    :root {
+        --radius-lg: 16px;
+    }
+
+    .navbar {
+        padding: 15px 20px;
+        top: 0;
+    }
+
+    .navbar .btn-outline,
+    .navbar .btn-sm {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
+
+    .hero {
+        padding: 60px 0 80px;
+    }
+
     .hero h1 {
-        font-size: 2.5rem;
+        font-size: 2.2rem !important;
+        line-height: 1.2;
     }
 
     .hero-sub {
-        font-size: 1.1rem;
+        font-size: 1.1rem !important;
+        margin-top: 20px;
+    }
+
+    .hero-cta-group {
+        flex-direction: column;
+        width: 100%;
+        padding: 0 20px;
+    }
+
+    .hero-cta-group button {
+        width: 100%;
+        padding: 16px 20px !important;
+    }
+
+    .hero-visual {
+        margin-top: 40px;
+        padding: 0 10px;
+    }
+
+    .section-title {
+        font-size: 2rem !important;
+    }
+
+    .section-lead {
+        font-size: 1.1rem !important;
+        margin-bottom: 40px;
     }
 
     .steps-container {
         grid-template-columns: 1fr;
+        gap: 20px;
     }
 
     .step-card.featured {
@@ -1081,6 +1146,14 @@ img {
     .pack-wrapper {
         flex-direction: column;
         text-align: center;
+        gap: 40px;
+    }
+
+    .doc-stack {
+        width: 100%;
+        height: 380px;
+        max-width: 320px;
+        margin: 0 auto;
     }
 
     .benefit-list li {
@@ -1089,57 +1162,67 @@ img {
     }
 
     .glass-card {
-        width: 90%;
+        width: 100%;
+        padding: 20px;
+    }
+
+    .pricing-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 0 10px;
+    }
+
+    .pricing-card.recommended {
+        transform: none;
+        padding: 40px 24px;
+    }
+
+    .modal-content {
+        padding: 30px 20px;
+        margin: 10px;
+    }
+
+    .success-title {
+        font-size: 1.5rem;
+    }
+
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 15px;
+    }
+
+    .banner-responsive {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+
+    .auth-container {
+        padding: 10px;
+    }
+
+    .auth-card {
+        padding: 30px 20px !important;
+    }
+
+    .questionnaire-container {
+        padding: 0 !important;
+    }
+
+    .step-header {
+        font-size: 1.4rem !important;
+    }
+
+    .step-subtext {
+        font-size: 0.95rem !important;
+        max-width: 100% !important;
     }
 }
 
-/* Footer Form */
-.footer-form-container {
-    max-width: 500px;
-    margin: 0 auto 40px;
-    text-align: center;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 30px;
-    border-radius: var(--radius-md);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.footer-form-container h4 {
-    color: white;
-    margin-bottom: 10px;
-}
-
-.footer-form-container p {
-    color: rgba(255, 255, 255, 0.7);
-    margin-bottom: 20px;
-    font-size: 0.9rem;
-}
-
-.footer-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.form-input {
-    width: 100%;
-    padding: 12px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border-subtle);
-    font-family: inherit;
-}
-
-.form-check {
-    text-align: left;
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 0.8rem;
-}
-
-.form-check input {
-    margin-top: 3px;
+@media (max-width: 480px) {
+    .hero h1 {
+        font-size: 1.8rem !important;
+    }
 }
 
 .footer-divider {
