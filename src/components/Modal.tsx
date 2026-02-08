@@ -77,7 +77,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, mode, initialEmai
             badge: "⏳ Accès Prioritaire",
             title: "STOP ! Vous êtes en avance.",
             desc: "L'Allié ouvre officiellement ses portes le 14 février. En vous inscrivant aujourd'hui, vous sécurisez votre accès prioritaire.",
-            offer: <>Nous avons réservé votre place au <strong>tarif Early Bird de 29€</strong> (au lieu de 59€).</>,
+            offer: <>Nous avons réservé votre place au <strong>tarif Bêta de 19€</strong> (au lieu de 59€).</>,
             button: "Je veux mon accès au 14/02",
             label: "Ton email (pour t’envoyer ton accès le 14 février)",
             successMsg: "C'est réservé ! Vous recevrez votre accès prioritaire par email le 14 février."

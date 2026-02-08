@@ -54,9 +54,9 @@ export const Pricing: React.FC<PricingProps> = ({ onCtaClick }) => {
                             position: 'relative'
                         }}
                     >
-                        <div style={{ position: 'absolute', top: '24px', right: '24px', background: 'var(--accent)', color: 'white', padding: '6px 12px', borderRadius: '50px', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase' }}>OFFRE BÊTA</div>
-                        <h3 style={{ fontSize: '1.2rem', color: 'var(--accent)', fontWeight: 800, marginBottom: '24px' }}>OPTION A : L'ALLIÉ MDPH</h3>
-                        <div style={{ fontSize: '4.5rem', fontWeight: 800, color: 'white', marginBottom: '8px' }}>29€</div>
+                        <div style={{ position: 'absolute', top: '24px', right: '24px', background: 'var(--accent)', color: 'white', padding: '6px 12px', borderRadius: '50px', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase' }}>30 PLACES UNIQUEMENT</div>
+                        <h3 style={{ fontSize: '1.2rem', color: 'var(--accent)', fontWeight: 800, marginBottom: '24px' }}>OFFRE BÊTA : L'ALLIÉ MDPH</h3>
+                        <div style={{ fontSize: '4.5rem', fontWeight: 800, color: 'white', marginBottom: '8px' }}>19€</div>
                         <p style={{ fontSize: '1.1rem', color: 'rgba(255,255,255,0.7)', marginBottom: '32px' }}>Paiement unique. Vie illimitée.</p>
 
                         <div style={{ height: '1px', background: 'rgba(255,255,255,0.1)', marginBottom: '32px' }} />
@@ -69,7 +69,7 @@ export const Pricing: React.FC<PricingProps> = ({ onCtaClick }) => {
                         </ul>
 
                         <button className="btn-primary" onClick={() => onCtaClick('founder')} style={{ width: '100%', padding: '20px' }}>
-                            Réserver mon accès à 29€
+                            Réserver mon accès à 19€
                         </button>
                     </motion.div>
 
