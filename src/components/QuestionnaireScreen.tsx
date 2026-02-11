@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { PDFDocument } from 'pdf-lib';
 import { PaymentGate } from './PaymentGate';
+import { HealthDataConsentModal } from './HealthDataConsentModal';
 
 // DossierReview Component
 const DossierReview = ({ answers, onSave, onBack }: { answers: any, onSave: (newAnswers: any) => void, onBack: () => void }) => {
@@ -73,7 +74,12 @@ const DossierReview = ({ answers, onSave, onBack }: { answers: any, onSave: (new
                             style={{
                                 minHeight: '350px',
                                 marginTop: '12px',
-                                background: '#fcfcfc'
+                                background: '#fcfcfc',
+                                fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+                                fontSize: '0.95rem',
+                                lineHeight: '1.7',
+                                padding: '20px',
+                                whiteSpace: 'pre-wrap'
                             }}
                         />
                         <div className="info-text">
@@ -116,6 +122,7 @@ export const QuestionnaireScreen = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [isGenerating, setIsGenerating] = useState(false);
     const [optimizationMessage, setOptimizationMessage] = useState('Analyse des réponses...');
+    const [hasConsent, setHasConsent] = useState(false);
 
     useEffect(() => {
         const loadSubmission = async () => {
@@ -354,6 +361,10 @@ export const QuestionnaireScreen = () => {
         <div className="questionnaire-screen" style={{ minHeight: '100vh', background: '#f8fafc' }}>
             <main className="container" style={{ padding: '40px 20px 80px' }}>
                 <AnimatePresence mode="wait">
+                    {!hasConsent && !isLoading ? (
+                        <HealthDataConsentModal onConsent={() => setHasConsent(true)} />
+                    ) : null}
+
                     {isLoading ? (
                         <motion.div
                             key="loading"
@@ -468,9 +479,9 @@ export const QuestionnaireScreen = () => {
                             </div>
 
                             <h1 style={{ fontSize: '2.2rem', marginBottom: '16px', color: '#0f172a', fontWeight: '800' }}>Votre Pack est prêt !</h1>
-                            <p style={{ color: '#64748b', fontSize: '1.1rem', marginBottom: '40px', lineHeight: '1.6' }}>
-                                Nous avons généré votre **Projet de Vie** personnalisé ainsi que le **formulaire CERFA officiel** partiellement pré-rempli.
-                            </p>
+                            <div style={{ color: '#64748b', fontSize: '1.1rem', marginBottom: '40px', lineHeight: '1.6' }}>
+                                <p>Nous avons généré votre <strong style={{ color: 'var(--primary)', fontWeight: '700' }}>Projet de Vie</strong> personnalisé ainsi que le <strong style={{ color: 'var(--primary)', fontWeight: '700' }}>formulaire CERFA officiel</strong> partiellement pré-rempli.</p>
+                            </div>
 
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                                 <button

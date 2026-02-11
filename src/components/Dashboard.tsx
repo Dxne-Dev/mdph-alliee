@@ -195,6 +195,21 @@ export const Dashboard = () => {
     };
 
     const handleDownloadPack = async (child: any) => {
+        // 1. Vérification de sécurité : Statut Premium
+        try {
+            const { data: { user: currentUser } } = await supabase.auth.getUser();
+            if (!currentUser?.user_metadata?.is_premium) {
+                toast.error("Votre accès Premium n'est pas activé.");
+                // Rediriger vers le questionnaire qui affichera le PaymentGate puisqu'il est complet
+                navigate(`/questionnaire/${child.id}`);
+                return;
+            }
+        } catch (e) {
+            console.error("Erreur vérification premium", e);
+            toast.error("Impossible de vérifier votre statut.");
+            return;
+        }
+
         const tid = toast.loading('Préparation du téléchargement...', { id: 'dl-' + child.id });
         setIsGenerating(child.id);
 

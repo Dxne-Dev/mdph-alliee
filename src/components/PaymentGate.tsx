@@ -55,7 +55,13 @@ export const PaymentGate: React.FC<PaymentGateProps> = ({ childName, onPaymentSu
 
         const pollInterval = setInterval(async () => {
             try {
-                // Forcer le rafraîchissement de la session
+                // IMPORTANT : Forcer le rafraîchissement de la session pour obtenir un nouveau Token
+                // qui contient les métadonnées mises à jour (is_premium: true)
+                const { error: refreshError } = await supabase.auth.refreshSession();
+
+                if (refreshError) console.log("Refresh silencieux...", refreshError.message);
+
+                // Maintenant on récupère l'utilisateur avec ses données fraîches
                 const { data: { user } } = await supabase.auth.getUser();
 
                 // Si l'utilisateur est devenu premium
