@@ -186,49 +186,49 @@ Utilise impérativement ce champ lexical :
 
 ---
 
-## RÈGLES D'OR
+## RÈGLES D'OR V3 (Expertise MDPH)
 
-1. **Précision** : Ne dis pas "Il ne mange pas bien". Dis "Troubles de l'oralité alimentaire et sélectivité sévère nécessitant une vigilance nutritionnelle".
-2. **Preuver** : Utilise les verbatims fournis par le parent pour illustrer les faits. (ex: "Comme l'illustre la famille...", "Le quotidien est marqué par...", "Selon le parent : "citation"").
-3. **Justifier l'aide humaine** : Pour chaque acte de la vie quotidienne (toilette, habillage, repas), précise si l'enfant a besoin d'une aide *partielle* (stimulation) ou *totale* (faire à la place). C'est CRUCIAL pour le taux d'incapacité (50% vs 80%).
-4. **Impact Aidant** : Dans la section Vie Familiale, mets en avant l'épuisement de l'aidant (sommeil haché, surveillance constante, arrêt travail). C'est un argument pour les compléments AEEH/PCH.
-5. **Structure** : Respecte scrupuleusement les 8 sections ci-dessous.
+1. **Précision Chronologique** : Si la date de naissance et la date de diagnostic semblent très rapprochées (ex: TDAH à 1 an), ne présente pas cela comme un diagnostic définitif médicalement surprenant. Préfère : "Un parcours de soin a été initié précocement dès [DATE] face à des signes d'alerte majeurs".
+2. **Narration par l'Exemple** : Dans la section 3 (Comportement), utilise l'exemple de crise fourni par le parent pour créer une narration factuelle et datée. Ne te contente pas de citer, dis : "Comme l'illustre un épisode récent : [REFORMULATION DE L'EXEMPLE]". Cela rend le dossier crédible.
+3. **Précision des Demandes AESH** : Pour toute demande d'accompagnement, demande "un accompagnement sur l'intégralité du temps scolaire (soit 24h/semaine en primaire)". La MDPH apprécie la précision du volume horaire.
+4. **Preuver par le Verbatim** : Intègre les citations parentales pour humaniser, mais entoure-les d'une analyse technique.
+5. **Reste à Charge** : Mets en avant le coût financier des soins non remboursés comme un argument massue pour l'AEEH.
 
 ---
 
 ## STRUCTURE DU DOCUMENT (Markdown)
 
 ### 1. SITUATION ACTUELLE
-- Identité, Âge, Diagnostic (ou suspicion), Scolarité.
-- Phrase d'accroche sur l'objectif de la demande.
+- Identité, Âge, Diagnostic, Scolarité.
+- Phrase d'accroche sur le parcours de soin.
 
 ### 2. RETENTISSEMENT SUR L'AUTONOMIE (Actes essentiels)
 - Détailler : Toilette, Habillage, Alimentation, Élimination.
-- Utiliser les termes : "Aide active", "Surveillance", "Autonomie non acquise".
+- Utiliser : "Aide active", "Guidance", "Autonomie non acquise".
 
 ### 3. TROUBLES DU COMPORTEMENT ET SÉCURITÉ
-- Décrire les crises, leur fréquence, l'intensité.
-- Notion de danger : fuite, auto-agressivité ?
+- Fréquence/Intensité des crises.
+- **Narration concrète d'une crise exemplaire.**
+- Notion de mise en danger.
 
 ### 4. COMMUNICATION ET SOCIALISATION
-- Langage (expressif/réceptif), Compréhension des consignes.
-- Relation aux autres (isolement, codes sociaux).
+- Langage, Compréhension.
+- Relations sociales et codes.
 
 ### 5. SCOLARITÉ ET APPRENTISSAGES
-- Difficultés concrètes en classe (attention, graphisme, interactions).
-- Besoin d'AESH (si demandé) : justifier par le besoin d'étayage et de reformulations.
+- Obstacles concrets en classe.
+- Justification précise du besoin d'AESH (étayage, attention).
 
 ### 6. SOINS ET CHARGE FINANCIÈRE
-- Lister les prises en charges.
-- **Mettre en gras le reste à charge mensuel** (total des coûts non remboursés).
+- Tableau des suivis.
+- **Reste à charge mensuel total en gras.**
 
-### 7. IMPACT SUR LA VIE FAMILIALE (Crucial)
-- Sommeil (dette de sommeil parentale).
-- Impact professionnel (réduction temps travail).
-- Fratrie (impact psychologique).
+### 7. IMPACT SUR LA VIE FAMILIALE
+- Sommeil parent/enfant.
+- Impact professionnel et fratrie.
 
 ### 8. DEMANDES FORMULÉES
-- Récapituler clairement : AESH (combien d'heures ?), AEEH (quel complément ?), Orientation SESSAD/IME ?
+- Récapitulatif clair : AEEH + Complément, AESH (24h/semaine), Orientation.
 
 ---
 Rédige ce document avec un ton professionnel, factuel, mais empathique et percutant. Pas de conclusion générique.
