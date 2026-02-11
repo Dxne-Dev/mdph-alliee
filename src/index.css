@@ -304,28 +304,6 @@ img {
     line-height: 1.6;
 }
 
-@media (max-width: 768px) {
-    .form-grid-2col {
-        grid-template-columns: 1fr;
-    }
-
-    .nested-form-grid {
-        padding-left: 16px;
-    }
-
-    .questionnaire-container {
-        padding: 10px 10px 40px !important;
-    }
-
-    .step-indicator-label {
-        display: none;
-    }
-
-    .progress-step-wrapper {
-        gap: 0 !important;
-    }
-}
-
 .modal-input {
     width: 100%;
     padding: 16px;
@@ -843,26 +821,6 @@ img {
     margin: 0 auto;
 }
 
-@media (max-width: 1024px) {
-
-    .pricing-grid,
-    .mvp-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-
-    .pricing-grid,
-    .mvp-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .pricing-card.recommended {
-        transform: none;
-    }
-}
-
 .pricing-card {
     background: white;
     padding: 50px 40px;
@@ -1072,120 +1030,329 @@ img {
     opacity: 0.6;
 }
 
-/* Mobile Responsiveness */
+/* ==========================================================
+   RESPONSIVE DESIGN — FULL MVP
+   Breakpoints: 1024px (tablet), 768px (mobile), 480px (small)
+   ========================================================== */
+
+/* ---- TABLET (max-width: 1024px) ---- */
 @media (max-width: 1024px) {
     .container {
         padding: 0 24px;
     }
+
+    /* Grids → 2 columns */
+    .pain-points,
+    .steps-container,
+    .pricing-grid,
+    .mvp-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    /* Hero visual smaller */
+    .hero-visual {
+        max-width: 90% !important;
+    }
+
+    /* Pack section side-by-side → tighter gap */
+    .pack-wrapper {
+        gap: 40px !important;
+    }
+
+    /* Section padding tighter */
+    .section-problem,
+    .section-solution,
+    .section-pack,
+    .section-mvp,
+    .section-pricing,
+    .section-faq {
+        padding: 80px 0 !important;
+    }
+
+    /* Section titles smaller */
+    .section-problem h2,
+    .section-solution h2,
+    .section-faq h2 {
+        font-size: 2.4rem !important;
+    }
+
+    /* Pricing recommended card → no transform */
+    .pricing-card.recommended,
+    .step-card:nth-child(2) {
+        transform: none !important;
+    }
+
+    /* Dashboard child grid */
+    .dashboard-children-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
 }
 
+/* ---- MOBILE (max-width: 768px) ---- */
 @media (max-width: 768px) {
     :root {
         --radius-lg: 16px;
     }
 
+    .container {
+        padding: 0 16px;
+    }
+
+    /* ---- NAVBAR ---- */
     .navbar {
-        padding: 15px 20px;
+        padding: 12px 16px;
         top: 0;
+        gap: 10px;
+    }
+
+    .navbar .logo {
+        font-size: 1.2rem !important;
     }
 
     .navbar .btn-outline,
     .navbar .btn-sm {
-        padding: 8px 12px;
-        font-size: 0.8rem;
+        padding: 6px 12px;
+        font-size: 0.75rem;
     }
 
+    /* ---- HERO ---- */
     .hero {
-        padding: 60px 0 80px;
+        padding: 80px 0 60px !important;
     }
 
     .hero h1 {
         font-size: 2.2rem !important;
-        line-height: 1.2;
+        line-height: 1.2 !important;
     }
 
     .hero-sub {
-        font-size: 1.1rem !important;
-        margin-top: 20px;
+        font-size: 1rem !important;
+        margin-top: 16px !important;
     }
 
     .hero-cta-group {
-        flex-direction: column;
+        flex-direction: column !important;
         width: 100%;
-        padding: 0 20px;
+        padding: 0 10px;
+        gap: 12px !important;
     }
 
     .hero-cta-group button {
         width: 100%;
         padding: 16px 20px !important;
+        font-size: 1rem !important;
     }
 
     .hero-visual {
-        margin-top: 40px;
+        margin-top: 40px !important;
         padding: 0 10px;
     }
 
-    .section-title {
-        font-size: 2rem !important;
+    /* Hide the visual sidebar mockup on mobile */
+    .hero-visual>div>div>div:first-child>div:first-child {
+        display: none;
+    }
+
+    .hero-visual>div>div {
+        height: 280px !important;
+    }
+
+    .trust-text {
+        flex-direction: column !important;
+        gap: 12px !important;
+        font-size: 0.85rem;
+    }
+
+    .trust-text>div:nth-child(2) {
+        display: none;
+        /* hide separator */
+    }
+
+    /* ---- ALL SECTION GRIDS → 1 COLUMN ---- */
+    .pain-points,
+    .steps-container,
+    .pricing-grid,
+    .mvp-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+
+    /* ---- SECTION TITLES ---- */
+    .section-title,
+    .section-problem h2,
+    .section-solution h2,
+    .section-faq h2 {
+        font-size: 1.8rem !important;
     }
 
     .section-lead {
-        font-size: 1.1rem !important;
+        font-size: 1rem !important;
         margin-bottom: 40px;
     }
 
-    .steps-container {
-        grid-template-columns: 1fr;
-        gap: 20px;
+    /* ---- PROBLEM SECTION ---- */
+    .section-problem {
+        padding: 60px 0 !important;
     }
 
-    .step-card.featured {
-        transform: none;
+    .section-problem>.container>div:first-child {
+        margin-bottom: 40px !important;
+    }
+
+    .section-problem>.container>div:first-child h2 {
+        font-size: 1.8rem !important;
+    }
+
+    .section-problem>.container>div:first-child p {
+        font-size: 1rem !important;
+    }
+
+    /* ---- SOLUTION SECTION ---- */
+    .section-solution {
+        padding: 60px 0 !important;
+    }
+
+    .step-card {
+        transform: none !important;
+        box-shadow: var(--shadow-md) !important;
+    }
+
+    /* ---- PACK SECTION ---- */
+    .section-pack {
+        padding: 60px 0 !important;
     }
 
     .pack-wrapper {
-        flex-direction: column;
+        flex-direction: column !important;
         text-align: center;
-        gap: 40px;
+        gap: 30px !important;
+    }
+
+    .pack-image,
+    .pack-content {
+        flex: none !important;
+        width: 100%;
     }
 
     .doc-stack {
-        width: 100%;
-        height: 380px;
-        max-width: 320px;
+        height: 320px !important;
+        max-width: 280px;
         margin: 0 auto;
     }
 
-    .benefit-list li {
-        justify-content: flex-start;
-        text-align: left;
+    .doc-stack>div {
+        width: 260px !important;
+        height: 340px !important;
     }
 
-    .glass-card {
-        width: 100%;
-        padding: 20px;
+    .pack-content h2 {
+        font-size: 1.8rem !important;
     }
 
-    .pricing-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-        padding: 0 10px;
+    .pack-content p {
+        font-size: 1rem !important;
+    }
+
+    .first-demand-card {
+        padding: 40px 20px !important;
+        margin-top: 60px !important;
+    }
+
+    .first-demand-card h3 {
+        font-size: 1.5rem !important;
+    }
+
+    /* ---- MVP CAPABILITIES ---- */
+    .section-mvp {
+        padding: 60px 0 !important;
+    }
+
+    .mvp-card {
+        padding: 30px 20px !important;
+    }
+
+    /* ---- PRICING ---- */
+    .section-pricing {
+        padding: 60px 0 !important;
+    }
+
+    .section-pricing>.container>div:first-child h2 {
+        font-size: 1.8rem !important;
+    }
+
+    .section-pricing>.container>div:first-child p {
+        font-size: 1rem !important;
+    }
+
+    .pricing-card {
+        padding: 30px 24px !important;
     }
 
     .pricing-card.recommended {
-        transform: none;
-        padding: 40px 24px;
+        transform: none !important;
+        padding: 40px 24px !important;
     }
 
+    .pricing-card .btn-primary,
+    .pricing-card .btn-outline {
+        padding: 16px !important;
+    }
+
+    /* ---- FAQ ---- */
+    .section-faq {
+        padding: 60px 0 !important;
+    }
+
+    .section-faq h2 {
+        font-size: 1.8rem !important;
+    }
+
+    /* ---- FOOTER ---- */
+    .footer {
+        padding: 60px 0 40px !important;
+    }
+
+    .footer>.container>div:first-child {
+        grid-template-columns: 1fr !important;
+        gap: 40px !important;
+    }
+
+    .footer .logo {
+        font-size: 1.5rem !important;
+    }
+
+    .footer>.container>div:last-child {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 16px;
+    }
+
+    .footer>.container>div:last-child>div:last-child {
+        flex-wrap: wrap;
+        gap: 16px !important;
+    }
+
+    /* ---- AUTH ---- */
+    .auth-container {
+        padding: 10px;
+    }
+
+    .auth-card {
+        padding: 30px 20px !important;
+    }
+
+    /* ---- MODALS ---- */
     .modal-content {
         padding: 30px 20px;
         margin: 10px;
+        max-width: calc(100vw - 20px);
     }
 
     .success-title {
         font-size: 1.5rem;
     }
 
+    /* ---- DASHBOARD ---- */
     .dashboard-header {
         flex-direction: column;
         align-items: flex-start !important;
@@ -1197,14 +1364,31 @@ img {
         align-items: flex-start !important;
     }
 
-    .auth-container {
-        padding: 10px;
+    .dashboard-children-grid {
+        grid-template-columns: 1fr !important;
     }
 
-    .auth-card {
-        padding: 30px 20px !important;
+    .dashboard-child-card {
+        padding: 20px !important;
     }
 
+    .dashboard-child-card-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px;
+    }
+
+    .dashboard-child-card-actions {
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+
+    .dashboard-child-card-actions button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* ---- QUESTIONNAIRE ---- */
     .questionnaire-container {
         padding: 0 !important;
     }
@@ -1217,20 +1401,102 @@ img {
         font-size: 0.95rem !important;
         max-width: 100% !important;
     }
-}
 
-@media (max-width: 480px) {
-    .hero h1 {
-        font-size: 1.8rem !important;
+    .form-grid-2col {
+        grid-template-columns: 1fr !important;
+    }
+
+    .nested-form-grid {
+        padding-left: 16px;
+    }
+
+    .step-indicator-label {
+        display: none;
+    }
+
+    .progress-step-wrapper {
+        gap: 0 !important;
+    }
+
+    /* ---- PAYMENT GATE ---- */
+    .payment-gate-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .payment-gate-container {
+        margin: 20px 10px !important;
+    }
+
+    .payment-gate-container>div>div:first-child {
+        padding: 30px 20px !important;
+    }
+
+    .payment-gate-container>div>div:last-child {
+        padding: 30px 20px !important;
+        border-left: none !important;
+        border-top: 1px solid #e2e8f0;
     }
 }
 
-.footer-divider {
-    border: 0;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.1);
-    margin: 40px 0;
+/* ---- SMALL MOBILE (max-width: 480px) ---- */
+@media (max-width: 480px) {
+    .hero h1 {
+        font-size: 1.7rem !important;
+    }
+
+    .hero-sub {
+        font-size: 0.95rem !important;
+    }
+
+    .section-problem h2,
+    .section-solution h2,
+    .section-faq h2,
+    .section-title {
+        font-size: 1.5rem !important;
+    }
+
+    .pack-content h2 {
+        font-size: 1.5rem !important;
+    }
+
+    .first-demand-card h3 {
+        font-size: 1.3rem !important;
+    }
+
+    .pricing-card .card-tag,
+    .pricing-card h3 {
+        font-size: 0.85rem !important;
+    }
+
+    .pricing-card>div:nth-child(3) {
+        font-size: 2.5rem !important;
+    }
+
+    .navbar {
+        padding: 10px 12px;
+    }
+
+    .navbar .btn-outline {
+        display: none;
+        /* hide Connexion on very small screens, keep CTA */
+    }
+
+    .btn-primary {
+        padding: 14px 24px;
+        font-size: 0.95rem;
+    }
+
+    .footer>.container>div:last-child>div:last-child {
+        flex-direction: column;
+        gap: 12px !important;
+    }
+
+    /* Dashboard even tighter */
+    .dashboard-child-card {
+        padding: 16px !important;
+    }
 }
+
 
 /* Modal */
 .modal-overlay {
