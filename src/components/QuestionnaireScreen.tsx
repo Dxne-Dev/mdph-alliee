@@ -229,9 +229,8 @@ export const QuestionnaireScreen = () => {
                     .eq('child_id', childId)
                     .eq('user_id', user.id);
 
-                // Vérifier statut Premium pour savoir si on affiche le Gate ou le Succès
-                // On check les métadonnées de l'utilisateur
-                const isPremium = user.user_metadata?.is_premium;
+                // Vérifier statut Premium via user_metadata (mis à jour par le webhook Chariow)
+                const isPremium = user.user_metadata?.is_premium === true;
 
                 if (isPremium) {
                     setStage('success');

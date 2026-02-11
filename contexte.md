@@ -22,7 +22,8 @@ Améliorer la qualité de la synthèse générée pour passer d'un texte "correc
 - [x] **Alertes Documents** : (V2) Signaler si un certificat médical a plus de 12 mois (complété ✅).
 
 ## 💰 4. Monétisation & Légal
-- [ ] **Stripe Live** : Passer du lien de test au lien Stripe réel (Payment Link).
+- [x] **Chariow Integration** : Remplacement de Stripe par Chariow (Edge Function webhook, table transactions, PaymentGate refait).
+- [ ] **Chariow Config** : Créer les produits (19€ / 29€), coupons partenaires (1%), et configurer le Pulse.
 - [ ] **Pages Légales** : Rédiger et intégrer les Mentions Légales et les CGV (obligatoire pour le lancement).
 - [ ] **Emailing Transactionnel** : Configurer l'envoi d'un email de confirmation avec le pack après paiement.
 

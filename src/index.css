@@ -1406,3 +1406,14 @@ img {
     font-size: 1.1rem;
     line-height: 1.5;
 }
+
+/* Payment Gate Responsive */
+@media (max-width: 768px) {
+    .payment-gate-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .payment-gate-container {
+        margin: 20px 10px !important;
+    }
+}

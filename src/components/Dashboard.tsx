@@ -91,6 +91,51 @@ export const Dashboard = () => {
         fetchDashboardData();
     }, [navigate]);
 
+    // Gérer le retour après paiement Chariow (?paid=true dans l'URL)
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('paid') === 'true') {
+            toast.loading('Vérification de votre paiement...', { id: 'payment-return' });
+
+            let attempts = 0;
+            const maxAttempts = 15;
+
+            const pollInterval = setInterval(async () => {
+                attempts++;
+                try {
+                    // Rafraîchir les données user pour obtenir les metadata à jour
+                    const { data: { user: currentUser } } = await supabase.auth.getUser();
+                    if (!currentUser) return;
+
+                    // Vérifier is_premium dans user_metadata (mis à jour par le webhook Chariow)
+                    if (currentUser.user_metadata?.is_premium) {
+                        clearInterval(pollInterval);
+                        toast.success('Paiement confirmé ! Votre accès est activé 🎉', { id: 'payment-return' });
+                        // Nettoyer l'URL
+                        window.history.replaceState({}, '', '/dashboard');
+                        // Rafraîchir les données
+                        fetchDashboardData();
+                        return;
+                    }
+                } catch (e) {
+                    console.warn('Erreur polling paiement:', e);
+                }
+
+                if (attempts >= maxAttempts) {
+                    clearInterval(pollInterval);
+                    toast.dismiss('payment-return');
+                    toast('Le paiement est en cours de traitement. Rafraîchissez dans quelques instants.', {
+                        icon: '⏳',
+                        duration: 6000,
+                    });
+                    window.history.replaceState({}, '', '/dashboard');
+                }
+            }, 2000);
+
+            return () => clearInterval(pollInterval);
+        }
+    }, []);
+
     const handleVaultClose = () => {
         setVaultOpenId(null);
         fetchDashboardData(); // Rafraîchir les compteurs
