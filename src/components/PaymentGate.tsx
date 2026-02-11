@@ -41,50 +41,54 @@ export const PaymentGate: React.FC<PaymentGateProps> = ({ childName, onPaymentSu
         getUser();
     }, []);
 
-    // Vérifier le retour après paiement (polling du statut premium)
+    // Vérifier le statut premium en boucle si le polling est actif
     useEffect(() => {
+        // Optionnel : Si l'utilisateur revient quand même via l'URL de retour
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('paid') === 'true') {
             setIsPolling(true);
-            toast.loading('Vérification de votre paiement...', { id: 'payment-check' });
+        }
 
-            let attempts = 0;
-            const maxAttempts = 15; // 30 secondes max
+        if (!isPolling) return;
 
-            const pollInterval = setInterval(async () => {
-                attempts++;
-                try {
-                    // Forcer le rafraîchissement de la session pour récupérer les metadata à jour
-                    const { data: { user } } = await supabase.auth.getUser();
-                    if (!user) return;
+        toast.loading('En attente de la confirmation...', { id: 'payment-check' });
 
-                    // Vérifier is_premium dans les user_metadata (mis à jour par le webhook Chariow)
-                    if (user.user_metadata?.is_premium) {
-                        clearInterval(pollInterval);
-                        setIsPolling(false);
-                        toast.success('Paiement confirmé ! 🎉', { id: 'payment-check' });
-                        window.history.replaceState({}, '', window.location.pathname);
-                        onPaymentSuccess();
-                        return;
-                    }
-                } catch (e) {
-                    console.warn('Erreur lors du polling:', e);
-                }
+        const pollInterval = setInterval(async () => {
+            try {
+                // Forcer le rafraîchissement de la session
+                const { data: { user } } = await supabase.auth.getUser();
 
-                if (attempts >= maxAttempts) {
+                // Si l'utilisateur est devenu premium
+                if (user?.user_metadata?.is_premium) {
                     clearInterval(pollInterval);
                     setIsPolling(false);
-                    toast.dismiss('payment-check');
-                    toast('Le paiement est en cours de traitement. Rafraîchissez la page dans quelques instants.', {
-                        icon: '⏳',
-                        duration: 6000,
-                    });
-                }
-            }, 2000);
+                    toast.success('Paiement reçu ! Félicitations ! 🎉', { id: 'payment-check' });
 
-            return () => clearInterval(pollInterval);
-        }
-    }, [onPaymentSuccess]);
+                    // Nettoyer l'URL si besoin
+                    if (window.location.search.includes('paid=true')) {
+                        window.history.replaceState({}, '', window.location.pathname);
+                    }
+
+                    onPaymentSuccess();
+                }
+            } catch (e) {
+                console.warn('Erreur polling:', e);
+            }
+        }, 3000); // Vérifier toutes les 3 secondes
+
+        // Arrêter au bout de 5 minutes (300 secondes) pour ne pas tourner indéfiniment
+        const timeout = setTimeout(() => {
+            clearInterval(pollInterval);
+            setIsPolling(false);
+            toast.dismiss('payment-check');
+            toast('Le délai d\'attente est dépassé. Rafraîchissez la page si vous avez payé.', { icon: '⏳', duration: 6000 });
+        }, 300000);
+
+        return () => {
+            clearInterval(pollInterval);
+            clearTimeout(timeout);
+        };
+    }, [isPolling, onPaymentSuccess]);
 
     const handlePaymentClick = async () => {
         setIsLoading(true);
@@ -103,14 +107,20 @@ export const PaymentGate: React.FC<PaymentGateProps> = ({ childName, onPaymentSu
             const currentPath = window.location.pathname;
             const returnUrl = encodeURIComponent(`${window.location.origin}${currentPath}?paid=true`);
 
-            // Rediriger vers Chariow avec l'email pré-rempli
-            // Adapte les paramètres selon la documentation Chariow
+            // Rediriger vers Chariow dans un NOUVEL ONGLET
             const chariowUrl = `${CHARIOW_CONFIG.betaLink}?email=${encodeURIComponent(email)}&redirect_url=${returnUrl}`;
 
-            window.location.href = chariowUrl;
+            // Ouvrir dans un nouvel onglet pour que l'app reste active en background
+            window.open(chariowUrl, '_blank', 'noopener,noreferrer');
+
+            // Passer immédiatement en mode "Vérification" sur l'onglet actuel
+            setIsPolling(true);
+            setIsLoading(false);
+
+            toast('Onglet de paiement ouvert !', { icon: '↗️' });
         } catch (e) {
             console.error('Erreur redirection paiement:', e);
-            toast.error('Erreur lors de la redirection');
+            toast.error('Erreur lors de l\'ouverture du paiement');
             setIsLoading(false);
         }
     };

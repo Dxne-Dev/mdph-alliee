@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.7";
 
@@ -6,7 +7,7 @@ const corsHeaders = {
     "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-serve(async (req) => {
+serve(async (req: Request) => {
     if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
     try {
@@ -34,7 +35,7 @@ serve(async (req) => {
 
         if (listError) throw new Error("Erreur listUsers: " + listError.message);
 
-        const targetUser = data.users.find(u => u.email?.toLowerCase() === normalizedEmail);
+        const targetUser = data.users.find((u: { email?: string }) => u.email?.toLowerCase() === normalizedEmail);
 
         if (targetUser) {
             console.log(`✅ Utilisateur trouvé: ${targetUser.id}`);
@@ -63,8 +64,8 @@ serve(async (req) => {
                 amount: parseFloat(payload.amount || payload.total || 0),
                 status: "completed"
             });
-        } catch (e) {
-            console.error("DB Log Error (ignored):", e.message);
+        } catch (e: any) {
+            console.error("DB Log Error (ignored):", e.message || e);
         }
 
         return new Response(JSON.stringify({ success: true, user_found: !!targetUser }), {
@@ -72,9 +73,9 @@ serve(async (req) => {
             headers: { ...corsHeaders, "Content-Type": "application/json" }
         });
 
-    } catch (error) {
-        console.error("❌ Erreur:", error.message);
-        return new Response(JSON.stringify({ error: true, message: error.message }), {
+    } catch (error: any) {
+        console.error("❌ Erreur:", error.message || error);
+        return new Response(JSON.stringify({ error: true, message: error.message || String(error) }), {
             status: 500,
             headers: { ...corsHeaders, "Content-Type": "application/json" }
         });
