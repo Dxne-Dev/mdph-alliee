@@ -143,11 +143,12 @@ export const QuestionnaireScreen = () => {
                 if (error && error.code !== 'PGRST116') throw error;
 
                 if (data) {
+                    const savedAnswers = data.answers || {};
+                    setInitialData(savedAnswers); // Toujours charger initialData pour le mode édition
+
                     if (data.status === 'completed') {
-                        setCompletedAnswers(data.answers);
+                        setCompletedAnswers(savedAnswers);
                         setStage('review');
-                    } else {
-                        setInitialData(data.answers || {});
                     }
                 }
             } catch (error) {
@@ -161,6 +162,9 @@ export const QuestionnaireScreen = () => {
     }, [childId, navigate]);
 
     const handleAutoSave = async (answers: any) => {
+        // Sécurité : Ne pas sauvegarder si les réponses sont vides (évite d'écraser un profil existant par erreur)
+        if (!answers || Object.keys(answers).length <= 1) return;
+
         try {
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
@@ -206,10 +210,22 @@ export const QuestionnaireScreen = () => {
             // Si erreur (ex: fonction pas déployée), on continue silencieusement avec les réponses brutes
             // if (error) throw error; 
 
-            setCompletedAnswers({
+            const finalAnswers = {
                 ...answers,
                 expectations: data?.expertText || answers.expectations
-            });
+            };
+            setCompletedAnswers(finalAnswers);
+
+            // Sauvegarde immédiate en base pour ne pas perdre le résultat de l'IA 
+            // même si l'utilisateur ne clique pas sur "Valider" tout de suite
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                await supabase
+                    .from('submissions')
+                    .update({ answers: finalAnswers })
+                    .eq('child_id', childId)
+                    .eq('user_id', user.id);
+            }
 
             clearInterval(interval);
             setStage('review');
@@ -446,7 +462,12 @@ export const QuestionnaireScreen = () => {
                         <DossierReview
                             answers={completedAnswers}
                             onSave={handleSaveReview}
-                            onBack={() => setStage('questionnaire')}
+                            onBack={() => {
+                                // Important : On repasse les completedAnswers (y compris le texte IA) 
+                                // dans initialData pour que le questionnaire les recharge
+                                setInitialData(completedAnswers);
+                                setStage('questionnaire');
+                            }}
                         />
                     )}
 
