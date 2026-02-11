@@ -593,7 +593,7 @@ const Section2Autonomie = ({ answers, updateAnswer }: any) => (
                 <textarea
                     value={answers.autonomyNotes || ''}
                     onChange={(e) => updateAnswer('autonomyNotes', e.target.value)}
-                    placeholder="Ex: Il ne sait pas lacer ses chaussures, je dois choisir ses vêtements sinon il met la même chose 5 jours de suite..."
+                    placeholder="Détaillez ici : sait-il lacer ses chaussures ? Mettre ses boutons ? Se laver les dents sans rappel ? Couper sa viande ? (Soyez précis, l'IA utilisera ces détails)"
                     className="modal-input"
                     rows={4}
                     style={{ resize: 'vertical' }}
@@ -677,7 +677,7 @@ const Section3Comportement = ({ answers, updateAnswer }: any) => (
                 <textarea
                     value={answers.behaviorExample || ''}
                     onChange={(e) => updateAnswer('behaviorExample', e.target.value)}
-                    placeholder="Ex: La semaine dernière on a dû changer de route pour aller à l'école à cause de travaux. Il a hurlé 40 minutes dans la voiture..."
+                    placeholder="Décrivez une crise récente : Élément déclencheur ? Durée ? Violence (envers lui ou les autres) ? Comment le calmez-vous ? (Donnez un exemple concret)"
                     className="modal-input"
                     rows={4}
                     style={{ resize: 'vertical' }}
@@ -809,7 +809,7 @@ const Section5Scolarite = ({ answers, updateAnswer, toggleMultiSelect }: any) =>
                 <textarea
                     value={answers.schoolContext || ''}
                     onChange={(e) => updateAnswer('schoolContext', e.target.value)}
-                    placeholder="Ex: La maîtresse fait ce qu'elle peut mais elle a 28 élèves. Timéo décroche au bout de 20 min. Il fugue parfois dans le couloir..."
+                    placeholder="Racontez le quotidien : Est-il scolarisé à temps plein ? L'AESH est-elle vraiment là ? La cantine se passe bien ? Est-il exclu des activités ? (Citez des faits)"
                     className="modal-input"
                     rows={4}
                     style={{ resize: 'vertical' }}
@@ -1062,7 +1062,7 @@ const Section7Famille = ({ answers, updateAnswer }: any) => (
                 <textarea
                     value={answers.familyImpact || ''}
                     onChange={(e) => updateAnswer('familyImpact', e.target.value)}
-                    placeholder="Ex: Je suis à 80% au travail parce que je dois gérer les rdv. J'ai plus de vie sociale. Ma fille de 12 ans dit que je m'occupe que de Timéo..."
+                    placeholder="Ne minimisez pas votre fatigue. Parlez de votre sommeil, de votre travail (temps perdu, arrêts), de l'impact sur vos autres enfants, de votre vie sociale inexistante..."
                     className="modal-input"
                     rows={5}
                     style={{ resize: 'vertical' }}
@@ -1169,7 +1169,7 @@ const Section8Demande = ({ answers, updateAnswer }: any) => (
                 <textarea
                     value={answers.finalNotes || ''}
                     onChange={(e) => updateAnswer('finalNotes', e.target.value)}
-                    placeholder="Ex: Je fais tout ce que je peux. Je paye des soins que je peux pas vraiment me permettre. J'ai juste besoin qu'on m'aide un peu plus..."
+                    placeholder="C'est le moment de parler avec le cœur. Expliquez pourquoi ces aides sont VITALES pour vous aujourd'hui. L'IA reformulera cela en arguments administratifs imparables."
                     className="modal-input"
                     rows={5}
                     style={{ resize: 'vertical' }}
