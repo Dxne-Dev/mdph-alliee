@@ -3,136 +3,76 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers":
-        "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
 serve(async (req) => {
-    // Handle CORS preflight
     if (req.method === "OPTIONS") {
         return new Response("ok", { headers: corsHeaders });
     }
 
     try {
-        // 1. Récupérer les données envoyées par Chariow (Pulse)
         const payload = await req.json();
-        console.log("🔔 Webhook Chariow reçu:", JSON.stringify(payload));
+        console.log("🔔 Payload reçu:", JSON.stringify(payload));
 
-        // 2. Extraire les infos du payload
-        // Adapte les clés selon la structure réelle du Pulse Chariow
-        const email =
-            payload.customer_email || payload.email || payload.buyer_email;
-        const orderId =
-            payload.order_id || payload.id || payload.transaction_id;
-        const amount = payload.amount || payload.total || payload.price;
-        const couponCode =
-            payload.coupon_code || payload.discount_code || payload.coupon || null;
-        const productName = payload.product_name || payload.product || null;
+        const email = payload.customer_email || payload.email || payload.buyer_email || payload.customer?.email;
+        const orderId = payload.order_id || payload.id || payload.ref || "SIMUL-" + Date.now();
+        const amount = payload.amount || payload.total || payload.price || 0;
+        const couponCode = payload.coupon_code || payload.discount_code || payload.coupon || null;
 
         if (!email) {
-            console.error("❌ Email manquant dans le payload webhook");
-            return new Response(
-                JSON.stringify({ error: "Email manquant dans le payload" }),
-                {
-                    status: 400,
-                    headers: { ...corsHeaders, "Content-Type": "application/json" },
-                }
-            );
+            return new Response(JSON.stringify({ error: "Email manquant" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
         }
 
         const normalizedEmail = email.toLowerCase().trim();
-        console.log(`📧 Traitement du paiement pour: ${normalizedEmail}`);
 
-        // 3. Connexion Supabase avec la clé Service Role (accès admin)
-        const supabase = createClient(
-            Deno.env.get("SUPABASE_URL")!,
-            Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-        );
+        // Initialisation client avec Service Role
+        const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
+        const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
 
-        // 4. Trouver l'utilisateur par email dans auth.users
-        let userId: string | null = null;
-
-        // Utiliser listUsers pour trouver par email
-        // Note: pour un grand nombre d'utilisateurs, utiliser une requête plus ciblée
-        const { data: authData, error: authError } =
-            await supabase.auth.admin.listUsers();
-
-        if (!authError && authData?.users) {
-            const matchedUser = authData.users.find(
-                (u: any) => u.email?.toLowerCase() === normalizedEmail
-            );
-            if (matchedUser) {
-                userId = matchedUser.id;
-                console.log(`✅ Utilisateur trouvé: ${userId}`);
-            }
-        } else {
-            console.warn("⚠️ Erreur listUsers:", authError?.message);
+        if (!supabaseUrl || !supabaseKey) {
+            console.error("❌ Variables d'environnement manquantes");
+            throw new Error("Missing environment variables");
         }
 
-        // 5. Mettre à jour is_premium dans les user_metadata (auth.users)
-        if (userId) {
-            const { error: updateError } =
-                await supabase.auth.admin.updateUserById(userId, {
-                    user_metadata: {
-                        is_premium: true,
-                        payment_date: new Date().toISOString(),
-                    },
-                });
+        const supabase = createClient(supabaseUrl, supabaseKey);
 
-            if (updateError) {
-                console.error(
-                    "❌ Erreur mise à jour metadata premium:",
-                    updateError.message
-                );
-            } else {
-                console.log("✅ Statut premium activé dans auth.users metadata");
-            }
-        } else {
-            console.warn(
-                `⚠️ Aucun utilisateur trouvé pour: ${normalizedEmail}`
-            );
-            console.log(
-                "📝 Transaction enregistrée sans user_id (rattachement ultérieur possible)"
-            );
+        // 1. Chercher l'utilisateur
+        console.log(`🔍 Recherche de l'utilisateur: ${normalizedEmail}`);
+        const { data: userData } = await supabase.auth.admin.getUserByEmail(normalizedEmail);
+
+        if (userData && userData.user) {
+            console.log(`✅ Utilisateur trouvé: ${userData.user.id}`);
+
+            // 2. Mettre à jour Premium
+            await supabase.auth.admin.updateUserById(userData.user.id, {
+                user_metadata: { is_premium: true, payment_date: new Date().toISOString() }
+            });
+            console.log("💎 Statut Premium activé");
         }
 
-        // 6. Logger la transaction dans la table transactions
-        const { error: insertError } = await supabase.from("transactions").insert({
-            user_id: userId,
-            email: normalizedEmail,
-            order_id: orderId?.toString() || null,
-            amount: parseFloat(amount) || null,
-            coupon_code: couponCode,
-            product_name: productName,
-            status: "completed",
+        // 3. Logger dans la table transactions (entouré d'un try pour ne pas bloquer le reste)
+        try {
+            await supabase.from("transactions").insert({
+                user_id: userData?.user?.id || null,
+                email: normalizedEmail,
+                order_id: orderId.toString(),
+                amount: parseFloat(amount),
+                coupon_code: couponCode,
+                status: "completed"
+            });
+            console.log("📝 Transaction enregistrée");
+        } catch (e) {
+            console.warn("⚠️ Impossible d'enregistrer dans la table 'transactions'. Vérifiez qu'elle existe.");
+        }
+
+        return new Response(JSON.stringify({ success: true }), {
+            status: 200,
+            headers: { ...corsHeaders, "Content-Type": "application/json" }
         });
 
-        if (insertError) {
-            console.error("❌ Erreur insertion transaction:", insertError.message);
-        } else {
-            console.log("✅ Transaction enregistrée avec succès");
-        }
-
-        console.log(
-            `🎉 Paiement traité pour: ${normalizedEmail} (coupon: ${couponCode || "aucun"})`
-        );
-
-        return new Response(
-            JSON.stringify({
-                success: true,
-                message: `Paiement traité pour ${normalizedEmail}`,
-                user_found: !!userId,
-            }),
-            {
-                status: 200,
-                headers: { ...corsHeaders, "Content-Type": "application/json" },
-            }
-        );
     } catch (error) {
-        console.error("❌ Erreur webhook:", error);
-        return new Response(JSON.stringify({ error: error.message }), {
-            status: 500,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        console.error("❌ Erreur:", error.message);
+        return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 });
