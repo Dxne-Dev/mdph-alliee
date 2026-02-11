@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.7";
 
 const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
@@ -7,72 +7,76 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-    if (req.method === "OPTIONS") {
-        return new Response("ok", { headers: corsHeaders });
-    }
+    if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
     try {
-        const payload = await req.json();
+        const payload = await req.json().catch(() => ({}));
         console.log("🔔 Payload reçu:", JSON.stringify(payload));
 
         const email = payload.customer_email || payload.email || payload.buyer_email || payload.customer?.email;
-        const orderId = payload.order_id || payload.id || payload.ref || "SIMUL-" + Date.now();
-        const amount = payload.amount || payload.total || payload.price || 0;
-        const couponCode = payload.coupon_code || payload.discount_code || payload.coupon || null;
-
-        if (!email) {
-            return new Response(JSON.stringify({ error: "Email manquant" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-        }
+        if (!email) throw new Error("Email manquant dans le payload");
 
         const normalizedEmail = email.toLowerCase().trim();
 
-        // Initialisation client avec Service Role
-        const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
-        const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+        // RÉCUPÉRATION DES SECRETS
+        const supabaseUrl = Deno.env.get("SUPABASE_URL") || "https://fvjaeetgbgggghymskgv.supabase.co";
+        const supabaseKey = Deno.env.get("CHARIOW_SERVICE_ROLE") || Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
 
         if (!supabaseUrl || !supabaseKey) {
-            console.error("❌ Variables d'environnement manquantes");
-            throw new Error("Missing environment variables");
+            throw new Error(`Variables d'env manquantes: URL=${!!supabaseUrl}, KEY=${!!supabaseKey}`);
         }
 
         const supabase = createClient(supabaseUrl, supabaseKey);
 
-        // 1. Chercher l'utilisateur
-        console.log(`🔍 Recherche de l'utilisateur: ${normalizedEmail}`);
-        const { data: userData } = await supabase.auth.admin.getUserByEmail(normalizedEmail);
+        // 1. Chercher l'utilisateur avec listUsers (Méthode la plus stable)
+        console.log(`🔍 Recherche utilisateur pour: ${normalizedEmail}`);
+        const { data, error: listError } = await supabase.auth.admin.listUsers();
 
-        if (userData && userData.user) {
-            console.log(`✅ Utilisateur trouvé: ${userData.user.id}`);
+        if (listError) throw new Error("Erreur listUsers: " + listError.message);
 
-            // 2. Mettre à jour Premium
-            await supabase.auth.admin.updateUserById(userData.user.id, {
-                user_metadata: { is_premium: true, payment_date: new Date().toISOString() }
+        const targetUser = data.users.find(u => u.email?.toLowerCase() === normalizedEmail);
+
+        if (targetUser) {
+            console.log(`✅ Utilisateur trouvé: ${targetUser.id}`);
+
+            // 2. Mise à jour Premium
+            const { error: updateError } = await supabase.auth.admin.updateUserById(targetUser.id, {
+                user_metadata: {
+                    is_premium: true,
+                    payment_date: new Date().toISOString(),
+                    source: "Chariow Webhook"
+                }
             });
-            console.log("💎 Statut Premium activé");
+
+            if (updateError) throw new Error("Erreur update: " + updateError.message);
+            console.log("💎 Statut Premium activé avec succès");
+        } else {
+            console.warn("⚠️ Aucun utilisateur trouvé pour cet email dans Auth");
         }
 
-        // 3. Logger dans la table transactions (entouré d'un try pour ne pas bloquer le reste)
+        // 3. Logger la transaction (Facultatif, ne bloque pas si échec)
         try {
             await supabase.from("transactions").insert({
-                user_id: userData?.user?.id || null,
+                user_id: targetUser?.id || null,
                 email: normalizedEmail,
-                order_id: orderId.toString(),
-                amount: parseFloat(amount),
-                coupon_code: couponCode,
+                order_id: (payload.order_id || payload.id || "manual").toString(),
+                amount: parseFloat(payload.amount || payload.total || 0),
                 status: "completed"
             });
-            console.log("📝 Transaction enregistrée");
         } catch (e) {
-            console.warn("⚠️ Impossible d'enregistrer dans la table 'transactions'. Vérifiez qu'elle existe.");
+            console.error("DB Log Error (ignored):", e.message);
         }
 
-        return new Response(JSON.stringify({ success: true }), {
+        return new Response(JSON.stringify({ success: true, user_found: !!targetUser }), {
             status: 200,
             headers: { ...corsHeaders, "Content-Type": "application/json" }
         });
 
     } catch (error) {
         console.error("❌ Erreur:", error.message);
-        return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        return new Response(JSON.stringify({ error: true, message: error.message }), {
+            status: 500,
+            headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
     }
 });
