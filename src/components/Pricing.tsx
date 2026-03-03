@@ -1,10 +1,9 @@
 import React from 'react';
-import { Lock, FileText, Sparkles, Send, Repeat, Check } from 'lucide-react';
+import { Lock, FileText, Repeat, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { type ModalMode } from './Modal';
 
 interface PricingProps {
-    onCtaClick: (mode: ModalMode) => void;
+    onCtaClick: () => void;
 }
 
 export const Pricing: React.FC<PricingProps> = ({ onCtaClick }) => {
@@ -68,33 +67,33 @@ export const Pricing: React.FC<PricingProps> = ({ onCtaClick }) => {
                             <li style={{ display: 'flex', gap: '12px', color: 'white', fontWeight: 500 }}><Check size={20} className="text-accent" /> Mises à jour gratuites</li>
                         </ul>
 
-                        <button className="btn-primary" onClick={() => onCtaClick('founder')} style={{ width: '100%', padding: '20px' }}>
+                        <button className="btn-primary" onClick={() => onCtaClick()} style={{ width: '100%', padding: '20px' }}>
                             Réserver mon accès à 19€
                         </button>
                     </motion.div>
 
-                    {/* Option B - Free */}
+                    {/* Option C - Future Price */}
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true }}
                         className="pricing-card"
-                        style={{ padding: '40px', background: 'white', border: '1px solid #e2e8f0' }}
+                        style={{ padding: '40px', background: 'white', opacity: 0.7, border: '1px solid #e2e8f0' }}
                     >
-                        <h3 style={{ fontSize: '0.9rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '24px' }}>Version Découverte</h3>
-                        <div style={{ fontSize: '3.5rem', fontWeight: 800, color: '#1e293b', marginBottom: '8px' }}>0€</div>
-                        <p style={{ fontSize: '1rem', color: '#64748b', marginBottom: '32px' }}>Testez l'outil sans engagement</p>
+                        <h3 style={{ fontSize: '0.9rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '24px' }}>Tarif Public</h3>
+                        <div style={{ fontSize: '3.5rem', fontWeight: 800, color: '#1e293b', marginBottom: '8px' }}>49€</div>
+                        <p style={{ fontSize: '1rem', color: '#64748b', marginBottom: '32px' }}>Prix après la phase Bêta</p>
 
                         <div style={{ height: '1px', background: '#e2e8f0', marginBottom: '32px' }} />
 
                         <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 40px', textAlign: 'left', display: 'grid', gap: '16px' }}>
-                            <li style={{ display: 'flex', gap: '12px', color: '#64748b' }}><Send size={18} /> Questionnaire interactif</li>
-                            <li style={{ display: 'flex', gap: '12px', color: '#64748b' }}><Sparkles size={18} /> Aperçu du projet de vie</li>
-                            <li style={{ display: 'flex', gap: '12px', color: '#64748b' }}><Lock size={18} /> Téléchargement bloqué</li>
+                            <li style={{ display: 'flex', gap: '12px', color: '#94a3b8' }}><Check size={18} /> Mêmes fonctionnalités</li>
+                            <li style={{ display: 'flex', gap: '12px', color: '#94a3b8' }}><Check size={18} /> Accès à vie</li>
+                            <li style={{ display: 'flex', gap: '12px', color: '#94a3b8' }}><Check size={18} /> Mises à jour incluses</li>
                         </ul>
 
-                        <button className="btn-outline" onClick={() => onCtaClick('waitlist' as any)} style={{ width: '100%', padding: '16px' }}>
-                            S'inscrire gratuitement
+                        <button className="btn-outline" disabled style={{ width: '100%', padding: '16px', cursor: 'not-allowed', opacity: 0.6 }}>
+                            Bientôt disponible
                         </button>
                     </motion.div>
                 </div>
