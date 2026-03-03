@@ -73,7 +73,7 @@ export const Pricing: React.FC<PricingProps> = ({ onCtaClick }) => {
                         </button>
                     </motion.div>
 
-                    {/* Option B - Waitlist */}
+                    {/* Option B - Free */}
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         whileInView={{ opacity: 1, scale: 1 }}
@@ -81,20 +81,20 @@ export const Pricing: React.FC<PricingProps> = ({ onCtaClick }) => {
                         className="pricing-card"
                         style={{ padding: '40px', background: 'white', border: '1px solid #e2e8f0' }}
                     >
-                        <h3 style={{ fontSize: '0.9rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '24px' }}>Liste d'attente</h3>
+                        <h3 style={{ fontSize: '0.9rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '24px' }}>Version Découverte</h3>
                         <div style={{ fontSize: '3.5rem', fontWeight: 800, color: '#1e293b', marginBottom: '8px' }}>0€</div>
-                        <p style={{ fontSize: '1rem', color: '#64748b', marginBottom: '32px' }}>Soyez prévenu au lancement</p>
+                        <p style={{ fontSize: '1rem', color: '#64748b', marginBottom: '32px' }}>Testez l'outil sans engagement</p>
 
                         <div style={{ height: '1px', background: '#e2e8f0', marginBottom: '32px' }} />
 
                         <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 40px', textAlign: 'left', display: 'grid', gap: '16px' }}>
-                            <li style={{ display: 'flex', gap: '12px', color: '#64748b' }}><Send size={18} /> Notifications email</li>
-                            <li style={{ display: 'flex', gap: '12px', color: '#64748b' }}><Sparkles size={18} /> Tarif public au lancement (59€)</li>
-                            <li style={{ display: 'flex', gap: '12px', color: '#64748b' }}><Lock size={18} /> Sans priorité d'accès</li>
+                            <li style={{ display: 'flex', gap: '12px', color: '#64748b' }}><Send size={18} /> Questionnaire interactif</li>
+                            <li style={{ display: 'flex', gap: '12px', color: '#64748b' }}><Sparkles size={18} /> Aperçu du projet de vie</li>
+                            <li style={{ display: 'flex', gap: '12px', color: '#64748b' }}><Lock size={18} /> Téléchargement bloqué</li>
                         </ul>
 
-                        <button className="btn-outline" onClick={() => onCtaClick('waitlist')} style={{ width: '100%', padding: '16px' }}>
-                            Rejoindre la liste
+                        <button className="btn-outline" onClick={() => onCtaClick('waitlist' as any)} style={{ width: '100%', padding: '16px' }}>
+                            S'inscrire gratuitement
                         </button>
                     </motion.div>
                 </div>

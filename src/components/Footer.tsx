@@ -1,19 +1,10 @@
-import React, { useState, type FormEvent } from 'react';
+import React, { useState } from 'react';
 import { Mail, ShieldCheck, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-interface FooterProps {
-    onWaitlistSubmit: (email: string) => void;
-}
-
-export const Footer: React.FC<FooterProps> = ({ onWaitlistSubmit }) => {
+export const Footer: React.FC = () => {
     const [email, setEmail] = useState('');
     const [consent, setConsent] = useState(false);
-
-    const handleSubmit = (e: FormEvent) => {
-        e.preventDefault();
-        onWaitlistSubmit(email);
-    };
 
     return (
         <footer className="footer" style={{ padding: '100px 0 60px', background: 'var(--primary)', color: 'white' }}>
@@ -35,10 +26,10 @@ export const Footer: React.FC<FooterProps> = ({ onWaitlistSubmit }) => {
                     </div>
 
                     <div style={{ background: 'rgba(255,255,255,0.05)', padding: '40px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                        <h4 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: '12px' }}>Restez informé(e)</h4>
-                        <p style={{ color: 'rgba(255,255,255,0.6)', marginBottom: '24px' }}>Inscrivez-vous pour recevoir nos guides et être prévenu du lancement.</p>
+                        <h4 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: '12px' }}>Commencer maintenant</h4>
+                        <p style={{ color: 'rgba(255,255,255,0.6)', marginBottom: '24px' }}>Inscrivez-vous pour créer votre dossier et simplifier vos démarches.</p>
 
-                        <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '16px' }}>
+                        <form onSubmit={() => window.location.href = '/auth'} style={{ display: 'grid', gap: '16px' }}>
                             <div style={{ position: 'relative' }}>
                                 <Mail size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.4)' }} />
                                 <input
@@ -64,7 +55,7 @@ export const Footer: React.FC<FooterProps> = ({ onWaitlistSubmit }) => {
                                 </label>
                             </div>
                             <button type="submit" className="btn-primary" style={{ width: '100%' }}>
-                                Me prévenir
+                                Créer mon compte
                             </button>
                         </form>
                     </div>
