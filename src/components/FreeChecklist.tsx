@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle, XCircle, AlertTriangle, ClipboardCheck, ArrowRight, ShieldCheck, Calendar, FileText, Lock } from 'lucide-react';
+import { XCircle, AlertTriangle, ClipboardCheck, ArrowRight, ShieldCheck, Calendar, FileText, Lock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const REQUIRED = [
@@ -31,7 +31,7 @@ const HAS_EXPIRY = new Set([
   'Compte-rendu médical du spécialiste',
 ]);
 
-type Status = 'provided' | 'missing' | undefined;
+
 
 export const FreeChecklist = () => {
   const [started, setStarted] = useState(false);
