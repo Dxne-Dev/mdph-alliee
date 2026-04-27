@@ -8,6 +8,7 @@ import { QuestionnaireScreen } from './components/QuestionnaireScreen';
 import { Toaster } from 'react-hot-toast';
 import { LegalPage } from './components/LegalPage';
 import { MentionsLegalesContent, ConfidentialityContent, CGVContent, CGUContent } from './LegalContent';
+import { FreeChecklist } from './components/FreeChecklist';
 
 function App() {
     const [session, setSession] = useState<any>(null);
@@ -63,6 +64,9 @@ function App() {
                 <Route path="/confidentialite" element={<LegalPage title="Politique de Confidentialité" content={<ConfidentialityContent />} />} />
                 <Route path="/cgv" element={<LegalPage title="Conditions Générales de Vente" content={<CGVContent />} />} />
                 <Route path="/cgu" element={<LegalPage title="Conditions Générales d'Utilisation" content={<CGUContent />} />} />
+
+                {/* Free Checklist (Public) */}
+                <Route path="/checklist-gratuite" element={<FreeChecklist />} />
 
                 {/* Catch-all to landing */}
                 <Route path="*" element={<Navigate to="/" />} />

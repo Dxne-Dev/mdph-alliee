@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Check, FileText, ArrowRight, ShieldCheck, Zap } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface HeroProps {
     onCtaClick: () => void;
@@ -52,9 +53,9 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
                         Renouvelez mon Dossier
                         <ArrowRight size={20} />
                     </button>
-                    <button onClick={onCtaClick} className="btn-outline" style={{ padding: '20px 45px', fontSize: '1.1rem' }}>
-                        Démarrer première demande
-                    </button>
+                    <Link to="/checklist-gratuite" className="btn-outline" style={{ padding: '20px 45px', fontSize: '1.1rem', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        Vérifier mon dossier (Gratuit)
+                    </Link>
                 </motion.div>
 
                 <motion.div
