@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldAlert, Check } from 'lucide-react';
+import { ShieldAlert, Check, Lock } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface HealthDataConsentModalProps {
     onConsent: () => void;
@@ -71,11 +72,27 @@ export const HealthDataConsentModal: React.FC<HealthDataConsentModalProps> = ({ 
                         color: 'var(--text-muted)',
                         lineHeight: '1.6',
                         fontSize: '1rem',
-                        marginBottom: '24px'
+                        marginBottom: '16px'
                     }}>
                         Les informations que vous allez saisir concernent la santé et le handicap de votre enfant.
                         Ces données sont <strong>strictement confidentielles</strong>, chiffrées, et utilisées uniquement pour générer votre dossier MDPH.
                     </p>
+
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: '10px',
+                        padding: '12px 14px',
+                        background: '#f0fdf4',
+                        borderRadius: '10px',
+                        border: '1px solid #bbf7d0',
+                        marginBottom: '24px'
+                    }}>
+                        <Lock size={16} style={{ color: '#16a34a', marginTop: '2px', flexShrink: 0 }} />
+                        <p style={{ fontSize: '0.85rem', color: '#15803d', fontWeight: '600', lineHeight: '1.5', margin: 0 }}>
+                            Vos données médicales ne sont jamais revendues, jamais conservées au-delà de la génération de votre dossier.
+                        </p>
+                    </div>
 
                     <div style={{
                         backgroundColor: '#f8fafc',
@@ -103,7 +120,7 @@ export const HealthDataConsentModal: React.FC<HealthDataConsentModalProps> = ({ 
                                 }}
                             />
                             <span style={{ fontSize: '0.9rem', color: '#334155', fontWeight: '500' }}>
-                                Je consens au traitement de ces données sensibles conformément à la <a href="#" style={{ color: 'var(--accent)', textDecoration: 'underline' }}>Politique de Confidentialité</a>.
+                                Je consens au traitement de ces données sensibles conformément à la <Link to="/confidentialite" style={{ color: 'var(--accent)', textDecoration: 'underline' }}>Politique de Confidentialité</Link>.
                             </span>
                         </label>
                     </div>

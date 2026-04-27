@@ -789,15 +789,6 @@ const Section5Scolarite = ({ answers, updateAnswer, toggleMultiSelect }: any) =>
 );
 
 const Section6Soins = ({ answers, updateAnswer }: any) => {
-    const calculateTotalCost = () => {
-        let total = 0;
-        if (answers.psychomotricianCost) total += Number(answers.psychomotricianCost);
-        if (answers.psychologistCost) total += Number(answers.psychologistCost);
-        if (answers.ergotherapistCost) total += Number(answers.ergotherapistCost);
-        if (answers.educatorCost) total += Number(answers.educatorCost);
-        return total;
-    };
-
     return (
         <div className="section-card">
             <h2 className="step-header" style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '16px', justifyContent: 'center' }}><Stethoscope size={32} style={{ color: 'var(--accent)' }} /> Soins et Thérapies</h2>
@@ -942,13 +933,16 @@ const Section6Soins = ({ answers, updateAnswer }: any) => {
                     )}
                 </div>
 
-                {/* Total */}
-                <div className="total-cost-card">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontWeight: 'bold', fontSize: '16px' }}>Reste à charge mensuel total :</span>
-                        <span style={{ fontWeight: 'bold', fontSize: '24px', color: 'var(--primary)' }}>
-                            {calculateTotalCost()}€
-                        </span>
+                {/* Info reste à charge */}
+                <div className="total-cost-card" style={{ background: '#eff6ff', borderColor: '#93c5fd' }}>
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                        <span style={{ fontSize: '20px', flexShrink: 0 }}>💡</span>
+                        <div>
+                            <span style={{ fontWeight: 'bold', fontSize: '14px', color: 'var(--primary)', display: 'block', marginBottom: '4px' }}>Estimation du reste à charge</span>
+                            <span style={{ fontSize: '13px', color: '#475569', lineHeight: '1.5' }}>
+                                Les coûts renseignés ci-dessus seront inclus dans votre synthèse MDPH. Pour estimer précisément votre reste à charge, nous vous recommandons d'utiliser le <a href="https://www.caf.fr" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', fontWeight: 600 }}>simulateur officiel de la CAF</a> ou de consulter un professionnel.
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>

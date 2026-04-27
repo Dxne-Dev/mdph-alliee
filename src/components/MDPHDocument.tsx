@@ -283,14 +283,7 @@ export const MDPHDocument = ({ data }: MDPHDocumentProps) => {
         return text;
     };
 
-    const calculateTotalCost = () => {
-        let total = 0;
-        if (data.psychomotricianCost) total += Number(data.psychomotricianCost);
-        if (data.psychologistCost) total += Number(data.psychologistCost);
-        if (data.ergotherapistCost) total += Number(data.ergotherapistCost);
-        if (data.educatorCost) total += Number(data.educatorCost);
-        return total;
-    };
+
 
     const getFamilyImpactDescription = () => {
         const sleepMap: any = {
@@ -536,7 +529,7 @@ export const MDPHDocument = ({ data }: MDPHDocumentProps) => {
 
                 {/* SECTION 6/7: SOINS */}
                 <View style={styles.card} wrap={false}>
-                    <Text style={styles.sectionTitle}>{data.expectations ? 'VI.' : 'VII.'} Soins en Cours et Reste à Charge</Text>
+                    <Text style={styles.sectionTitle}>{data.expectations ? 'VI.' : 'VII.'} Soins en Cours</Text>
                     <View style={styles.table}>
                         <View style={styles.tableRow}>
                             <Text style={[styles.tableHeader, { width: '50%' }]}>Professionnel</Text>
@@ -579,8 +572,8 @@ export const MDPHDocument = ({ data }: MDPHDocumentProps) => {
                             </View>
                         )}
                     </View>
-                    <Text style={[styles.paragraph, { fontWeight: 'bold', marginTop: 10 }]}>
-                        Reste à charge mensuel total : {calculateTotalCost()}€
+                    <Text style={[styles.paragraph, { fontStyle: 'italic', marginTop: 10, fontSize: 9, color: '#64748b' }]}>
+                        Note : Pour une estimation précise du reste à charge, nous recommandons de consulter le simulateur officiel de la CAF ou un professionnel qualifié.
                     </Text>
                 </View>
 

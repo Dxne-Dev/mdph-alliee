@@ -65,11 +65,11 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
                     style={{ marginTop: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '24px' }}
                 >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#64748b' }}>
-                        <ShieldCheck size={16} className="text-accent" /> Données sécurisées 100% France
+                        <ShieldCheck size={16} className="text-accent" /> Données hébergées en UE
                     </div>
                     <div style={{ width: '1px', height: '16px', background: '#e2e8f0' }} />
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#64748b' }}>
-                        <Check size={16} className="text-accent" /> Utilisé par +500 parents
+                        <Check size={16} className="text-accent" /> Jamais revendues, jamais conservées
                     </div>
                 </motion.div>
             </div>

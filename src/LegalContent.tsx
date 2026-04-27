@@ -57,14 +57,14 @@ export const CGVContent = () => (
         <p>4.4 — Les documents générés utilisent l'intelligence artificielle. Malgré les mesures prises pour assurer la qualité des contenus, l'utilisateur doit vérifier et adapter les textes générés avant utilisation.</p>
 
         <h3>ARTICLE 5 — PRIX ET PAIEMENT</h3>
-        <p>5.1 — Le prix du service est de 29,00 € TTC (vingt-neuf euros toutes taxes comprises).</p>
+        <p>5.1 — Le prix du service est de 19,00 € TTC (dix-neuf euros toutes taxes comprises) pendant la phase de lancement (offre limitée aux 50 premiers utilisateurs), puis 49,00 € TTC (quarante-neuf euros toutes taxes comprises) en tarif standard.</p>
         <p>5.2 — Le paiement est unique. Il donne accès au service de manière illimitée dans le temps, y compris les mises à jour et les régénérations de documents.</p>
         <p>5.3 — Le paiement est effectué par carte bancaire via le prestataire sécurisé Stripe. Les données de paiement ne sont ni collectées ni stockées par L'Allié MDPH.</p>
         <p>5.4 — Des tarifs promotionnels peuvent être proposés ponctuellement. Ils n'ouvrent droit à aucun remboursement de la différence pour les achats effectués à un tarif antérieur.</p>
 
         <h3>ARTICLE 6 — DROIT DE RÉTRACTATION</h3>
         <p>6.1 — Conformément à l'article L221-28 du Code de la consommation, le droit de rétractation ne peut être exercé pour les contrats de fourniture de contenu numérique non fourni sur un support matériel dont l'exécution a commencé avec l'accord du consommateur.</p>
-        <p>6.2 — Toutefois, L'Allié MDPH propose une garantie commerciale "Satisfait ou Remboursé" de 14 jours à compter de la date d'achat. Pour en bénéficier, contactez-nous à [EMAIL] en précisant votre motif d'insatisfaction.</p>
+        <p>6.2 — Toutefois, L'Allié MDPH propose une garantie commerciale "Satisfait ou Remboursé" de 14 jours à compter de la date d'achat. Pour en bénéficier, contactez-nous à alassanemomo244@gmail.com en précisant votre motif d'insatisfaction.</p>
 
         <h3>ARTICLE 7 — ACCÈS AU SERVICE</h3>
         <p>7.1 — L'accès au service est activé dès la confirmation du paiement.</p>
@@ -72,7 +72,7 @@ export const CGVContent = () => (
         <p>7.3 — L'utilisateur est responsable de la confidentialité de ses identifiants de connexion.</p>
 
         <h3>ARTICLE 8 — PROPRIÉTÉ INTELLECTUELLE</h3>
-        <p>8.1 — L'ensemble du service (interface, textes, algorithmes, prompts, design) est la propriété exclusive de [TON NOM / SOCIÉTÉ].</p>
+        <p>8.1 — L'ensemble du service (interface, textes, algorithmes, prompts, design) est la propriété exclusive de Alassane Momo, entrepreneur indépendant.</p>
         <p>8.2 — Les documents générés par l'outil appartiennent à l'utilisateur. Il est libre de les utiliser, modifier, imprimer et diffuser dans le cadre de ses démarches administratives.</p>
 
         <h3>ARTICLE 9 — DISPONIBILITÉ DU SERVICE</h3>
@@ -83,7 +83,7 @@ export const CGVContent = () => (
         <p>10.1 — Les présentes CGV sont soumises au droit béninois.</p>
         <p>10.2 — En cas de litige, les parties s'engagent à rechercher une solution amiable avant toute action judiciaire.</p>
         <p>10.3 — À défaut d'accord amiable, le litige sera porté devant les tribunaux compétents de Cotonou.</p>
-        <p>10.4 — Conformément à l'article L.612-1 du Code de la consommation, le consommateur peut recourir gratuitement à un médiateur de la consommation. Médiateur : [NOM DU MÉDIATEUR ou "sera communiqué sur demande"].</p>
+        <p>10.4 — Conformément à l'article L.612-1 du Code de la consommation, le consommateur peut recourir gratuitement à un médiateur de la consommation. Le médiateur compétent sera communiqué sur demande à l'adresse : alassanemomo244@gmail.com.</p>
 
         <h3>ARTICLE 11 — CONTACT</h3>
         <p>Pour toute question relative aux présentes CGV :<br />Email : alassanemomo244@gmail.com</p>
@@ -93,7 +93,7 @@ export const CGVContent = () => (
 export const CGUContent = () => (
     <>
         <h3>ARTICLE 1 — OBJET</h3>
-        <p>Les présentes Conditions Générales d'Utilisation (CGU) définissent les règles d'utilisation du service "L'Allié MDPH" accessible à l'adresse [URL DU SITE].</p>
+        <p>Les présentes Conditions Générales d'Utilisation (CGU) définissent les règles d'utilisation du service "L'Allié MDPH" accessible à l'adresse https://allie-mdph.fr.</p>
         <p>L'utilisation du service implique l'acceptation pleine et entière des présentes CGU.</p>
 
         <h3>ARTICLE 2 — INSCRIPTION</h3>
@@ -160,7 +160,7 @@ export const CGUContent = () => (
             <li>Non-paiement</li>
             <li>Comportement abusif envers l'équipe ou les autres utilisateurs</li>
         </ul>
-        <p>7.2 — L'utilisateur peut résilier son compte à tout moment en contactant [EMAIL]. La suppression du compte entraîne la suppression de toutes les données associées dans un délai de 30 jours.</p>
+        <p>7.2 — L'utilisateur peut résilier son compte à tout moment en contactant alassanemomo244@gmail.com. La suppression du compte entraîne la suppression de toutes les données associées dans un délai de 30 jours.</p>
 
         <h3>ARTICLE 8 — RESPONSABILITÉ</h3>
         <p>8.1 — L'Allié MDPH s'engage à mettre en œuvre tous les moyens raisonnables pour assurer le bon fonctionnement du service.</p>
@@ -186,7 +186,7 @@ export const CGUContent = () => (
         <p>Les présentes CGU sont soumises au droit béninois. Tout litige sera soumis aux tribunaux compétents de Cotonou.</p>
 
         <h3>ARTICLE 12 — CONTACT</h3>
-        <p>Pour toute question relative aux présentes CGU :<br />Email : [TON EMAIL]</p>
+        <p>Pour toute question relative aux présentes CGU :<br />Email : alassanemomo244@gmail.com</p>
     </>
 );
 
@@ -250,7 +250,7 @@ export const ConfidentialityContent = () => (
             <li>La saisie des informations dans le questionnaire</li>
             <li>L'upload de pièces justificatives</li>
         </ul>
-        <p>3.3 — Vous pouvez retirer votre consentement à tout moment en supprimant vos données ou en nous contactant à [EMAIL].</p>
+        <p>3.3 — Vous pouvez retirer votre consentement à tout moment en supprimant vos données ou en nous contactant à alassanemomo244@gmail.com.</p>
 
         <h3>ARTICLE 4 — UTILISATION DES DONNÉES</h3>
         <p>Vos données sont utilisées exclusivement pour :</p>
@@ -273,7 +273,11 @@ export const ConfidentialityContent = () => (
             <li>Partager vos données médicales avec quiconque</li>
             <li>Utiliser vos données pour entraîner des modèles d'IA</li>
             <li>Transmettre vos informations à la MDPH ou à toute administration sans votre action explicite</li>
+            <li>Conserver vos données médicales au-delà de la génération de votre dossier</li>
         </ul>
+        <p style={{fontWeight: 'bold', fontStyle: 'italic', marginTop: '16px', padding: '12px', background: '#f0fdf4', borderRadius: '8px', borderLeft: '3px solid #22c55e'}}>
+            🔒 Vos données médicales ne sont jamais revendues, jamais conservées au-delà de la génération de votre dossier.
+        </p>
 
         <h3>ARTICLE 5 — INTELLIGENCE ARTIFICIELLE</h3>
         <p>5.1 — Le Service utilise l'intelligence artificielle (modèle de langage) pour générer les documents.</p>
@@ -310,7 +314,8 @@ export const ConfidentialityContent = () => (
 
         <h3>ARTICLE 7 — DURÉE DE CONSERVATION</h3>
         <ul>
-            <li>Données de compte, de l'enfant, documents : Durée de vie du compte + 30 jours après suppression</li>
+            <li>Données de compte : Durée de vie du compte + 60 jours après suppression</li>
+            <li>Données médicales et documents de l'enfant : Supprimées automatiquement 60 jours après la dernière génération de dossier, sauf action contraire de l'utilisateur</li>
             <li>Données de paiement : Conservées par Stripe selon sa politique</li>
             <li>Logs techniques : 12 mois</li>
         </ul>
@@ -389,7 +394,7 @@ export const MentionsLegalesContent = () => (
 
         <h3>MÉDIATION</h3>
         <p>Conformément aux articles L.616-1 et R.616-1 du Code de la consommation, le consommateur peut recourir gratuitement à un médiateur de la consommation en vue de la résolution amiable d'un litige.</p>
-        <p>[NOM ET COORDONNÉES DU MÉDIATEUR] ou Le médiateur compétent sera communiqué sur demande à l'adresse : alassanemomo244@gmail.com</p>
+        <p>Le médiateur compétent sera communiqué sur demande à l'adresse : alassanemomo244@gmail.com</p>
 
         <h3>CRÉDITS</h3>
         <p>Design et développement : Dxne-Corporate<br />Icônes : Lucide React</p>
